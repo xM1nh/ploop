@@ -1,0 +1,13 @@
+.toolSelector {
+    display: grid;
+    grid-template-columns: repeat(2, min-content);
+    width: min-content;
+    position: absolute;
+    left: calc(9 * 70vh/ 16 + 10px);
+    top: calc(70vh / 2 - 200px/2);
+}
+
+.toolSelector > button {
+    width: 70px;
+    height: 40px;
+}

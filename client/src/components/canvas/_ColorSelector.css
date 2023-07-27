@@ -1,0 +1,32 @@
+.colorSelector {
+    width: min-content;
+    display: grid;
+    grid-template-areas: 
+        'black darkgray blue'
+        'white silver cyan'
+        'pine burgundy brown'
+        'green red orange'
+        'gold plum coral'
+        'yellow pink beige'
+        'current current current';
+    gap: 5px;
+    background-color: #942740;
+    padding: 10px;
+    position: absolute;
+    left: -166px;
+    top: calc(70vh / 2 - 350px / 2);
+}
+
+.color {
+    width: 40px;
+    height: 40px;
+}
+
+.colorSelector .current {
+    grid-area: current;
+    height: 50px;
+} 
+
+.colorSelector > div {
+    border: 1px solid white;
+}
