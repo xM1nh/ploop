@@ -7,26 +7,31 @@
         'pine burgundy brown'
         'green red orange'
         'gold plum coral'
-        'yellow pink beige'
-        'current current current';
-    gap: 5px;
+        'yellow pink beige';
+    gap: 7px;
     background-color: #942740;
     padding: 10px;
-    position: absolute;
-    left: -166px;
-    top: calc(70vh / 2 - 350px / 2);
+    border-radius: 10px;
 }
 
-.color {
-    width: 40px;
-    height: 40px;
+.colorContainer {
+    width: 55px;
+    height: 55px;
 }
 
-.colorSelector .current {
+.colorContainer:hover {
+    cursor: pointer;
+}
+
+.colorContainer.active {
     grid-area: current;
     height: 50px;
+    width: 50px;
+    border: 2px solid rgb(255, 255, 255, 1);
+    border-radius: 5px;
 } 
 
 .colorSelector > div {
-    border: 1px solid white;
+    border: 2px solid white;
+    border-radius: 10px;
 }

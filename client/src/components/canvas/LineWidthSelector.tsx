@@ -5,9 +5,10 @@ import {v4 as uuidv4} from 'uuid'
 
 type LineWidthSelectorProps = {
     handleClick: MouseEventHandler,
+    activeLineWidth: number
 }
 
-const LineWidthSelector = ({handleClick} :LineWidthSelectorProps) => {
+const LineWidthSelector = ({handleClick, activeLineWidth} :LineWidthSelectorProps) => {
     const thickness = [
         1,
         5,
@@ -19,17 +20,15 @@ const LineWidthSelector = ({handleClick} :LineWidthSelectorProps) => {
     const content = thickness.map(thick => {
         return (
             <div 
-                className='thickWrapper' 
+                className={activeLineWidth === thick ? 'thickWrapper active' : 'thickWrapper'}
                 key={uuidv4()}
                 onClick={handleClick}
                 data-linewidth={thick}>
                 <div
-                    className='thick'
+                    className={activeLineWidth === thick ? 'thick active' : 'thick'}
                     style={{
                         height: thick*2,
                         width: thick*2,
-                        borderRadius: '50%',
-                        backgroundColor: 'gray'
                     }}
                 />
             </div>

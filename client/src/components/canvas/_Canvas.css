@@ -1,5 +1,6 @@
 canvas {
-    border: 1px solid black;
+    border: 2px solid black;
+    display: block;
 }
 
 #permCanvas {
@@ -13,6 +14,66 @@ canvas {
     z-index: -1;
 }
 
+.featuresContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    gap: 5px;
+    position: absolute;
+    left: 460px;
+    top: 593px;
+}
+
 .canvasContainer {
     position: relative;
+}
+
+.toolSelectorTrigger {
+    background: rgba(148, 39, 64, 0.9);
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.toolSelectorWrapper {
+    position: absolute;
+    left: 75px;
+    top: -247px;
+}
+
+.colorWrapper {
+    height: min-content;
+    width: min-content;
+}
+
+.colorSelectorTrigger {
+    background: rgba(148, 39, 64, 0.9);
+    border-radius: 10px;
+    padding: 5px;
+    width: min-content;
+    height: min-content;
+}
+
+.colorSelectorWrapper {
+    position: absolute;
+    left: 75px;
+    top: -267px;
+}
+
+.lineWidthSelectorTrigger {
+    height: 54px;
+    width: 54px;
+    background-color: rgba(148, 39, 64, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+.lineWidthSelectorWrapper {
+    position: absolute;
+    left: 75px;
+    top: -90px
 }

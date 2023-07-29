@@ -5,10 +5,9 @@ import {v4 as uuidv4} from 'uuid'
 
 type ColorSelectorProps = {
     handleClick: MouseEventHandler,
-    currentColor: string
 }
 
-const ColorSelector = ({ handleClick, currentColor } :ColorSelectorProps) => {
+const ColorSelector = ({ handleClick } :ColorSelectorProps) => {
     const colors = [
         'black #000000', //black
         'white #ffffff', //white
@@ -35,7 +34,7 @@ const ColorSelector = ({ handleClick, currentColor } :ColorSelectorProps) => {
         const colorCode = color.split(' ')[1]
         return (
             <div
-                className="color"
+                className="colorContainer"
                 key={uuidv4()}
                 data-color={colorCode}
                 style={{
@@ -50,7 +49,6 @@ const ColorSelector = ({ handleClick, currentColor } :ColorSelectorProps) => {
     return (
         <div className="colorSelector">
             {content}
-            <div className='current' style={{backgroundColor: currentColor}}/>
         </div>
     )
 }

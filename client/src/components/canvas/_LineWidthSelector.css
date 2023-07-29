@@ -1,16 +1,39 @@
 .lineWidthSelector {
     display: flex;
+    flex-direction: column;
     gap: 5px;
-    position: absolute;
-    left: calc(9 * 70vh / 32 - 270px / 2);
+    padding: 5px;
+    border-radius: 10px;
+    background: rgba(148, 39, 64, 0.9);
 }
 
 .thickWrapper {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    border: 1px solid gray;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.thickWrapper:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border: 2px solid rgb(255, 255, 255, 1);
+    cursor: pointer;
+}
+
+.thickWrapper.active {
+    border: 2px solid rgb(255, 255, 255, 1);
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.thick.active {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+
+.thick {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
 }

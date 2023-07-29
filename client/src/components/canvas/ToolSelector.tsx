@@ -1,32 +1,33 @@
 import './_ToolSelector.css'
 
-import { MouseEventHandler } from "react"
+import { MouseEventHandler} from "react"
+import {v4 as uuidv4} from 'uuid'
+
+import { tools } from './tools'
 
 type ToolSelectorProps = {
     handleClick: MouseEventHandler,
-    undo: () => void,
-    redo: () => void
+    activeTool: string
 }
 
 const ToolSelector = (
     {
-    handleClick, 
-    undo, 
-    redo
+    handleClick,
+    activeTool,
     } :ToolSelectorProps
 ) => {
+
+    const content = tools.map(tool => {
+        return (
+            <div key={uuidv4()} className={activeTool === tool.name ? 'toolContainer active' : 'toolContainer'} data-tool={tool.name} onClick={handleClick}>
+                {tool.icon}
+            </div>
+        )
+    })
+
     return (
         <div className="toolSelector">
-            <button data-tool='free' onClick={handleClick}>Free</button>
-            <button data-tool='eraser' onClick={handleClick}>Eraser</button>
-            <button data-tool='rectangle' onClick={handleClick}>Rectangle</button>
-            <button data-tool='filledRectangle' onClick={handleClick}>Filled Rectangle</button>
-            <button data-tool='oval' onClick={handleClick}>Oval</button>
-            <button data-tool='filledOval' onClick={handleClick}>Filled Oval</button>
-            <button data-tool='bucket' onClick={handleClick}>Bucket</button>
-            <button data-tool='line' onClick={handleClick}>Line</button>
-            <button data-tool='undo' onClick={undo}>Undo</button>
-            <button data-tool='redo' onClick={redo}>Redo</button>
+            {content}
         </div>
     )
 }

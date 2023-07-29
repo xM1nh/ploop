@@ -2,12 +2,41 @@
     display: grid;
     grid-template-columns: repeat(2, min-content);
     width: min-content;
-    position: absolute;
-    left: calc(9 * 70vh/ 16 + 10px);
-    top: calc(70vh / 2 - 200px/2);
+    background: rgba(148, 39, 64, 0.9);
+    padding: 7px;
+    gap: 5px;
+    border-radius: 10px;
 }
 
-.toolSelector > button {
-    width: 70px;
-    height: 40px;
+.toolContainer {
+    width: min-content;
+    height: min-content;
+    border: 2px solid rgb(255, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 5px;
+}
+
+.toolContainer:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border: 2px solid rgb(255, 255, 255, 1);
+    cursor: pointer;
+}
+
+.toolContainer:hover svg {
+    color: rgb(255, 255, 255, 1);
+}
+
+.toolContainer svg {
+    width: 38px;
+    height: 38px;
+    color: rgb(255, 255, 255, 0.3);
+}
+
+.toolContainer.active {
+    background-color: rgba(255, 255, 255, 0.3);
+    border: 2px solid rgb(255, 255, 255, 1);
+}
+
+.toolContainer.active svg {
+    color: rgb(255, 255, 255, 1);
 }
