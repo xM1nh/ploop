@@ -12,7 +12,9 @@ const Header = () => {
         <header>
             <div className="headerLeftContainer">
                 <div className='logoImageContainer'>
-                    <img className='logo' src={LogoWhite}/>
+                    <Link to='/'>
+                        <img className='logo' src={LogoWhite}/>
+                    </Link>
                 </div>
             </div>
             <div className="headerCenterContainer">
@@ -28,7 +30,7 @@ const Header = () => {
             </div>
             <div className="headerRightContainer">
                 <div className='uploadContainer'>
-                    <Link to='/'>
+                    <Link to='/create'>
                         <AddIcon />
                         <span className='uploadText'>Create</span>
                     </Link>
