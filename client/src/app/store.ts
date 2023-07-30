@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import uploadSprayReducer from '../features/spray/uploadSpraySlice'
+import createSprayReducer from '../features/spray/createSpraySlice'
 import apiSlice from "./api/apiSlice";
 
 const store = configureStore({
     reducer: {
         [apiSlice.reducerPath]: apiSlice.reducer,
-        uploadSpray: uploadSprayReducer
+        createSpray: createSprayReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat()
