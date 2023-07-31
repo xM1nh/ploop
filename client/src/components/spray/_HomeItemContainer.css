@@ -1,0 +1,251 @@
+.homeItemContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 20px 0px;
+    position: relative;
+    max-width: 692px;
+    height: unset;
+    width: unset;
+    transition-property: margin;
+    transition-duration: 0.3s;
+    margin-bottom: 0px;
+}
+
+.avartarAnchor {
+    flex: 0 0 auto
+}
+
+.avartarContainer {
+    width: 56px;
+    height: 56px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    -moz-box-pack: center;
+    justify-content: center;
+}
+
+.avartarWrapper {
+    width: 56px;
+    height: 56px;
+    display: inline-block;
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    font-feature-settings: "tnum";
+    position: relative;
+    overflow: hidden;
+    color: rgb(255, 255, 255);
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 32px;
+    border-radius: 50%;
+    border-color: rgba(22, 24, 35, 0.12);
+    border-width: 0.5px;
+    cursor: pointer;
+    background-color: rgba(136, 136, 136, 0.5);
+}
+
+.avartar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.contentContainer {
+    margin-left: 12px;
+    width: 624px;
+    flex: 1 1 624px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.textInfoContainer {
+    margin-right: 114px;
+}
+
+.creatorContainer {
+    display: flex;
+    flex-direction: row;
+    -moz-box-align: center;
+    align-items: center;
+}
+
+.creatorAnchor {
+    display: block;
+}
+
+.creatorUsername {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.028px;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.creatorNickname {
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.093px;
+    display: inline-block;
+    line-height: 28px;
+}
+
+.followButton {
+    box-sizing: border-box;
+    appearance: none;
+    min-width: 96px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 2px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    background-clip: padding-box;
+    font-size: 16px;
+    height: 36px;
+    padding-inline: 15px;
+    color: rgba(254, 44, 85, 1);
+    background-color: rgba(254, 44, 85, 0);
+    border-color: rgba(254, 44, 85, 1);
+    right: 0px;
+    position: absolute;
+    top: 28px;
+}
+
+.followButtonContent {
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    overflow: hidden;
+    gap: 6px;
+}
+
+.followButtonLabel {
+    box-sizing: border-box;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.captionWrapper {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding-bottom: unset;
+}
+
+.captionContainer {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -moz-box-orient: vertical;
+    max-height: 44px;
+}
+
+.captionContainer::before {
+    content: "";
+    height: calc(100% - 21px);
+    float: right;
+    width: 0px;
+    margin-top: 0px;
+}
+
+.captionText {
+    fill: rgb(22, 24, 35);
+    font-size: 16px;
+    line-height: 21px;
+    letter-spacing: 0.03px;
+    word-break: break-word;
+}
+
+span.caption {
+    display: inline;
+    font-weight: 400;
+}
+
+.contributorWrapper > h4 {
+    line-height: 21px;
+    letter-spacing: 0.03px;
+    margin-top: 2px;
+    margin-left: 2px;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+.sprayWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    height: 100%;
+    margin: unset;
+}
+
+.sprayContainer {
+    height: 600px;
+    position: relative;
+    box-sizing: border-box;
+    background-size: cover;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.sprayContainer > img {
+    height: 100%;
+    border-radius: 10px;
+    aspect-ratio: 9/ 16;
+}
+
+.sprayControl {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.sprayActionContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.sprayActionButton {
+    border: medium none;
+    background: none;
+    outline: none;
+    padding: 0px;
+    position: relative;
+    display: flex;
+    -moz-box-align: center;
+    align-items: center;
+    cursor: pointer;
+    flex-direction: column;
+}
+
+.actionIconWrapper {
+    color: rgb(22, 24, 35);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0px;
+    border-radius: 50%;
+    transition: all 200ms ease-in-out 0s;
+    width: 48px;
+    height: 48px;
+    background-color: rgba(22, 24, 35, 0.06);
+    margin-top: 8px;
+    margin-bottom: 6px;
+}
