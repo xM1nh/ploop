@@ -1,0 +1,141 @@
+.createMainContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.subContainer.two {
+    display: flex;
+    align-items: center;
+}
+
+.createMainContainer h1 {
+    box-sizing: border-box;
+    margin-block: 0px;
+    font-size: 24px;
+    line-height: 1.5;
+    font-weight: 700;
+    color: rgba(22,24,35,1);
+    display: block;
+}
+
+.createMainContainer .subtitle span {
+    box-sizing: border-box;
+    margin-block: 0px;
+    font-size: 18px;
+    line-height: 1.5;
+    font-weight: 400;
+    color: rgba(22,24,35,0.5)
+}
+
+.createMainContainer label {
+    box-sizing: border-box;
+    margin-block: 0px;
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 500;
+    color: rgba(22,24,35,1);
+    display: inline;
+}
+
+.createMainContainer form {
+    flex: 1 1 0%;
+    min-width: 0px;
+}
+
+.subButtonContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.buttonNextContainer, .buttonDiscardContainer {
+    width: 164px;
+    margin-right: 16px;
+    background-color: transparent;
+}
+
+.buttonNext, .buttonDiscard {
+    box-sizing: border-box;
+    appearance: none;
+    min-width: 96px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 2px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    background-clip: padding-box;
+    width: 100%;
+    font-size: 16px;
+    height: 48px;
+    padding-inline: 23px;
+    color: rgba(22,24,35,1);
+    background-color: rgba(255,255,255,1);
+    border-color: rgba(22,24,35,0.12);
+}
+
+.buttonNext:hover, .buttonDiscard:hover {
+    background-color: rgba(100, 100, 100, 0.12);
+}
+
+.textContainer {
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    -moz-box-pack: center;
+    justify-content: center;
+    -moz-box-align: center;
+    align-items: center;
+    opacity: 1;
+    overflow: hidden;
+    gap: 6px;
+}
+
+.createMainContainer .formWrapper {
+    width: max-content;
+    padding: 0 50px 0 24px;
+    margin: 24px;
+    border-radius: 4px;
+}
+
+.createMainContainer .formContainer {
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.createMainContainer .formFieldContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 24px;
+}
+
+.formFieldContainer.switch > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.dateTimeWrapper {
+    gap: 16px
+}
+
+.dateTimeWrapper input {
+    padding: 0;
+    padding-left: 14px;
+    cursor: pointer;
+}
+
+.dateTimeWrapper fieldset {
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
