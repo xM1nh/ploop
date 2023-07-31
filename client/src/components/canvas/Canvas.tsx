@@ -1,8 +1,9 @@
 import './_Canvas.css'
 
-import { useState, MouseEventHandler, useRef, useEffect} from 'react'
+import { useState, MouseEventHandler, useRef, useEffect, forwardRef, useImperativeHandle} from 'react'
 
 import { useOnDraw } from '../../hooks/useOnDraw'
+import { CanvasRef } from '../../pages/spray/CreateSpray'
 
 import { tools } from './tools'
 import ToolSelector from './ToolSelector'
@@ -12,6 +13,7 @@ import LineWidthSelector from './LineWidthSelector'
 interface CanvasProps {
     width: string | number | undefined,
     height: string | number | undefined,
+    drawable: boolean
 }
 
 export type Point = {
@@ -19,10 +21,11 @@ export type Point = {
     y: number
 } | null
 
-const Canvas = ({
+const Canvas = forwardRef<CanvasRef, CanvasProps>(({
     width, 
     height,
-}: CanvasProps) => {
+    drawable
+}: CanvasProps, ref) => {
     const [tool, setTool] = useState('free')
     const [isToolOpen, setIsToolOpen] = useState(false)
     const [color, setColor] = useState('#000000')
@@ -39,6 +42,8 @@ const Canvas = ({
         setPermanentCanvasRef, 
         undo, 
         redo,
+        getHistory,
+        setHistory
     } = useOnDraw(tool, color, lineWidth)
 
     const handleSelectTool: MouseEventHandler = (e) => {
@@ -117,9 +122,15 @@ const Canvas = ({
         return () => document.removeEventListener('mousedown', listener)
     }, [isColorOpen, isToolOpen, isLineWidthOpen])
 
+    useImperativeHandle(ref, () => ({
+        getHistory,
+        setHistory
+    }))
+
     return (
         <div className='canvasContainer'>
             <div className='canvasWrapper'>
+                {drawable &&
                 <canvas
                     className='canvas'
                     id='tempCanvas'
@@ -127,6 +138,7 @@ const Canvas = ({
                     height={height}
                     ref={setCanvasRef}
                 />
+                }
                 <canvas 
                     className='canvas'
                     id='permCanvas'
@@ -135,6 +147,7 @@ const Canvas = ({
                     ref={setPermanentCanvasRef}
                 />
             </div>
+            {drawable &&
             <div className='featuresContainer'>
                 <div className='toolWrapper' ref={toolSelectorRef}>
                     <div className='toolSelectorTrigger' data-type='tool' onClick={toggleOpenSelector}>
@@ -181,8 +194,9 @@ const Canvas = ({
                     </div>
                 </div>
             </div>
+            }
         </div>
     )
-}
+})
 
 export default Canvas

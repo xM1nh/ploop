@@ -33,17 +33,46 @@ export const useOnDraw = (tool: string, color: string, lineWidth: number) => {
         permanentCanvasRef.current = ref
     }
 
+    const init = () => {
+        if (permanentCanvasRef.current) {
+            const ctx = permanentCanvasRef.current.getContext('2d')
+            if (ctx) {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+                ctx.fillStyle = 'white'
+                ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+            }
+        }
+    }
+
     const getHistory = () => {
         return historyStack.current
+    }
+
+    const setHistory = (newHistory: string[][]) => {
+        if (!newHistory.length) return
+        historyStack.current = newHistory
+        historyStep.current = newHistory.length - 1
+        if (permanentCanvasRef.current) {
+            const ctx = permanentCanvasRef.current.getContext('2d')
+            if (ctx) {
+                const index = historyStack.current[historyStep.current].length - 1
+                const imageData = new Image()
+                imageData.src = historyStack.current[historyStep.current][index]
+                imageData.onload = () => {
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+                    ctx.drawImage(imageData, 0, 0)
+                }
+            }
+        }
     }
 
     const save = () => {
         if (permanentCanvasRef.current) {
             historyStep.current++
             if (historyStep.current < historyStack.current.length) {
-                historyStack.current.length = historyStep.current
+                historyStack.current = historyStack.current.slice(0, historyStep.current)
             }
-            historyStack.current.push([permanentCanvasRef.current.toDataURL()])
+            historyStack.current = [...historyStack.current, [permanentCanvasRef.current.toDataURL()]]
         }
     }
 
@@ -88,6 +117,7 @@ export const useOnDraw = (tool: string, color: string, lineWidth: number) => {
         //Manually set the stack and step to default value
         historyStack.current = []
         historyStep.current = -1
+        init()
         save()
     }, [])
 
@@ -244,7 +274,7 @@ export const useOnDraw = (tool: string, color: string, lineWidth: number) => {
         setPermanentCanvasRef,
         undo,
         redo,
-        getHistory
+        getHistory,
+        setHistory
     }
-
 }
