@@ -1,0 +1,236 @@
+.loginModalContainer {
+    z-index: 1001;
+    position: fixed;
+    inset: 0px;
+    z-index: 1001;
+    overflow: auto;
+    outline: 0px;
+    transition: all 500ms cubic-bezier(0.075, 0.82, 0.165, 1) 0s;
+    display: flex;
+    opacity: 1;
+}
+
+.loginModalWrapper {
+    width: 100vw;
+    height: 100%;
+    display: flex;
+    -moz-box-pack: center;
+    justify-content: center;
+    -moz-box-align: center;
+    align-items: center;
+}
+
+.loginModal {
+    border-radius: 8px;
+    transition: all 300ms cubic-bezier(0.075, 0.82, 0.165, 1) 0s;
+    transform: none;
+    margin: auto;
+    position: relative;
+    max-height: 693px;
+    height: 80%;
+    overflow: hidden;
+    background-color: rgb(255, 255, 255);
+}
+
+.loginModalContent {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 483px;
+    padding: 48px 0px 0px;
+    box-sizing: border-box;
+}
+
+.loginContainer {
+    flex: 1 1 0%;
+    overflow: auto;
+}
+
+.formContainer {
+    width: 375px;
+    margin: auto;
+    padding: unset;
+}
+
+.loginModalTitle {
+    color: rgb(22, 24, 35);
+    font-size: 32px;
+    margin: 16px auto;
+    font-weight: bold;
+    text-align: center;
+    overflow-wrap: break-word;
+}
+
+.formContainer .description {
+    color: rgb(22, 24, 35);
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.inputContainer {
+    position: relative;
+    margin-bottom: 9px;
+}
+
+.login, .signup {
+    border-radius: 2px;
+    background-color: rgba(22, 24, 35, 0.06);
+    border: 1px solid rgba(22, 24, 35, 0.12);
+    color: rgb(22, 24, 35);
+    line-height: 100%;
+    outline: none;
+    font-size: 16px;
+    height: 44px;
+    caret-color: rgb(254, 44, 85);
+    width: 100%;
+    padding-inline-start: 12px;
+    padding-inline-end: unset;
+}
+
+.login::placeholder, .singup::placeholder {
+    color: rgba(22, 24, 35, 0.34);
+}
+
+.inputIconContainer {
+    right: 0px;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0px;
+    height: 44px;
+    padding-inline-end: 16px;
+}
+
+.passwordIcon {
+    line-height: 0;
+    margin-inline-start: 16px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+form > a {
+    color: rgba(22, 24, 35, 0.75);
+    font-weight: 600;
+    font-size: 12px;
+    display: inline-block;
+}
+
+.loginButton {
+    border-radius: 4px;
+    border: medium none;
+    color: rgb(255, 255, 255);
+    background-color: rgb(254, 44, 85);
+    min-width: 120px;
+    min-height: 46px;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 700;
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 8px;
+    user-select: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 21px;
+}
+
+.loginButton:disabled {
+    border: medium none;
+    color: rgba(22, 24, 35, 0.34);
+    background-color: rgba(22, 24, 35, 0.06);
+    pointer-events: none;
+}
+
+.loginModalContainer .footer {
+    color: rgb(22, 24, 35);
+    height: 64px;
+    border-top: 1px solid rgba(22, 24, 35, 0.12);
+    margin: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    line-height: 18px;
+    gap: 5px
+}
+
+.bottomTextLink {
+    color: rgb(254, 44, 85);
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.modalMask {
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    inset: 0px;
+}
+
+.modalCloseButton {
+    transform: scale(1.7);
+    position: absolute;
+    top: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    -moz-box-align: center;
+    align-items: center;
+    -moz-box-pack: center;
+    justify-content: center;
+    z-index: 1;
+    right: 24px;
+    width: 24px;
+    height: 24px;
+    background: rgba(22, 24, 35, 0.03);
+}
+
+.pwVerificationText {
+    color: rgb(22, 24, 35);
+    font-weight: 600;
+    margin: 4px 0px;
+    font-size: 14px;
+}
+
+.pwVerificationReq {
+    color: rgba(22, 24, 35, 0.5);
+    font-size: 12px;
+    line-height: 15px;
+    margin: 4px 0px;
+    display: flex;
+}
+
+.agreement {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(255, 255, 255);
+    border-bottom: 1px solid rgba(22, 24, 35, 0.12);
+    border-color: rgba(22, 24, 35, 0.12);
+    padding: 16px 30px;
+    margin-bottom: unset;
+    box-sizing: border-box;
+}
+
+.agreementText {
+    color: rgba(22, 24, 35, 0.5);
+    font-size: 12px;
+    line-height: 15px;
+    width: 375px;
+    text-align: center;
+}
+
+.alRegisterErr {
+    color: rgb(22, 24, 35);
+    font-size: 12px;
+    line-height: 15px;
+    margin-bottom: 8px;
+    margin-top: -4px;
+    display: flex;
+}

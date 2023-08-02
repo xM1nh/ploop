@@ -1,6 +1,5 @@
-import { createApi, fetchBaseQuery, BaseQueryApi} from '@reduxjs/toolkit/query/react'
+import { createApi, fetchBaseQuery, BaseQueryApi, FetchArgs} from '@reduxjs/toolkit/query/react'
 import { RootState } from '../store'
-
 
 const baseQuery = fetchBaseQuery({
     baseUrl: '',
@@ -14,7 +13,7 @@ const baseQuery = fetchBaseQuery({
     }
 })
 
-const baseQueryWithReauth = async(args: string, api: BaseQueryApi, extraOptions: object) => {
+const baseQueryWithReauth = async(args: string | FetchArgs, api: BaseQueryApi, extraOptions: object) => {
     let result = await baseQuery(args, api, extraOptions)
 
     if (result?.error?.status === 403) {

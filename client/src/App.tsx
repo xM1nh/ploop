@@ -1,9 +1,17 @@
-function App() {
-  return (
-    <div>
+import Layout from "./components/layout/Layout"
 
-    </div>
-  )
+import HomeItemContainer from "./components/spray/HomeItemContainer"
+
+function App() {
+    return (
+        <Layout>
+            <div className="home">
+                <HomeItemContainer />
+                <HomeItemContainer />
+                <HomeItemContainer />
+            </div>
+        </Layout>
+    )
 }
 
 export default App
