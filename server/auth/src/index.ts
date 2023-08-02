@@ -8,7 +8,7 @@ const StartServer = async () => {
     expressApp(app)
 
     app.listen(PORT, () => {
-        console.log('User is listening to Port 8001')
+        console.log('Auth is listening to Port 8001')
     })
 }
 
