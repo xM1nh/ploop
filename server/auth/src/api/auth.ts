@@ -17,6 +17,7 @@ const auth = (app: Express) => {
                 sameSite: 'none', 
                 secure: true
             })
+            res.status(200).json({userId: data.existingUser})
         }
     }))
 

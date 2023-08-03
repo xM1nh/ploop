@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery, BaseQueryApi, FetchArgs} from '@reduxjs/tool
 import { RootState } from '../store'
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: '',
+    baseUrl: 'http://127.0.0.1:8001',
     credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
         const token = (getState() as RootState).auth.token

@@ -1,10 +1,22 @@
 import dotEnv from 'dotenv';
+import {CorsOptions} from 'cors'
 
 if (process.env.NODE_ENV !== 'prod') {
     const configFile = `./.env.${process.env.NODE_ENV}.local`
     dotEnv.config({path: configFile})
 } else {
     dotEnv.config()
+}
+
+const whitelist = ['http://localhost:5173'];
+export const corsOptions: CorsOptions = {
+    credentials: true,
+    origin: (origin, callback) => {
+    if(whitelist.includes(origin as string))
+        return callback(null, true)
+
+        callback(new Error('Not allowed by CORS'))
+    }
 }
 
 const index = {

@@ -16,9 +16,28 @@ const Header = () => {
     const dispatch = useDispatch()
     const isLoggedIn = useSelector(selectAuthentication)
 
-    const handleLoginButtonClick = () => {
+    const handleButtonClick = () => {
         dispatch(toggle())
     }
+
+    let uploadButton
+
+    if (isLoggedIn) {
+        uploadButton = 
+                    <Link to='/create'>
+                        <AddIcon />
+                        <span className='uploadText'>Create</span>
+                    </Link>
+    }
+
+    if (!isLoggedIn) {
+        uploadButton = 
+                    <a onClick={handleButtonClick}>
+                        <AddIcon />
+                        <span className='uploadText'>Create</span>
+                    </a>
+    }
+
 
     let headerRightContainer
 
@@ -26,10 +45,7 @@ const Header = () => {
         headerRightContainer = 
             <div className="headerRightContainer">
                 <div className='uploadContainer'>
-                    <Link to='/create'>
-                        <AddIcon />
-                        <span className='uploadText'>Create</span>
-                    </Link>
+                    {uploadButton}
                 </div>
                 
                 <div className='messageContainer'>
@@ -46,13 +62,10 @@ const Header = () => {
         headerRightContainer = 
             <div className="headerRightContainer">
                 <div className='uploadContainer'>
-                    <Link to='/create'>
-                        <AddIcon />
-                        <span className='uploadText'>Create</span>
-                    </Link>
+                    {uploadButton}
                 </div>
                 
-                <button className='headerLoginButton' onClick={handleLoginButtonClick}>Log in</button>
+                <button className='headerLoginButton' onClick={handleButtonClick}>Log in</button>
             </div>
     }
 

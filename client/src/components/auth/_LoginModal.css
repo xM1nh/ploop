@@ -205,6 +205,14 @@ form > a {
     display: flex;
 }
 
+.pwVerificationReq[data-validate='true'] {
+    color: rgba(11, 224, 155, 1)
+}
+
+.pwVerificationReq[data-validate='false'] {
+    color: rgba(255, 76, 58, 1)
+}
+
 .agreement {
     width: 100%;
     display: flex;

@@ -12,7 +12,7 @@ const store = configureStore({
         createSpray: createSprayReducer
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat()
+        getDefaultMiddleware().concat(apiSlice.middleware)
 })
 
 export type RootState = ReturnType<typeof store.getState>
