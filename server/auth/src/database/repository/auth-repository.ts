@@ -5,23 +5,25 @@ class AuthRepository {
         email: string,
         password: string,
         username: string,
-        salt: string
+        salt: string,
     ) {
         const queryString = `INSERT INTO users (
                                 email,
                                 password,
                                 username,
-                                salt
+                                salt,
+                                status
                             )
                             VALUES (
-                                ${email},
-                                ${password},
-                                ${username},
-                                ${salt}
+                                '${email}',
+                                '${password}',
+                                '${username}',
+                                '${salt}',
+                                0
                             )
                             RETURNING id`
 
-        const user = (await pool.query(queryString)).rows[0]
+        const user = (await pool.query(queryString)).rows[0].id
         return user
     }
 
@@ -37,7 +39,7 @@ class AuthRepository {
         try {
             await client.query('BEGIN')
 
-            const id = (await this.createUser(email, password, username, salt)).rows[0]
+            const id = await this.createUser(email, password, username, salt)
             await this.createRefreshToken(id, refreshToken)
 
             await client.query('COMMIT')
@@ -53,7 +55,7 @@ class AuthRepository {
     async findUserByEmail(email: string) {
         const queryString = `SELECT * 
                             FROM users 
-                            WHERE email = ${email}`
+                            WHERE email = '${email}'`
 
         const existingUser = (await pool.query(queryString)).rows[0]
         return existingUser
@@ -62,7 +64,7 @@ class AuthRepository {
     async findUserByUsername(username: string) {
         const queryString = `SELECT *
                             FROM users
-                            WHERE username = ${username}`
+                            WHERE username = '${username}'`
         
         const existingUser = (await pool.query(queryString)).rows[0]
         return existingUser
@@ -79,7 +81,7 @@ class AuthRepository {
 
     async updateEmail(id: number, email: string) {
         const queryString = `UPDATE users
-                            SET email = ${email}
+                            SET email = '${email}'
                             WHERE id = ${id}
                             RETURNING id`
 
@@ -89,7 +91,7 @@ class AuthRepository {
 
     async updateUsername(id: number, username: string) {
         const queryString = `UPDATE users
-                            SET username = ${username}
+                            SET username = '${username}'
                             WHERE id = ${id}
                             RETURNING username`
 
@@ -99,7 +101,7 @@ class AuthRepository {
 
     async updatePassword(id: number, password: string) {
         const queryString = `UPDATE users
-                            SET password = ${password}
+                            SET password = '${password}'
                             WHERE id = ${id}
                             RETURNING password`
 
@@ -114,7 +116,7 @@ class AuthRepository {
                             )
                             VALUES (
                                 ${id},
-                                ${refreshToken}
+                                '${refreshToken}'
                             )
                             RETURNING id`
         
@@ -124,7 +126,7 @@ class AuthRepository {
 
     async deleteRefreshToken(refreshToken: string) {
         const queryString = `DELETE FROM refresh_tokens
-                            WHERE token = ${refreshToken}
+                            WHERE token = '${refreshToken}'
                             RETURNING user_id`
 
         const deletedUser = (await pool.query(queryString)).rows[0]

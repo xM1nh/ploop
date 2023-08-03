@@ -9,14 +9,14 @@ const auth = (app: Express) => {
         const {email, password} = req.body
 
         const data = await service.signUp(email, password)
-        if (!data.existingUser) res.status(409) //Conflict
+        console.log(data)
+        if (!data.existingUser) res.sendStatus(409) //Conflict
         else {
             res.cookie('jwt', data.refreshToken, {
                 httpOnly: true, 
                 sameSite: 'none', 
                 secure: true
             })
-            res.redirect('/login')
         }
     }))
 
@@ -92,8 +92,6 @@ const auth = (app: Express) => {
             sameSite: 'none', 
             secure: true
         })
-
-        res.redirect('/login')
     }))
 
     app.post('/username', asyncHandler(async (req: Request, res: Response) => {
@@ -116,10 +114,6 @@ const auth = (app: Express) => {
             sameSite: 'none', 
             secure: true
         })
-
-        res.locals.newUsername = newUsername
-
-        res.redirect('/login')
     }))
 }
 
