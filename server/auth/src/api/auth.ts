@@ -9,7 +9,6 @@ const auth = (app: Express) => {
         const {email, password} = req.body
 
         const data = await service.signUp(email, password)
-        console.log(data)
         if (!data.existingUser) res.sendStatus(409) //Conflict
         else {
             res.cookie('jwt', data.refreshToken, {
@@ -29,16 +28,9 @@ const auth = (app: Express) => {
         if (res.locals.newUsername) username = res.locals.newUsername
         else username = req.body.username
 
-        const refreshToken = cookies.jwt
-        if (refreshToken) res.clearCookie('jwt', {
-            httpOnly: true, 
-            sameSite: 'none', 
-            secure: true
-        })
-
         let data
-        if (email) data = await service.signInByEmail(email, password, refreshToken)
-        if (username) data = await service.signInByUsername(username, password, refreshToken)
+        if (email) data = await service.signInByEmail(email, password)
+        if (username) data = await service.signInByUsername(username, password)
 
         if (data) {
             res.cookie('jwt', data.newRefreshToken, {
@@ -55,23 +47,36 @@ const auth = (app: Express) => {
     app.post('/logout', asyncHandler(async (req: Request, res: Response) => {
         const cookies = req.cookies
         if (!cookies.jwt) res.status(204)
+        const refreshToken = cookies.jwt
         res.clearCookie('jwt', {
             httpOnly: true, 
             sameSite: 'none', 
             secure: true
         })
+        const response = await service.signOut(refreshToken)
         res.json({message: 'Logged out'})
     }))
 
     app.get('/refresh', asyncHandler(async (req: Request, res: Response) => {
         const cookies = req.cookies
-        if (!cookies?.jwt) res.status(401)
+        if (!cookies?.jwt) res.sendStatus(401)
         const refreshToken = cookies.jwt
 
         const response = await service.refresh(refreshToken)
-        if (response === 403) res.status(403)
+        if (response === 403) res.sendStatus(403)
         else {
-            const {accessToken, newRefreshToken} = response
+            const {accessToken ,newRefreshToken} = response
+            res.clearCookie('jwt', {
+                httpOnly: true, 
+                sameSite: 'none', 
+                secure: true
+            })
+            res.cookie('jwt', newRefreshToken, {
+                httpOnly: true, 
+                sameSite: 'none', 
+                secure: true
+            })
+            res.status(200).json(accessToken)
         }
     }))
 

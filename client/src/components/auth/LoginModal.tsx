@@ -1,7 +1,7 @@
 import './_LoginModal.css'
 
 import { FormEvent, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { toggle } from '../../features/signup/modalSlice';
 import { useLoginMutation, useSignupMutation } from '../../features/auth/authApiSlice';
@@ -23,7 +23,6 @@ const LoginModal = () => {
     const [passwordVisibility, setPasswordVisibility] = useState(false)
 
     const dispatch = useDispatch()
-    const navigate = useNavigate()
 
     const [signup] = useSignupMutation()
 
@@ -70,7 +69,7 @@ const LoginModal = () => {
         try {
             const {id, accessToken} = await login({email: loginEmail, password: loginPassword}).unwrap()
                 dispatch(setCredentials({userId: id, accessToken}))
-                navigate('/')
+                dispatch(toggle())
         } catch (e) {
             console.log(e)
         }
@@ -83,7 +82,7 @@ const LoginModal = () => {
             if (userId) {
                 const {id, accessToken} = await login({email: signUpEmail, password: signUpPassword}).unwrap()
                 dispatch(setCredentials({userId: id, accessToken}))
-                navigate('/')
+                dispatch(toggle())
             } else {
                 console.log('else')
             }

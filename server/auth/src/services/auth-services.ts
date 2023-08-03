@@ -29,7 +29,7 @@ class AuthService {
         return formatData({existingUser, refreshToken})
     }
 
-    async signInByEmail(email: string, password: string, refreshToken?: string) {
+    async signInByEmail(email: string, password: string) {
         const existingUser = await this.repository.findUserByEmail(email)
 
         if (existingUser) {
@@ -38,11 +38,7 @@ class AuthService {
                 const newRefreshToken = generateRefreshToken(existingUser.username)
                 const accessToken = generateAccessToken(existingUser.username)
 
-                //Replace old refresh token with a new one
-                if (refreshToken) {
-                    const response = await this.repository.replaceRefreshToken(existingUser.id, refreshToken, newRefreshToken)
-                    if (!response) return formatData(null)
-                }
+                await this.repository.createRefreshToken(existingUser.id, newRefreshToken)
 
                 return formatData({id: existingUser.id, accessToken, newRefreshToken})
             }
@@ -51,7 +47,7 @@ class AuthService {
         return formatData(null)
     }
 
-    async signInByUsername(username: string, password: string, refreshToken?: string) {
+    async signInByUsername(username: string, password: string) {
         const existingUser = await this.repository.findUserByUsername(username)
 
         if (existingUser) {
@@ -60,11 +56,7 @@ class AuthService {
                 const newRefreshToken = generateRefreshToken(existingUser.username)
                 const accessToken = generateAccessToken(existingUser.username)
 
-                //Replace old refresh token with a new one
-                if (refreshToken) {
-                    const response = await this.repository.replaceRefreshToken(existingUser.id, refreshToken, newRefreshToken)
-                    if (!response) return formatData(null)
-                }
+                await this.repository.createRefreshToken(existingUser.id, newRefreshToken)
 
                 return formatData({id: existingUser.id, accessToken, newRefreshToken})
             }
@@ -99,7 +91,7 @@ class AuthService {
             const accessToken = generateAccessToken(existingUser.username)
             const newRefreshToken = generateRefreshToken(existingUser.username)
 
-            await this.repository.createRefreshToken(existingUser.id, newRefreshToken)
+            await this.repository.replaceRefreshToken(existingUser.id, refreshToken, newRefreshToken)
             return {accessToken, newRefreshToken}
         } catch (err) {
             await this.repository.deleteRefreshToken(refreshToken)

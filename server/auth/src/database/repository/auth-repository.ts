@@ -129,18 +129,32 @@ class AuthRepository {
                             WHERE token = '${refreshToken}'
                             RETURNING user_id`
 
-        const deletedUser = (await pool.query(queryString)).rows[0]
+        const deletedUser = (await pool.query(queryString)).rows
         return deletedUser
     }
 
     async replaceRefreshToken(id:number, oldRefreshToken: string, newRefreshToken: string) {
         const client = await pool.connect()
 
+        const createQueryString = `INSERT INTO refresh_tokens (
+                                        user_id,
+                                        token
+                                    )
+                                    VALUES (
+                                        ${id},
+                                        '${newRefreshToken}'
+                                    )
+                                    RETURNING id`
+        
+        const deleteQueryString = `DELETE FROM refresh_tokens
+                                    WHERE token = '${oldRefreshToken}'
+                                    RETURNING user_id`
+
         try {
             await client.query('BEGIN')
 
-            await this.deleteRefreshToken(oldRefreshToken)
-            await this.createRefreshToken(id, newRefreshToken)
+            await client.query(createQueryString)
+            await client.query(deleteQueryString)
 
             await client.query('COMMIT')
             return 1
@@ -178,7 +192,7 @@ class AuthRepository {
                                 status
                             FROM refresh_tokens
                             INNER JOIN users ON user_id = users.id
-                            WHERE token = ${refreshToken}`
+                            WHERE token = '${refreshToken}'`
         
         const existingUser = (await pool.query(queryString)).rows[0]
         return existingUser

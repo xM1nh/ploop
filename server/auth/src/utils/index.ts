@@ -21,7 +21,8 @@ export const validatePassword = async (password: string, savedPassword: string, 
 }
 
 export const generateUsername = async () => {
-    return `user${uuidv4()}`
+    const hexString = uuidv4()
+    return `user${Buffer.from(hexString.replace(/-/g, ''), 'hex').toString('base64url')}`
 }
 
 export const formatData = (data: any) => {
