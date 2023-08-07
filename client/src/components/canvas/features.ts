@@ -303,7 +303,7 @@ export const bucketTool = (
                 for (;;) {
                     l--
                     const color = getPixel(pixelData, l, y)
-                    if (color !== targetColor) {
+                    if (color !== targetColor || l < 0 || l > ctx.canvas.width) {
                         break
                     }
                 }
@@ -313,7 +313,7 @@ export const bucketTool = (
                 for (;;) {
                     r++
                     const color = getPixel(pixelData, r, y)
-                    if (color !== targetColor) {
+                    if (color !== targetColor || r < 0 || r > ctx.canvas.height) {
                         break
                     }
                 }
