@@ -40,7 +40,7 @@ const auth = (app: Express) => {
             })
             res.status(200).json({id: data.id, accessToken: data.accessToken})
         } else {
-            res.status(401)
+            res.sendStatus(401)
         }
     }))
 
@@ -82,7 +82,7 @@ const auth = (app: Express) => {
 
     app.post('/password', asyncHandler(async (req: Request, res: Response) => {
         const cookies = req.cookies
-        if (!cookies?.jwt) res.status(401)
+        if (!cookies?.jwt) res.sendStatus(401)
         const {id, newPassword} = req.body
 
         const newRefreshToken = await service.changePassword(id, newPassword)
@@ -98,6 +98,7 @@ const auth = (app: Express) => {
             sameSite: 'none', 
             secure: true
         })
+        res.sendStatus(200)
     }))
 
     app.post('/username', asyncHandler(async (req: Request, res: Response) => {
@@ -120,6 +121,7 @@ const auth = (app: Express) => {
             sameSite: 'none', 
             secure: true
         })
+        res.sendStatus(200)
     }))
 }
 

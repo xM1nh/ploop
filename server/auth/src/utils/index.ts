@@ -4,10 +4,6 @@ import {v4 as uuidv4} from 'uuid'
 import jwt from 'jsonwebtoken'
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config'
 
-export interface CustomRequest extends Request {
-    user: string
-}
-
 export const generateSalt = async () => {
     return await bcrypt.genSalt()
 }
@@ -50,7 +46,7 @@ export const generateRefreshToken = (username: string) => {
     )
 }
 
-export const verifyAccessToken = (req: CustomRequest) => {
+export const verifyAccessToken = (req: Request) => {
     try {
         const authHeader = req.get('authorization') || req.get('Authorization')
         const token = authHeader?.split(' ')[1]
