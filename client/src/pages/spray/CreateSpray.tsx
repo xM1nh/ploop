@@ -1,4 +1,5 @@
 import './_CreateSpray.css'
+import {v4 as uuidv4} from 'uuid'
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -15,7 +16,7 @@ export interface CanvasRef {
     setHistory: (newHistory: string[][]) => void
 }
 
-const Draw = () => {
+const CreateSpray = () => {
     const canvasRef = useRef<CanvasRef>(null)
     const [step, setStep] = useState(0)
 
@@ -42,18 +43,15 @@ const Draw = () => {
         setStep(0)
     }
 
-    console.log(sprayHistory)
-
-    const handleSubmit = () => {
-        const fileData = JSON.stringify(sprayHistory);
-        const blob = new Blob([fileData], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.download = 'filename.json';
-        link.href = url;
-        link.click();
-
-        URL.revokeObjectURL(url);
+    const handleSubmit = async () => {
+        const uploadWorker = new Worker(new URL('../../serviceWorker.ts', import.meta.url))
+        const id = uuidv4()
+        uploadWorker.postMessage({id, data: sprayHistory})
+        uploadWorker.onmessage = () => {
+            uploadWorker.terminate()
+        }
+        
+        //dispatch(addSpray([]))
     }
 
     useEffect(() => {
@@ -67,11 +65,9 @@ const Draw = () => {
     }, [dispatch])
 
     let content
-
     if (step === 0) {
         content = <CreateSprayCanvas canvasRef={canvasRef} handleNext={handleNext} handleDiscard={handleDiscard}/>
     }
-
     if (step === 1) {
         content = <CreateCanvasForm canvasRef={canvasRef} handleBack={handleBack} handleSubmit={handleSubmit}/>
     }
@@ -83,4 +79,4 @@ const Draw = () => {
     )
 }
 
-export default Draw
+export default CreateSpray

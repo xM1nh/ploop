@@ -1,0 +1,353 @@
+.userPage {
+    display: flex;
+    padding: 32px 24px 36px;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: calc(-59px + 100vh);
+    margin: 0px auto;
+    box-sizing: content-box;
+    max-width: calc(100vw - 240px);
+}
+
+.userPage > .content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.userPage > .content > .header {
+    position: relative;
+    flex: 0 0 auto;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    max-width: 624px;
+    padding-right: 92px;
+}
+
+.userPage > .content > .main {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 490px;
+    align-items: flex-start;
+    min-width: 520px;
+    position: relative;
+}
+
+.userPage .userInfo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.userPage .avatarContainer {
+    width: 116px;
+    height: 116px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userPage .avatarContainer span {
+    width: 116px;
+    height: 116px;
+    display: inline-block;
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    font-feature-settings: "tnum";
+    position: relative;
+    overflow: hidden;
+    color: rgb(255, 255, 255);
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 32px;
+    border-radius: 50%;
+    border-color: rgba(22, 24, 35, 0.12);
+    border-width: 0.5px;
+    cursor: pointer;
+    background-color: rgba(136, 136, 136, 0.5);
+}
+
+.userPage .avatarContainer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.userPage .infoContainer {
+    flex: 1 1 0%;
+    cursor: pointer;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 20px;
+}
+
+.userPage .infoContainer .username {
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 38px;
+    letter-spacing: 0px;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    word-break: break-word;
+}
+
+.userPage .infoContainer .nickname {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.028px;
+    text-overflow: ellipsis;
+    height: 25px;
+    overflow: hidden;
+    max-width: 450px;
+    white-space: nowrap;
+    display: flex;
+    align-items: flex-end;
+}
+
+.userPage .infoContainer .followButtonContainer {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.028px;
+    position: relative;
+    width: 208px;
+    height: 36px;
+    padding: 0px;
+    margin: 16px 0px 0px;
+}
+
+.userPage .infoContainer .editButtonContainer {
+    position: relative;
+    width: 136px;
+    height: 36px;
+    padding: 0px;
+    margin: 16px 0px 0px;
+}
+
+.editButtonContainer .editButton {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 4px;
+    color: rgb(22, 24, 35);
+    border-color: rgba(22, 24, 35, 0.12);
+    background-color: rgb(255, 255, 255);
+    min-height: 36px;
+    font-weight: 600;
+    position: relative;
+    justify-content: center;
+    user-select: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    height: 36px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    padding: 0px 16px;
+    min-width: 136px;
+    line-height: 24px;
+    margin-right: 8px;
+}
+
+.userPage .infoContainer .followButtonWrapper {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    min-width: 208px;
+    height: 36px;
+    line-height: 22px;
+    z-index: unset;
+    opacity: 1;
+}
+
+.followButtonWrapper button {
+    border-radius: 4px;
+    border: medium;
+    color: rgb(255, 255, 255);
+    background-color: rgb(254, 44, 85);
+    min-height: 36px;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 8px;
+    user-select: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    min-width: 208px;
+    line-height: 22px;
+}
+
+.userPage .numberInfo {
+    display: flex;
+    align-items: center;
+    margin-top: 22px;
+    color: rgba(18, 18, 18, 0.75);
+}
+
+.numberInfo .numberContainer {
+    color: rgb(22, 24, 35);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.028px;
+    display: flex;
+    direction: ltr;
+    align-items: baseline;
+    margin-right: 20px;
+}
+
+.numberContainer strong {
+    font-weight: 700;
+}
+
+.numberContainer span {
+    color: rgba(22, 24, 35, 0.75);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 21px;
+    letter-spacing: 0.03px;
+    display: inline-block;
+    margin-left: 6px;
+}
+
+.userPage h2.description {
+    text-align: left;
+    color: rgb(22, 24, 35);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 21px;
+    letter-spacing: 0.03px;
+    white-space: pre-line;
+    margin-top: 10px;
+}
+
+.userPage .moreButton {
+    position: absolute;
+    top: 11px;
+    cursor: pointer;
+    right: 12px;
+}
+
+.feedTab {
+    position: relative;
+    top: 0px;
+    z-index: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: stretch;
+    width: 100%;
+    height: 44px;
+    margin-bottom: 8px;
+    background-color: rgb(255, 255, 255);
+}
+
+.feedTab::after {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    content: "";
+    width: 100%;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.12);
+    transform: scaleY(0.5);
+}
+
+.feedTab .tab {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: -0.028px;
+    position: relative;
+    display: flex;
+    -moz-box-align: center;
+    align-items: center;
+    -moz-box-pack: center;
+    justify-content: center;
+    flex-shrink: 0;
+    height: 44px;
+    padding: 0px 32px;
+    cursor: pointer;
+    text-align: center;
+    color: rgb(22, 24, 35);
+}
+
+.bottomLine {
+    position: absolute;
+    height: 2px;
+    background: rgb(22, 24, 35);
+    bottom: 0px;
+    transition: transform 0.3s ease 0s;
+    transform: translateX(0px);
+    width: 122px;
+}
+
+.feedMainContainer {
+    width: 100%;
+}
+
+.feedMain {
+    display: grid;
+    gap: 24px 16px;
+    grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
+}
+
+.messageButtonWrapper {
+    display: flex;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    opacity: 0;
+    z-index: -1;
+}
+
+.messageButtonWrapper button {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 4px;
+    color: rgb(254, 44, 85);
+    border-color: rgb(254, 44, 85);
+    background-color: rgb(255, 255, 255);
+    min-width: 164px;
+    min-height: 36px;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 8px;
+    user-select: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    height: 36px;
+    line-height: 22px;
+    margin-right: 8px;
+}
+
+.editIconContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(22, 24, 35, 0.12);
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    background-color: rgb(255, 255, 255);
+    float: right;
+}

@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+interface InitState {
+    spray: string[][],
+    caption: string,
+    tags: string[]
+}
+
+const initialState: InitState = {
     spray: [],
     caption: '',
     tags: []

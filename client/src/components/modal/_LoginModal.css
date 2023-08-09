@@ -46,7 +46,7 @@
     overflow: auto;
 }
 
-.formContainer {
+.loginModalContent .formContainer {
     width: 375px;
     margin: auto;
     padding: unset;

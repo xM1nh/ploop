@@ -6,6 +6,11 @@
     align-items: center;
 }
 
+.subContainer.one {
+    position: relative;
+    right: 6%
+}
+
 .subContainer.two {
     display: flex;
     align-items: center;

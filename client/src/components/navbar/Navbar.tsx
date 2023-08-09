@@ -9,6 +9,8 @@ import HourglassEmptyOutlinedIcon from '@mui/icons-material/HourglassEmptyOutlin
 
 const Navbar = () => {
     return (
+        <div>
+        <div style={{position: 'relative', width: '240px'}}>
         <div className="sideNavBar">
             <div className='sideNavBarContainer'>
                 <nav className='mainNavContainer'>
@@ -60,6 +62,8 @@ const Navbar = () => {
                     </span>
                 </div>
             </div>
+        </div>
+        </div>
         </div>
     )
 }

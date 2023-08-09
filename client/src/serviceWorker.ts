@@ -6,7 +6,6 @@ self.addEventListener('message', async (e) => {
     const formData = new FormData()
 
     chunks.forEach((chunk, index) => {
-        console.log(index)
         formData.append(`sprays[]`, chunk, index.toString())
     })
 
@@ -15,6 +14,7 @@ self.addEventListener('message', async (e) => {
             method: 'POST',
             headers: {
                 'X-Upload-Id': id,
+                'X-Total-Files': chunks.length.toString()
             },
             body: formData
         })

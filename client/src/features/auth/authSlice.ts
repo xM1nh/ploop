@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 
 const initialState = {
-    isAuthenticated: false,
+    isAuthenticated: true,
     token: null,
     userId: null
 }

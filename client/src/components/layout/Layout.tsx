@@ -6,7 +6,7 @@ import { selectIsOpen } from '../../features/signup/modalSlice'
 
 import Header from '../header/Header'
 import Navbar from '../navbar/Navbar'
-import LoginModal from '../auth/LoginModal'
+import LoginModal from '../modal/LoginModal'
 
 type LayoutProps = {
     children: ReactNode
