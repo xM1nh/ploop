@@ -1,11 +1,13 @@
 import './_Header.css'
 
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux';
 import { selectAuthentication } from '../../features/auth/authSlice';
 import { toggle } from '../../features/signup/modalSlice';
 import { useDispatch } from 'react-redux';
 
+import Notification from '../modal/notification/Notification';
 import LogoWhite from '../../assets/Logo Header White.png'
 import AddIcon from '@mui/icons-material/Add';
 import InboxOutlinedIcon from '@mui/icons-material/InboxOutlined';
@@ -13,11 +15,17 @@ import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNone
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
 const Header = () => {
+    const notificationRef = useRef<HTMLDivElement>(null)
+    const [isNotiOpen, setIsNotiOpen] = useState(false)
     const dispatch = useDispatch()
     const isLoggedIn = useSelector(selectAuthentication)
 
-    const handleButtonClick = () => {
+    const toggleLoginModal = () => {
         dispatch(toggle())
+    }
+
+    const handleNotificationClick = () => {
+        setIsNotiOpen(prev => !prev)
     }
 
     let uploadButton
@@ -32,7 +40,7 @@ const Header = () => {
 
     if (!isLoggedIn) {
         uploadButton = 
-                    <a onClick={handleButtonClick}>
+                    <a onClick={toggleLoginModal}>
                         <AddIcon />
                         <span className='uploadText'>Create</span>
                     </a>
@@ -49,10 +57,11 @@ const Header = () => {
                 </div>
                 
                 <div className='messageContainer'>
-                    <InboxOutlinedIcon sx={{color: 'white'}}/>
+                    <InboxOutlinedIcon sx={{color: 'white', cursor: 'pointer'}}/>
                 </div>
-                <div className='notificationContainer'>
-                    <NotificationsNoneOutlinedIcon sx={{color: 'white'}}/>
+                <div className='notificationContainer' onClick={handleNotificationClick} ref={notificationRef}>
+                    <NotificationsNoneOutlinedIcon sx={{color: 'white', cursor: 'pointer'}} className='notificationIcon'/>
+                    <Notification isOpen={isNotiOpen}/>
                 </div>
                 <div className='profileContainer'>More</div>
             </div>
@@ -65,9 +74,23 @@ const Header = () => {
                     {uploadButton}
                 </div>
                 
-                <button className='headerLoginButton' onClick={handleButtonClick}>Log in</button>
+                <button className='headerLoginButton' onClick={toggleLoginModal}>Log in</button>
             </div>
     }
+
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (!notificationRef.current?.contains(e.target as Node)) {
+                setIsNotiOpen(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handler)
+
+        return () => {
+            document.removeEventListener('mousedown', handler)
+        }
+    })
 
     return (
         <header>

@@ -1,0 +1,46 @@
+.notificationModalWrapper {
+    position: absolute;
+    width: 376px;
+    height: 640px;
+    top: 45px;
+    background: rgb(255, 255, 255);
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px -4px 32px;
+    transition: all 200ms linear 0s;
+    z-index: 1000;
+    right: -66px;
+}
+
+.notificationModalWrapper.false {
+    display: none;
+    opacity: 0;
+}
+
+.notificationModalWrapper.true {
+    display: block;
+    opacity: 1;
+}
+
+.notificationModalContainer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.notificationContainer .header {
+    padding-top: 24px;
+    flex: 0 0 auto;
+    padding-left: 16px;
+}
+
+.notificationHeaderTitle {
+    color: rgb(22, 24, 35);
+    font-size: 24px;
+    line-height: 30px;
+    display: flex;
+}
+
+.notificationList {
+    flex: 1 1 auto;
+    overflow: auto;
+}

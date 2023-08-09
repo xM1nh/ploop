@@ -131,6 +131,7 @@ header {
 
 .notificationContainer {
     margin-left: 16px;
+    position: relative;
 }
 
 .profileContainer {

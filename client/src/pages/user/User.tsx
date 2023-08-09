@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
 import Layout from '../../components/layout/Layout'
-import EditProfile from '../../components/modal/EditProfile';
+import EditProfile from '../../components/modal/user/EditProfile';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditIcon from '@mui/icons-material/Edit';
 import HowToRegIcon from '@mui/icons-material/HowToReg';

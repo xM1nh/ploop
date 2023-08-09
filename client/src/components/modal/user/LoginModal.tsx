@@ -3,9 +3,9 @@ import './_LoginModal.css'
 import { FormEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { toggle } from '../../features/signup/modalSlice';
-import { useLoginMutation, useSignupMutation } from '../../features/auth/authApiSlice';
-import { setCredentials } from '../../features/auth/authSlice';
+import { toggle } from '../../../features/signup/modalSlice';
+import { useLoginMutation, useSignupMutation } from '../../../features/auth/authApiSlice';
+import { setCredentials } from '../../../features/auth/authSlice';
 
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
