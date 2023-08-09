@@ -1,4 +1,5 @@
 import amqp, {Channel} from 'amqplib'
+import EncodingService from '../services/encoding-service'
 import { MESSAGE_BROKER_URL, EXCHANGE_NAME } from '../config'
 
 export const connect = async () => {
@@ -22,7 +23,7 @@ export const publishMessage = (channel: Channel, routingKey: string, message: Bu
     }
 }
 
-export const subscribeMessage = async (channel: Channel, queueName: string, routingKey: string, callback: any) => {
+export const subscribeMessage = async (channel: Channel, queueName: string, service: EncodingService, routingKey: string) => {
     const appQueue = await channel.assertQueue(queueName)
 
     channel.bindQueue(appQueue.queue, EXCHANGE_NAME, routingKey)
@@ -30,8 +31,7 @@ export const subscribeMessage = async (channel: Channel, queueName: string, rout
     channel.consume(appQueue.queue, data => {
         if (data) {
             //console.log('received data')
-            callback(data.content.toString())
-            //console.log(data.content.toString())
+            service.subscribeEvents(data.content.toString())
             channel.ack(data)
         }
     })

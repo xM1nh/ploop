@@ -6,7 +6,6 @@ import EncodingService from '../services/encoding-service'
 import { subscribeMessage } from '.'
 import { QUEUE_NAME } from '../config'
 import { PROCESSING_ROUTING_KEY } from '../config'
-import cluster from 'cluster'
 
 export default (app :Express, channel: Channel) => {
     app.use(express.json())
@@ -15,5 +14,5 @@ export default (app :Express, channel: Channel) => {
 
     const service = new EncodingService()
 
-    subscribeMessage(channel, QUEUE_NAME, PROCESSING_ROUTING_KEY, service.encode)
+    subscribeMessage(channel, QUEUE_NAME, service, PROCESSING_ROUTING_KEY)
 }

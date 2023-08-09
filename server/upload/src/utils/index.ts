@@ -22,9 +22,9 @@ export const connect = async () => {
     }
 }
 
-export const publishMessage = async (channel: Channel, routingKey: string, message: Buffer) => {
+export const publishMessage = async (channel: Channel, routingKey: string, message: string) => {
     try {
-        channel.publish(EXCHANGE_NAME, routingKey, message)
+        channel.publish(EXCHANGE_NAME, routingKey, Buffer.from(message))
     } catch (e) {
         throw e
     }

@@ -11,7 +11,15 @@ export default (app: Express, channel: Channel) => {
 
         asyncHandler(async (req: Request, res: Response) => {
             const id = req.headers['x-upload-id']
-            publishMessage(channel, PROCESSING_ROUTING_KEY, Buffer.from(id as string))
+            const fileCount = req.headers['x-total-files']
+            const payload = {
+                event: 'PROCESS',
+                data: {
+                    id,
+                    fileCount
+                }
+            }
+            publishMessage(channel, PROCESSING_ROUTING_KEY, JSON.stringify(payload))
             res.sendStatus(200)
         })
     )

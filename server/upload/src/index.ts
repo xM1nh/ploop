@@ -12,7 +12,11 @@ const StartServer = async () => {
 
     expressApp(app, channel)
 
-    const numCPUs = os.cpus().length
+    app.listen(PORT, () => {
+        console.log(`Upload is listening to Port 8001`)
+    })
+
+    /*const numCPUs = os.cpus().length
 
     if (cluster.isPrimary) {
         for (let i = 0; i < numCPUs/2; i++) {
@@ -29,7 +33,7 @@ const StartServer = async () => {
         app.listen(PORT, () => {
             console.log(`Upload worker ${workerId} is listening to Port 8001`)
         })
-    }
+    }*/
 }
 
 StartServer()

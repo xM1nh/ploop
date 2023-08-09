@@ -2,7 +2,6 @@ import dotEnv from 'dotenv';
 import { CorsOptions } from 'cors'
 import multer from 'multer'
 import fs from 'fs'
-import path from 'path'
 
 //.env
 if (process.env.NODE_ENV !== 'prod') {
@@ -28,7 +27,7 @@ export const corsOptions: CorsOptions = {
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         const folderName = req.headers['x-upload-id']
-        const destination = `../file-storage/${folderName}`
+        const destination = `../temp/${folderName}`
 
         if (!fs.existsSync(destination)) {
             fs.mkdirSync(destination, {recursive: true})
@@ -46,6 +45,8 @@ const index = {
     MESSAGE_BROKER_URL: process.env.MESSAGE_BROKER_URL,
     EXCHANGE_NAME: 'PLOOP_EVENT_BUS',
     PROCESSING_ROUTING_KEY: 'PROCESSING_SERVICE',
+    AWS_S3_ACCESS_KEY: process.env.AWS_S3_ACCESS_KEY as string,
+    AWS_S3_SECRET_ACCESS_KEY: process.env.AWS_S3_SECRET_ACCESS_KEY as string,
 }
 
 export const {
@@ -53,4 +54,6 @@ export const {
     MESSAGE_BROKER_URL,
     EXCHANGE_NAME,
     PROCESSING_ROUTING_KEY,
+    AWS_S3_ACCESS_KEY,
+    AWS_S3_SECRET_ACCESS_KEY
 } = index

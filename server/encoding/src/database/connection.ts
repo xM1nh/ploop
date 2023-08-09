@@ -1,0 +1,12 @@
+import { S3Client } from '@aws-sdk/client-s3'
+import AWS from 'aws-sdk'
+import { AWS_S3_ACCESS_KEY, AWS_S3_SECRET_ACCESS_KEY } from '../config'
+
+AWS.config.update({
+    accessKeyId: AWS_S3_ACCESS_KEY,
+    secretAccessKey: AWS_S3_SECRET_ACCESS_KEY,
+    region: 'us-west-1'
+})
+const s3 = new AWS.S3({})
+
+export default s3
