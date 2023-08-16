@@ -6,7 +6,11 @@ import path from 'path'
 import { EncodingRepository } from '../database';
 
 class EncodingService {
-    repository = new EncodingRepository()
+    repository: EncodingRepository
+
+    constructor() {
+        this.repository = new EncodingRepository()
+    }
 
     async encode(id: string) {
         const canvas = createCanvas(450, 800)

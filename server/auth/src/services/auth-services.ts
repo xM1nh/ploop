@@ -22,11 +22,10 @@ class AuthService {
         const username = await generateUsername()
         const salt = await generateSalt()
         const hashedPassword = await generatePassword(password, salt)
-        const refreshToken = generateRefreshToken(username)
 
-        const existingUser = await this.repository.createUserWithTokenTransaction(email, hashedPassword, username, salt, refreshToken)
+        const id = await this.repository.createUser(email, hashedPassword, username, salt)
 
-        return formatData({existingUser, refreshToken})
+        return formatData({id, username})
     }
 
     async signInByEmail(email: string, password: string) {

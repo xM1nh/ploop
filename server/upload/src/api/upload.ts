@@ -19,7 +19,7 @@ export default (app: Express, channel: Channel) => {
                     fileCount
                 }
             }
-            publishMessage(channel, PROCESSING_ROUTING_KEY, JSON.stringify(payload))
+            publishMessage(channel, PROCESSING_ROUTING_KEY, payload)
             res.sendStatus(200)
         })
     )

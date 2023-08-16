@@ -7,19 +7,17 @@ class AuthRepository {
         username: string,
         salt: string,
     ) {
-        const queryString = `INSERT INTO users (
+        const queryString = `INSERT INTO auth_schema.users (
                                 email,
                                 password,
                                 username,
-                                salt,
-                                status
+                                salt
                             )
                             VALUES (
                                 '${email}',
                                 '${password}',
                                 '${username}',
-                                '${salt}',
-                                0
+                                '${salt}'
                             )
                             RETURNING id`
 
@@ -35,12 +33,38 @@ class AuthRepository {
         refreshToken: string
     ) {
         const client = await pool.connect()
+        console.log('here')
         
         try {
             await client.query('BEGIN')
 
-            const id = await this.createUser(email, password, username, salt)
-            await this.createRefreshToken(id, refreshToken)
+            const createUserqueryString = `INSERT INTO auth_schema.users (
+                                            email,
+                                            password,
+                                            username,
+                                            salt
+                                        )
+                                        VALUES (
+                                            '${email}',
+                                            '${password}',
+                                            '${username}',
+                                            '${salt}'
+                                        )
+                                        RETURNING id`
+
+            const id = (await client.query(createUserqueryString)).rows[0].id
+
+            const createRefreshTokenQueryString = `INSERT INTO auth_schema.refresh_tokens (
+                                                    user_id,
+                                                    token
+                                                )
+                                                VALUES (
+                                                    ${id},
+                                                    '${refreshToken}'
+                                                )
+                                                RETURNING id`
+
+            await client.query(createRefreshTokenQueryString)
 
             await client.query('COMMIT')
             return id
@@ -54,7 +78,7 @@ class AuthRepository {
 
     async findUserByEmail(email: string) {
         const queryString = `SELECT * 
-                            FROM users 
+                            FROM auth_schema.users 
                             WHERE email = '${email}'`
 
         const existingUser = (await pool.query(queryString)).rows[0]
@@ -63,7 +87,7 @@ class AuthRepository {
 
     async findUserByUsername(username: string) {
         const queryString = `SELECT *
-                            FROM users
+                            FROM auth_schema.users
                             WHERE username = '${username}'`
         
         const existingUser = (await pool.query(queryString)).rows[0]
@@ -72,7 +96,7 @@ class AuthRepository {
 
     async findUserById(id: number) {
         const queryString = `SELECT * 
-                            FROM users 
+                            FROM auth_schema.users 
                             WHERE id = ${id}`
 
         const existingUser = (await pool.query(queryString)).rows[0]
@@ -80,7 +104,7 @@ class AuthRepository {
     }
 
     async updateEmail(id: number, email: string) {
-        const queryString = `UPDATE users
+        const queryString = `UPDATE auth_schema.users
                             SET email = '${email}'
                             WHERE id = ${id}
                             RETURNING id`
@@ -90,7 +114,7 @@ class AuthRepository {
     }
 
     async updateUsername(id: number, username: string) {
-        const queryString = `UPDATE users
+        const queryString = `UPDATE auth_schema.users
                             SET username = '${username}'
                             WHERE id = ${id}
                             RETURNING username`
@@ -100,7 +124,7 @@ class AuthRepository {
     }
 
     async updatePassword(id: number, password: string) {
-        const queryString = `UPDATE users
+        const queryString = `UPDATE auth_schema.users
                             SET password = '${password}'
                             WHERE id = ${id}
                             RETURNING password`
@@ -110,7 +134,7 @@ class AuthRepository {
     }
 
     async createRefreshToken(id: number, refreshToken: string) {
-        const queryString = `INSERT INTO refresh_tokens (
+        const queryString = `INSERT INTO auth_schema.refresh_tokens (
                                 user_id,
                                 token
                             )
@@ -125,7 +149,7 @@ class AuthRepository {
     }
 
     async deleteRefreshToken(refreshToken: string) {
-        const queryString = `DELETE FROM refresh_tokens
+        const queryString = `DELETE FROM auth_schema.refresh_tokens
                             WHERE token = '${refreshToken}'
                             RETURNING user_id`
 
@@ -136,7 +160,7 @@ class AuthRepository {
     async replaceRefreshToken(id:number, oldRefreshToken: string, newRefreshToken: string) {
         const client = await pool.connect()
 
-        const createQueryString = `INSERT INTO refresh_tokens (
+        const createQueryString = `INSERT INTO auth_schema.refresh_tokens (
                                         user_id,
                                         token
                                     )
@@ -146,7 +170,7 @@ class AuthRepository {
                                     )
                                     RETURNING id`
         
-        const deleteQueryString = `DELETE FROM refresh_tokens
+        const deleteQueryString = `DELETE FROM auth_schema.refresh_tokens
                                     WHERE token = '${oldRefreshToken}'
                                     RETURNING user_id`
 
@@ -167,7 +191,7 @@ class AuthRepository {
     }
 
     async deleteAllUserRefreshToken(id: number) {
-        const queryString = `DELETE FROM refresh_tokens
+        const queryString = `DELETE FROM auth_schema.refresh_tokens
                             WHERE user_id = ${id}`
 
         await pool.query(queryString)
@@ -175,7 +199,7 @@ class AuthRepository {
 
     async getUserRefreshTokens(id: number) {
         const queryString = `SELECT token
-                            FROM refresh_tokens
+                            FROM auth_schema.refresh_tokens
                             where user_id = ${id}`
         
         const tokens = (await pool.query(queryString)).rows
@@ -190,7 +214,7 @@ class AuthRepository {
                                 username,
                                 salt,
                                 status
-                            FROM refresh_tokens
+                            FROM auth_schema.refresh_tokens
                             INNER JOIN users ON user_id = users.id
                             WHERE token = '${refreshToken}'`
         

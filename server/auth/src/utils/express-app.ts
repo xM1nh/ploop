@@ -3,8 +3,9 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { auth } from '../api'
 import { corsOptions } from '../config'
+import { Channel } from 'amqplib'
 
-export default (app :Express) => {
+export default (app :Express, channel: Channel) => {
 
     app.use(express.json())
     app.use(cors(corsOptions))
@@ -12,5 +13,5 @@ export default (app :Express) => {
     app.use(express.urlencoded({ extended: false }))
     app.use(cookieParser())
 
-    auth(app)
+    auth(app, channel)
 }

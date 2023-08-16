@@ -1,36 +1,40 @@
 import AuthService from "../services/auth-services";
 import { Express, Request, Response } from "express";
 import asyncHandler from 'express-async-handler'
+import { publishMessage } from "../utils";
+import { Channel } from "amqplib";
+import { USER_ROUTING_KEY } from "../config";
 
-const auth = (app: Express) => {
+const auth = (app: Express, channel: Channel) => {
     const service = new AuthService()
 
     app.post('/signup', asyncHandler(async (req: Request, res: Response) => {
-        const {email, password} = req.body
+        const {email, password, nickname} = req.body
 
         const data = await service.signUp(email, password)
-        if (!data.existingUser) res.sendStatus(409) //Conflict
+        if (!data.id) res.sendStatus(409) //Conflict
         else {
-            res.cookie('jwt', data.refreshToken, {
-                httpOnly: true, 
-                sameSite: 'none', 
-                secure: true
-            })
-            res.status(200).json({userId: data.existingUser})
+            const message = {
+                event: 'SIGN_UP',
+                data: {
+                    id: data.id,
+                    username: data.username,
+                    nickname
+                }
+            }
+
+            publishMessage(channel, USER_ROUTING_KEY, message)
+
+            res.status(200).json({userId: data.id})
         }
     }))
 
     app.post('/login', asyncHandler(async (req: Request, res: Response) => {
-        const cookies = req.cookies
         const {email, password} = req.body
-
-        let username
-        if (res.locals.newUsername) username = res.locals.newUsername
-        else username = req.body.username
 
         let data
         if (email) data = await service.signInByEmail(email, password)
-        if (username) data = await service.signInByUsername(username, password)
+        //if (username) data = await service.signInByUsername(username, password)
 
         if (data) {
             res.cookie('jwt', data.newRefreshToken, {
