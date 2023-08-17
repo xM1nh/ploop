@@ -1,12 +1,14 @@
 import AuthService from "../services/auth-services";
 import { Express, Request, Response } from "express";
 import asyncHandler from 'express-async-handler'
-import { publishMessage } from "../utils";
+import { publishMessage, subscribeMessage } from "../utils";
 import { Channel } from "amqplib";
-import { USER_ROUTING_KEY } from "../config";
+import { USER_ROUTING_KEY, AUTH_QUEUE, AUTH_ROUTING_KEY } from "../config";
 
 const auth = (app: Express, channel: Channel) => {
     const service = new AuthService()
+
+    subscribeMessage(channel, service, AUTH_QUEUE, AUTH_ROUTING_KEY)
 
     app.post('/signup', asyncHandler(async (req: Request, res: Response) => {
         const {email, password, nickname} = req.body
@@ -40,9 +42,11 @@ const auth = (app: Express, channel: Channel) => {
             res.cookie('jwt', data.newRefreshToken, {
                 httpOnly: true, 
                 sameSite: 'none', 
-                secure: true
+                secure: true,
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
             })
-            res.status(200).json({id: data.id, accessToken: data.accessToken})
+            .status(200)
+            .json({id: data.id, accessToken: data.accessToken})
         } else {
             res.sendStatus(401)
         }
@@ -52,17 +56,19 @@ const auth = (app: Express, channel: Channel) => {
         const cookies = req.cookies
         if (!cookies.jwt) res.status(204)
         const refreshToken = cookies.jwt
-        res.clearCookie('jwt', {
-            httpOnly: true, 
-            sameSite: 'none', 
-            secure: true
-        })
         const response = await service.signOut(refreshToken)
-        res.json({message: 'Logged out'})
+        res.cookie('jwt', '', {
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+            expires: new Date(0)
+        })
+        .json({message: 'Logged out'})
     }))
 
     app.get('/refresh', asyncHandler(async (req: Request, res: Response) => {
         const cookies = req.cookies
+        console.log(cookies)
         if (!cookies?.jwt) res.sendStatus(401)
         const refreshToken = cookies.jwt
 
@@ -70,17 +76,19 @@ const auth = (app: Express, channel: Channel) => {
         if (response === 403) res.sendStatus(403)
         else {
             const {accessToken ,newRefreshToken} = response
-            res.clearCookie('jwt', {
+            res.cookie('jwt', '', {
+                httpOnly: true,
+                sameSite: 'none',
+                secure: true,
+                expires: new Date(0) // Set the expiration date to the past
+            })
+            .cookie('jwt', newRefreshToken, {
                 httpOnly: true, 
                 sameSite: 'none', 
-                secure: true
+                secure: true,
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
             })
-            res.cookie('jwt', newRefreshToken, {
-                httpOnly: true, 
-                sameSite: 'none', 
-                secure: true
-            })
-            res.status(200).json(accessToken)
+            .status(200).json(accessToken)
         }
     }))
 
@@ -91,18 +99,19 @@ const auth = (app: Express, channel: Channel) => {
 
         const newRefreshToken = await service.changePassword(id, newPassword)
 
-        res.clearCookie('jwt', {
+        res.cookie('jwt', '', {
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+            expires: new Date(0) // Set the expiration date to the past
+        })
+        .cookie('jwt', newRefreshToken, {
             httpOnly: true, 
             sameSite: 'none', 
-            secure: true
+            secure: true,
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         })
-
-        res.cookie('jwt', newRefreshToken, {
-            httpOnly: true, 
-            sameSite: 'none', 
-            secure: true
-        })
-        res.sendStatus(200)
+        .sendStatus(200)
     }))
 
     app.post('/username', asyncHandler(async (req: Request, res: Response) => {
@@ -110,21 +119,8 @@ const auth = (app: Express, channel: Channel) => {
         if (!cookies?.jwt) res.status(401)
 
         const {id, newUsername} = req.body
-        const refreshToken = cookies.jwt
 
-        const newRefreshToken = await service.changeUsername(id, newUsername, refreshToken)
-
-        res.clearCookie('jwt', {
-            httpOnly: true, 
-            sameSite: 'none', 
-            secure: true
-        })
-
-        res.cookie('jwt', newRefreshToken, {
-            httpOnly: true, 
-            sameSite: 'none', 
-            secure: true
-        })
+        await service.changeUsername(id, newUsername)
         res.sendStatus(200)
     }))
 }

@@ -103,6 +103,18 @@ class AuthRepository {
         return existingUser
     }
 
+    async deleteUserById(id: number) {
+        const queryString = `DELETE FROM auth_schema.users
+                            WHERE id = ${id}`
+
+        try {
+            await pool.query(queryString)
+            return true
+        } catch(e) {
+            return null
+        }
+    }
+
     async updateEmail(id: number, email: string) {
         const queryString = `UPDATE auth_schema.users
                             SET email = '${email}'
@@ -212,10 +224,9 @@ class AuthRepository {
                                 email,
                                 password,
                                 username,
-                                salt,
-                                status
+                                salt
                             FROM auth_schema.refresh_tokens
-                            INNER JOIN users ON user_id = users.id
+                            INNER JOIN auth_schema.users ON user_id = users.id
                             WHERE token = '${refreshToken}'`
         
         const existingUser = (await pool.query(queryString)).rows[0]

@@ -110,12 +110,31 @@ class AuthService {
         return newRefreshToken
     }
 
-    async changeUsername(id: number, newUsername: string, refreshToken: string) {
+    async changeUsername(id: number, newUsername: string) {
         await this.repository.updateUsername(id, newUsername)
-        await this.repository.deleteRefreshToken(refreshToken)
+    }
 
-        const newRefreshToken = generateRefreshToken(newUsername)
-        return newRefreshToken
+    async deleteAccount(id: number) {
+        await this.repository.deleteUserById(id)
+    }
+
+    async subscribeEvents(payload: string) {
+        const message = JSON.parse(payload)
+
+        const {event, data} = message
+
+        const {id, username} = data
+
+        switch(event) {
+            case 'DELETE_ACCOUNT':
+                await this.deleteAccount(id)
+                break
+            case 'CHANGE_USERNAME':
+                await this.changeUsername(id, username)
+                break
+            default:
+                break
+        }
     }
 }
 

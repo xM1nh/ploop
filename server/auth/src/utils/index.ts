@@ -4,6 +4,7 @@ import {v4 as uuidv4} from 'uuid'
 import jwt from 'jsonwebtoken'
 import amqp, {Channel} from 'amqplib'
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, MESSAGE_BROKER_URL, EXCHANGE_NAME } from '../config'
+import AuthService from '../services/auth-services'
 
 export const generateSalt = async () => {
     return await bcrypt.genSalt()
@@ -80,7 +81,7 @@ export const publishMessage = async (channel: Channel, routingKey: string, messa
     }
 }
 
-export const subscribeMessage = async (channel: Channel, queueName: string, routingKey: string) => {
+export const subscribeMessage = async (channel: Channel, service: AuthService, queueName: string, routingKey: string) => {
     const appQueue = await channel.assertQueue(queueName)
 
     channel.bindQueue(appQueue.queue, EXCHANGE_NAME, routingKey)
@@ -88,7 +89,8 @@ export const subscribeMessage = async (channel: Channel, queueName: string, rout
     channel.consume(appQueue.queue, data => {
         if (data) {
             //console.log('received data')
-            console.log(data?.content.toString())
+            //console.log(data?.content.toString())
+            service.subscribeEvents(data.content.toString())
             channel.ack(data)
         }
     })
