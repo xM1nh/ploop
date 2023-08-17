@@ -127,6 +127,7 @@ header {
 
 .messageContainer {
     margin-left: 16px;
+    position: relative;
 }
 
 .notificationContainer {
@@ -135,7 +136,13 @@ header {
 }
 
 .profileContainer {
-    margin-left: 16px;
+    margin-left: 24px;
+    position: relative;
+    width: 28px;
+    height: 28px;
+    background: center center / cover no-repeat;
+    border-radius: 50%;
+    cursor: pointer;
 }
 
 .headerLoginButton {
@@ -158,4 +165,21 @@ header {
     letter-spacing: 0.03px;
     margin-left: 16px;
     min-width: 100px;
+}
+
+sup {
+    color: rgb(255, 255, 255);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 18px;
+    letter-spacing: 0.093px;
+    left: 16px;
+    background: rgb(254, 44, 85);
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    border-radius: 10px;
+    position: absolute;
+    top: -20%;
 }

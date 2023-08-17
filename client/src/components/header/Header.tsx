@@ -1,4 +1,5 @@
 import './_Header.css'
+import defaultAvatar from '../../../public/default-avatar.jpg'
 
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom'
@@ -12,6 +13,7 @@ import LogoWhite from '../../assets/Logo Header White.png'
 import AddIcon from '@mui/icons-material/Add';
 import InboxOutlinedIcon from '@mui/icons-material/InboxOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
 const Header = () => {
@@ -58,12 +60,18 @@ const Header = () => {
                 
                 <div className='messageContainer'>
                     <InboxOutlinedIcon sx={{color: 'white', cursor: 'pointer'}}/>
+                    <sup>2</sup>
                 </div>
                 <div className='notificationContainer' onClick={handleNotificationClick} ref={notificationRef}>
-                    <NotificationsNoneOutlinedIcon sx={{color: 'white', cursor: 'pointer'}} className='notificationIcon'/>
+                    {
+                        isNotiOpen
+                            ? <NotificationsIcon sx={{color: 'white', cursor: 'pointer'}} className='notificationIcon'/>
+                            : <NotificationsNoneOutlinedIcon sx={{color: 'white', cursor: 'pointer'}} className='notificationIcon'/>
+                    }
                     <Notification isOpen={isNotiOpen}/>
+                    <sup>1</sup>
                 </div>
-                <div className='profileContainer'>More</div>
+                <div className='profileContainer' style={{backgroundImage: `url(${defaultAvatar})`}}></div>
             </div>
     }
 
