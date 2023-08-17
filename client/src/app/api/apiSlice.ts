@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery, BaseQueryApi, FetchArgs} from '@reduxjs/tool
 import { RootState } from '../store'
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: 'http://127.0.0.1:8001',
+    baseUrl: 'http://127.0.0.1:8000',
     credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
         const token = (getState() as RootState).auth.token
@@ -37,6 +37,7 @@ const baseQueryWithReauth = async(args: string | FetchArgs, api: BaseQueryApi, e
 
 const apiSlice = createApi({
     baseQuery: baseQueryWithReauth,
+    tagTypes: ['User', 'Spray'],
     endpoints: () => ({})
 })
 

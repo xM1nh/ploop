@@ -9,7 +9,7 @@ self.addEventListener('message', async (e) => {
         formData.append(`sprays[]`, chunk, index.toString())
     })
 
-    await fetch('http://127.0.0.1:8001/upload', {
+    await fetch('http://127.0.0.1:8000/upload', {
             credentials: 'include',
             method: 'POST',
             headers: {

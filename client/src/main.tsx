@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <RouteSwitch />
+        <RouteSwitch />
       </LocalizationProvider>
     </Provider>
   </React.StrictMode>,
