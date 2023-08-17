@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { toggle } from '../../../features/signup/modalSlice';
 import { useLoginMutation, useSignupMutation } from '../../../features/auth/authApiSlice';
-import { setCredentials } from '../../../features/auth/authSlice';
+import { setCredentials } from '../../../features/auth/authSlice'; 
 
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -16,6 +16,7 @@ const LoginModal = () => {
     const [isSignUp, setIsSignUp] = useState(false)
     const [signUpEmail, setSignUpEmail] = useState('')
     const [signUpPassword, setSignUpPassword] = useState('')
+    const [signUpName, setSignUpName] = useState('')
     const [loginEmail, setLoginEmail] = useState('')
     const [loginPassword, setLoginPassword] = useState('')
     const [showValidation, setShowValidation] = useState(false)
@@ -68,8 +69,9 @@ const LoginModal = () => {
         e.preventDefault()
         try {
             const {id, accessToken} = await login({email: loginEmail, password: loginPassword}).unwrap()
-                dispatch(setCredentials({userId: id, accessToken}))
-                dispatch(toggle())
+            dispatch(setCredentials({userId: id, accessToken}))
+            dispatch(toggle())
+            localStorage.setItem('isLoggedIn', JSON.stringify(true))
         } catch (e) {
             console.log(e)
         }
@@ -78,7 +80,7 @@ const LoginModal = () => {
     const handleSignup = async (e: FormEvent) => {
         e.preventDefault()
         try {
-            const {userId} = await signup({email: signUpEmail, password: signUpPassword}).unwrap()
+            const {userId} = await signup({email: signUpEmail, password: signUpPassword, nickname: signUpName}).unwrap()
             if (userId) {
                 const {id, accessToken} = await login({email: signUpEmail, password: signUpPassword}).unwrap()
                 dispatch(setCredentials({userId: id, accessToken}))
@@ -205,6 +207,14 @@ const LoginModal = () => {
                                     </div>
                                 </>
                             }
+                            <div className='inputContainer'>
+                                <input 
+                                    className='signup name'
+                                    placeholder='Your Name'
+                                    value={signUpName}
+                                    onChange={e => setSignUpName(e.target.value)}    
+                                />
+                            </div>
                             <button className='loginButton' type='submit' disabled={isSignUpDisabled()}>
                                 Signup
                             </button>

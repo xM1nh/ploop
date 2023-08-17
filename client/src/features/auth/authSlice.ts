@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 
 const initialState = {
-    isAuthenticated: true,
+    isAuthenticated: false,
     token: null,
     userId: null
 }
@@ -32,3 +32,4 @@ export default authSlice.reducer
 
 export const selectCurrentToken = (state :RootState) => state.auth.token
 export const selectAuthentication = (state :RootState) => state.auth.isAuthenticated
+export const selectUserId = (state: RootState) => state.auth.userId

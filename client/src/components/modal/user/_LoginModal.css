@@ -90,7 +90,7 @@
     padding-inline-end: unset;
 }
 
-.login::placeholder, .singup::placeholder {
+.login::placeholder, .signup::placeholder {
     color: rgba(22, 24, 35, 0.34);
 }
 
