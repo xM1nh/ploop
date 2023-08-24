@@ -68,14 +68,13 @@ const auth = (app: Express, channel: Channel) => {
 
     app.get('/refresh', asyncHandler(async (req: Request, res: Response) => {
         const cookies = req.cookies
-        console.log(cookies)
         if (!cookies?.jwt) res.sendStatus(401)
         const refreshToken = cookies.jwt
 
         const response = await service.refresh(refreshToken)
         if (response === 403) res.sendStatus(403)
         else {
-            const {accessToken ,newRefreshToken} = response
+            const {accessToken ,newRefreshToken, existingUser} = response
             res.cookie('jwt', '', {
                 httpOnly: true,
                 sameSite: 'none',
@@ -88,7 +87,7 @@ const auth = (app: Express, channel: Channel) => {
                 secure: true,
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
             })
-            .status(200).json(accessToken)
+            .status(200).json({accessToken, userId: existingUser.id})
         }
     }))
 

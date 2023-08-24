@@ -91,7 +91,7 @@ class AuthService {
             const newRefreshToken = generateRefreshToken(existingUser.username)
 
             await this.repository.replaceRefreshToken(existingUser.id, refreshToken, newRefreshToken)
-            return {accessToken, newRefreshToken}
+            return {accessToken, newRefreshToken, existingUser}
         } catch (err) {
             await this.repository.deleteRefreshToken(refreshToken)
             return 403
