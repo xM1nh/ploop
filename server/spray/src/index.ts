@@ -1,14 +1,17 @@
 import express from 'express'
 import {PORT} from './config/index'
 import expressApp from './utils/express-app'
+import { connect } from './utils'
 
 const StartServer = async () => {
     const app = express()
 
-    expressApp(app)
+    const channel = await connect()
+
+    expressApp(app, channel)
 
     app.listen(PORT, () => {
-        console.log('User is listening to Port 8001')
+        console.log(`Spray is listening to Port ${PORT}`)
     })
 }
 
