@@ -3,7 +3,7 @@ import './_LoginModal.css'
 import { FormEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { toggle } from '../../../features/signup/modalSlice';
+import { toggleAuth } from '../../../features/modal/modalSlice';
 import { useLoginMutation, useSignupMutation } from '../../../features/auth/authApiSlice';
 import { setCredentials } from '../../../features/auth/authSlice'; 
 
@@ -58,7 +58,7 @@ const LoginModal = () => {
     }
     
     const handleCloseButtonClick = () => {
-        dispatch(toggle())
+        dispatch(toggleAuth())
     }
 
     const handleClick = () => {
@@ -70,7 +70,7 @@ const LoginModal = () => {
         try {
             const {id, accessToken} = await login({email: loginEmail, password: loginPassword}).unwrap()
             dispatch(setCredentials({userId: id, accessToken}))
-            dispatch(toggle())
+            dispatch(toggleAuth())
             localStorage.setItem('isLoggedIn', JSON.stringify(true))
         } catch (e) {
             console.log(e)
@@ -84,7 +84,7 @@ const LoginModal = () => {
             if (userId) {
                 const {id, accessToken} = await login({email: signUpEmail, password: signUpPassword}).unwrap()
                 dispatch(setCredentials({userId: id, accessToken}))
-                dispatch(toggle())
+                dispatch(toggleAuth())
             } else {
                 console.log('else')
             }

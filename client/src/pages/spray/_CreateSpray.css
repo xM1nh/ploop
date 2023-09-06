@@ -91,6 +91,13 @@
     background-color: rgba(100, 100, 100, 0.12);
 }
 
+.buttonNext:disabled {
+    border: medium none;
+    color: rgba(22, 24, 35, 0.34);
+    background-color: rgba(22, 24, 35, 0.06);
+    pointer-events: none;
+}
+
 .textContainer {
     box-sizing: border-box;
     width: 100%;

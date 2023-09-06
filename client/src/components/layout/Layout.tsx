@@ -2,7 +2,7 @@ import './_Layout.css'
 
 import { ReactNode } from 'react'
 import { useSelector } from 'react-redux'
-import { selectIsOpen } from '../../features/signup/modalSlice'
+import { selectIsAuthOpen } from '../../features/modal/modalSlice'
 
 import Header from '../header/Header'
 import Navbar from '../navbar/Navbar'
@@ -13,7 +13,7 @@ type LayoutProps = {
 }
 
 const Layout = ({children} :LayoutProps) => {
-    const isOpen = useSelector(selectIsOpen)
+    const isAuthOpen = useSelector(selectIsAuthOpen)
 
     return (
         <div className='app'>
@@ -24,7 +24,7 @@ const Layout = ({children} :LayoutProps) => {
                     {children}
                 </div>
             </main>
-            {isOpen && <LoginModal />}
+            {isAuthOpen && <LoginModal />}
         </div>
     )
 }

@@ -9,9 +9,7 @@ const PersistLogin = () => {
     const effectRan = useRef(false)
     const isLoggedIn = JSON.parse(localStorage.getItem('isLoggedIn') as string)
 
-    const [refresh, {
-        isLoading,
-    }] = useRefreshMutation()
+    const [refresh] = useRefreshMutation()
 
     useEffect(() => {
         if (effectRan.current === true || process.env.NODE_ENV !== 'development') {
@@ -30,14 +28,9 @@ const PersistLogin = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    let content = <Outlet />
-    if (isLoading) {
-        content = <p>Please wait...</p>
-    }
-
     return (
         <div>
-            {content}
+            <Outlet />
         </div>
     )
 }

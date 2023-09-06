@@ -37,7 +37,6 @@ const baseQueryWithReauth = async(args: string | FetchArgs, api: BaseQueryApi, e
 
 const apiSlice = createApi({
     baseQuery: baseQueryWithReauth,
-    tagTypes: ['User', 'Spray'],
     endpoints: () => ({})
 })
 

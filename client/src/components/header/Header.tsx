@@ -1,11 +1,10 @@
 import './_Header.css'
-import defaultAvatar from '../../../public/default-avatar.jpg'
 
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux';
-import { selectAuthentication } from '../../features/auth/authSlice';
-import { toggle } from '../../features/signup/modalSlice';
+import { selectAuthentication, selectUser } from '../../features/auth/authSlice';
+import { toggleAuth } from '../../features/modal/modalSlice';
 import { useDispatch } from 'react-redux';
 
 import Notification from '../modal/notification/Notification';
@@ -17,13 +16,14 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
 const Header = () => {
+    const user = useSelector(selectUser)
     const notificationRef = useRef<HTMLDivElement>(null)
     const [isNotiOpen, setIsNotiOpen] = useState(false)
     const dispatch = useDispatch()
     const isLoggedIn = useSelector(selectAuthentication)
 
     const toggleLoginModal = () => {
-        dispatch(toggle())
+        dispatch(toggleAuth())
     }
 
     const handleNotificationClick = () => {
@@ -71,7 +71,9 @@ const Header = () => {
                     <Notification isOpen={isNotiOpen}/>
                     <sup>1</sup>
                 </div>
-                <div className='profileContainer' style={{backgroundImage: `url(${defaultAvatar})`}}></div>
+                <Link to={`/${user?.id}`}>
+                <div className='profileContainer' style={{backgroundImage: `url(${user?.avatar_url})`}}></div>
+                </Link>
             </div>
     }
 

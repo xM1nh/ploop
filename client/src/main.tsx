@@ -1,4 +1,5 @@
 import React from 'react'
+import { BrowserRouter } from 'react-router-dom'
 import ReactDOM from 'react-dom/client'
 import RouteSwitch from './RouteSwitch'
 import { Provider } from 'react-redux'
@@ -12,7 +13,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <RouteSwitch />
+        <BrowserRouter>
+          <RouteSwitch />
+        </BrowserRouter>
       </LocalizationProvider>
     </Provider>
   </React.StrictMode>,

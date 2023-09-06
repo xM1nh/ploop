@@ -5,7 +5,7 @@ import { RootState } from '../../app/store'
 const initialState = {
     isAuthenticated: false,
     token: null,
-    userId: null
+    user: null
 }
 
 const authSlice = createSlice({
@@ -13,15 +13,15 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         setCredentials: (state, action) => {
-            const {accessToken, userId} = action.payload
+            const {accessToken, user} = action.payload
             state.isAuthenticated = true
             state.token = accessToken
-            state.userId = userId
+            state.user = user
         },
         logOut: (state) => {
             state.isAuthenticated = false,
             state.token = null,
-            state.userId = null
+            state.user = null
         }
     }
 })
@@ -32,4 +32,4 @@ export default authSlice.reducer
 
 export const selectCurrentToken = (state :RootState) => state.auth.token
 export const selectAuthentication = (state :RootState) => state.auth.isAuthenticated
-export const selectUserId = (state: RootState) => state.auth.userId
+export const selectUser = (state: RootState) => state.auth.user

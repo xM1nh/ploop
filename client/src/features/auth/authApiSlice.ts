@@ -34,7 +34,7 @@ const authApiSlice = apiSlice.injectEndpoints({
                 }
             }
         }),
-        refresh: builder.mutation<{accessToken: string, userId: string}, void>({
+        refresh: builder.mutation<{accessToken: string, user: object}, void>({
             query: () => ({
                 url: '/auth/refresh',
                 method: 'GET'
@@ -42,8 +42,8 @@ const authApiSlice = apiSlice.injectEndpoints({
             async onQueryStarted(_arg, {dispatch, queryFulfilled}) {
                 try {
                     const {data} = await queryFulfilled
-                    const {accessToken, userId} = data
-                    dispatch(setCredentials({accessToken, userId}))
+                    const {accessToken, user} = data
+                    dispatch(setCredentials({accessToken, user}))
                 } catch (e) {
                     console.error(e)
                 }
