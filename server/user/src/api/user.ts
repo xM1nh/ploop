@@ -2,7 +2,7 @@ import UserService from "../services/user-services";
 import { Express, Request, Response, NextFunction } from "express";
 import { Channel } from "amqplib";
 import { publishMessage, subscribeMessage } from "../utils";
-import { upload, USER_QUEUE, USER_ROUTING_KEY, AUTH_ROUTING_KEY, CLOUDFLARE_ACCOUNT_ID } from "../config";
+import { USER_QUEUE, USER_ROUTING_KEY, AUTH_ROUTING_KEY } from "../config";
 import asyncHandler from 'express-async-handler'
 
 const user = (app: Express, channel: Channel) => {
@@ -35,35 +35,26 @@ const user = (app: Express, channel: Channel) => {
         res.status(200).json(user)
     }))
 
-    app.put('/users/:id', 
-        upload.single('avatar'),
+    app.put('/users/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const id = parseInt(req.params.id)
 
-        asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-            const id = parseInt(req.params.id)
+        const {username, nickname, bio} = req.body
 
-            const filename = req.file?.filename
-            if (filename) {
-                const fileLocation = `https://${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com/ploop/${req.file?.filename}`
-                await service.changeAvatar(id, fileLocation)
-            }
-
-            const {username, nickname, bio} = req.body
-
-            if (username) {
-                await service.changeUsername(id, username)
-                const message = {
-                    event: 'CHANGE_USERNAME',
-                    data: {
-                        id,
-                        username
-                    }
+        if (username) {
+            await service.changeUsername(id, username)
+            const message = {
+                event: 'CHANGE_USERNAME',
+                data: {
+                    id,
+                    username
                 }
-                publishMessage(channel, AUTH_ROUTING_KEY, message)
             }
-            if (nickname) await service.changeNickname(id, nickname)
-            if (bio) await service.changeBio(id, bio)
+            publishMessage(channel, AUTH_ROUTING_KEY, message)
+        }
+        if (nickname) await service.changeNickname(id, nickname)
+        if (bio) await service.changeBio(id, bio)
 
-            res.sendStatus(200)
+        res.sendStatus(200)
         })
     )
 

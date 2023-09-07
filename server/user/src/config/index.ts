@@ -1,9 +1,5 @@
 import dotEnv from 'dotenv';
-import multer from 'multer'
-import multerS3 from 'multer-s3'
-import {Request} from 'express'
 import { CorsOptions } from 'cors';
-import { DeleteObjectCommand, HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 if (process.env.NODE_ENV !== 'prod') {
     const configFile = `./.env.${process.env.NODE_ENV}.local`
@@ -62,43 +58,3 @@ export const {
     CLOUDFLARE_R2_SECRET_ACCESS_KEY,
     DEFAULT_AVATAR_URL
 } = index
-
-//R2
-export const s3 = new S3Client({
-    region: 'auto',
-    endpoint: `https://${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-    credentials: {
-        accessKeyId: CLOUDFLARE_R2_ACCESS_KEY,
-        secretAccessKey: CLOUDFLARE_R2_SECRET_ACCESS_KEY
-    }
-})
-
-//Multer
-export const upload = multer({
-    storage: multerS3({
-        s3: s3,
-        bucket: 'ploop',
-        key: async function(req: Request, file, cb) {
-            const id = file.originalname
-            try {
-                const key = `user-avatar/${id}.png`
-
-                const headObject = new HeadObjectCommand({
-                    Bucket: 'ploop',
-                    Key: key
-                })
-                await s3.send(headObject)
-
-                const deleteObject = new DeleteObjectCommand({
-                    Bucket: 'ploop',
-                    Key: key
-                })
-                await s3.send(deleteObject)
-            } catch(e) {
-                console.log('File does not exist or could not be deleted:', e)
-            }
-            
-            cb(null, id)
-        }
-    })
-})
