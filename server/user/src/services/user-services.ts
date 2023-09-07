@@ -22,7 +22,8 @@ class UserService {
     async deleteAccount(
         id: number
     ) {
-        await this.repository.deleteUser(id)
+        const user = await this.repository.deleteUser(id)
+        return user
     }
 
     async getProfile(id: number) {
@@ -36,7 +37,8 @@ class UserService {
     ) {
         const user = await this.repository.findUserById(id)
         if (newUsername === user.username) return
-        await this.repository.updateUsername(id, newUsername)
+        const response = await this.repository.updateUsername(id, newUsername)
+        return response
     }
 
     async changeBio(
@@ -45,7 +47,18 @@ class UserService {
     ) {
         const user = await this.repository.findUserById(id)
         if (bio === user.bio) return
-        await this.repository.updateBio(id, bio)
+        const response = await this.repository.updateBio(id, bio)
+        return response 
+    }
+
+    async changeNickname(
+        id: number,
+        newName: string
+    ) {
+        const user = await this.repository.findUserById(id)
+        if (newName === user.nickname) return
+        const response = await this.repository.updateNickname(id, newName)
+        return response
     }
 
     async changeAvatar(
@@ -56,21 +69,13 @@ class UserService {
         return user
     }
 
-    async changeNickname(
-        id: number,
-        newName: string
-    ) {
-        const user = await this.repository.findUserById(id)
-        if (newName === user.nickname) return
-        await this.repository.updateNickname(id, newName)
-    }
-
-    async isFollow(
+    async getFollow(
         followerId: number,
         followeeId: number,
     ) {
         const isFollow = await this.repository.getFollow(followerId, followeeId)
-        return isFollow
+
+        return isFollow ? true : false
     }
 
     async follow(
@@ -78,13 +83,13 @@ class UserService {
         followeeId: number
     ) {
         try {
-            if (!await this.isFollow(followerId, followeeId)) {
-                await this.repository.follow(followeeId, followeeId)
+            if (!await this.getFollow(followerId, followeeId)) {
+                const response = await this.repository.addFollow(followerId, followeeId)
                 await this.repository.increaseFollowers(followeeId)
                 await this.repository.increaseFollowings(followerId)
-                return true
+                return response
             }
-            return
+            return 
         } catch (e) {
             return null
         }
@@ -95,11 +100,11 @@ class UserService {
         followeeId: number
     ) {
         try {
-            if (await this.isFollow(followerId, followeeId)) {
-                await this.repository.unfollow(followerId, followeeId)
+            if (await this.getFollow(followerId, followeeId)) {
+                const response = await this.repository.deleteFollow(followerId, followeeId)
                 await this.repository.decreaseFollowers(followeeId)
                 await this.repository.decreaseFollowings(followerId)
-                return true
+                return response
             }
             return 
         } catch (e) {
@@ -115,7 +120,7 @@ class UserService {
         const offset = page * itemPerPage
         const followers = await this.repository.getFollowersByUserId(id, itemPerPage, offset)
 
-        return {followers}
+        return followers
     }
 
     async getFollowings(
@@ -126,7 +131,7 @@ class UserService {
         const offset = page * itemPerPage
         const followings = await this.repository.getFollowingByUserId(id, itemPerPage, offset)
 
-        return {followings}
+        return followings
     }
 
     async subscribeEvents(payload: string) {

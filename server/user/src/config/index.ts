@@ -13,7 +13,7 @@ if (process.env.NODE_ENV !== 'prod') {
 }
 
 //Cors
-const whitelist = ['http://localhost:5173'];
+const whitelist = ['http://localhost:5173', 'http://localhost:8000'];
 export const corsOptions: CorsOptions = {
     credentials: true,
     origin: (origin, cb) => {
