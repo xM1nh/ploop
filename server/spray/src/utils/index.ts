@@ -1,5 +1,6 @@
 import amqp, {Channel} from 'amqplib'
 import { MESSAGE_BROKER_URL, EXCHANGE_NAME } from '../config'
+import PositionalList from './positional-list'
 
 export const connect = async () => {
     try {
@@ -39,4 +40,8 @@ export const subscribeMessage = async (channel: Channel, service: any, queueName
             channel.ack(data)
         }
     })
+}
+
+export {
+    PositionalList
 }

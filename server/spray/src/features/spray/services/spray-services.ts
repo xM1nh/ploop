@@ -9,15 +9,15 @@ class SprayService {
 
     async createNewSpray(
         url: string,
+        coverUrl: string,
         creatorId: number,
         caption: string,
         viewPermission: number,
         drawPermission: number,
         limited: boolean,
-        deadline: Date | null
+        deadline: Date | string
     ) {
-        console.log(deadline)
-        const spray = await this.repository.addSpray(url, creatorId, caption, viewPermission, drawPermission, limited, deadline)
+        const spray = await this.repository.addSpray(url, coverUrl, creatorId, caption, viewPermission, drawPermission, limited, deadline)
         return spray
     }
 
@@ -26,14 +26,21 @@ class SprayService {
         offset: number
     ) {
         const sprays = await this.repository.getPublicSprays(limit, offset)
-        return sprays
+        const response = sprays.map(spray => ({
+            ...spray,
+            deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
+        }))
+        return response
     }
 
     async getSpray(
         id: number
     ) {
         const spray = await this.repository.findSprayById(id)
-        return spray
+        return {
+            ...spray,
+            deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
+        }
     }
 
     async getSpraysForUser(
@@ -42,7 +49,92 @@ class SprayService {
         offset: number
     ) {
         const sprays = await this.repository.findSpraysByUserId(id, limit, offset)
+        const response = sprays.map(spray => ({
+            ...spray,
+            deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
+        }))
         return sprays
+    }
+
+    async deleteSpray(
+        id: number
+    ) {
+        const spray = await this.repository.deleteSprayById(id)
+        return {
+            ...spray,
+            deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
+        }
+    }
+
+    async deleteUserSprays(
+        id: number
+    ) {
+        await this.repository.deleteSpraysByUserId(id)
+    }
+
+    async updateCaption(
+        id: number,
+        newCaption: string
+    ) {
+        const spray = await this.repository.editCaption(id, newCaption)
+        return {
+            ...spray,
+            deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
+        }
+    }
+
+    async updateUrl(
+        id: number,
+        newUrl: string
+    ) {
+        const spray = await this.repository.editUrl(id, newUrl)
+        return {
+            ...spray,
+            deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
+        }
+    }
+
+    async updateViewPermission(
+        id: number,
+        viewPermission: number
+    ) {
+        const spray = await this.repository.editViewPermission(id, viewPermission)
+        return {
+            ...spray,
+            deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
+        }
+    }
+
+    async updateDrawPermission(
+        id: number,
+        drawPermission: number
+    ) {
+        const spray = await this.repository.editDrawPermission(id, drawPermission)
+        return {
+            ...spray,
+            deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
+        }
+    }
+
+    async updateLimitation(
+        id: number,
+        limited: boolean,
+        deadline?: Date
+    ) {
+        if (!limited) {
+            const spray = await this.repository.editLimitation(id, false, 'infinity')
+            return {
+                ...spray,
+                deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
+            }
+        }
+        else {
+            const spray = await this.repository.editLimitation(id, true, deadline)
+            return {
+                ...spray,
+                deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
+            }
+        }
     }
 
     async subscribeEvents(payload: string) {
@@ -51,7 +143,8 @@ class SprayService {
         const {event, data} = message
 
         const {
-            url,
+            sprayUrl,
+            coverUrl,
             userId: creatorId,
             caption,
             viewPermission,
@@ -64,8 +157,7 @@ class SprayService {
 
         switch(event) {
             case 'CREATE_SPRAY':
-                await this.createNewSpray(url, creatorId, caption, viewPermission, drawPermission, limited, JSON.parse(deadline))
-                console.log('done')
+                await this.createNewSpray(sprayUrl, coverUrl, creatorId, caption, viewPermission, drawPermission, limited, JSON.parse(deadline))
                 break
             default:
                 break

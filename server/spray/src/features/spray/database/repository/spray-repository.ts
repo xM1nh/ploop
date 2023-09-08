@@ -3,16 +3,18 @@ import {pool} from '..'
 class SprayRepository {
     async addSpray(
         url: string,
-        creatorId: number,
+        coverUrl: string,
+        userId: number,
         caption: string,
         viewPermission: number,
         drawPermission: number,
         limited: boolean,
-        deadline: Date | null 
+        deadline: Date | string
     ) {
         const queryString = `INSERT INTO spray_schema.sprays (
                                 url,
-                                creator_id,
+                                cover_url,
+                                user_id,
                                 caption,
                                 view_permission,
                                 draw_permission,
@@ -20,7 +22,8 @@ class SprayRepository {
                                 deadline
                             ) VALUES (
                                 '${url}',
-                                ${creatorId},
+                                '${coverUrl}',
+                                ${userId},
                                 '${caption}',
                                 ${viewPermission},
                                 ${drawPermission},
@@ -50,15 +53,12 @@ class SprayRepository {
     ) {
         const queryString =`SELECT *
                             FROM spray_schema.sprays
-                            WHERE creator_id = ${id}
+                            WHERE user_id = ${id}
                             ORDER BY created_on
                             LIMIT ${limit} OFFSET ${offset}`
 
         const sprays = (await pool.query(queryString)).rows
-        const publicSprays = sprays.map(spray => spray.view_permission === 1)
-        const privateSprays = sprays.map(spray => spray.view_permission === 2)
-
-        return {public: publicSprays, private: privateSprays}
+        return sprays
     }
 
     async getPublicSprays(
@@ -68,8 +68,8 @@ class SprayRepository {
         const queryString = `SELECT *
                             FROM spray_schema.sprays
                             WHERE view_permission = 1
-                            LIMIT ${limit} OFFSET ${offset}
-                            ORDER BY created_on`
+                            ORDER BY created_on DESC
+                            LIMIT ${limit} OFFSET ${offset}`
 
         const sprays = (await pool.query(queryString)).rows
         return sprays
@@ -81,14 +81,14 @@ class SprayRepository {
     ) {
         const queryString = `UPDATE spray_schema.sprays
                             SET url = '${newUrl}'
-                            WHERE id = ${id}`
+                            WHERE id = ${id}
+                            RETURNING *`
 
         try {
-            await pool.query(queryString)
-            return true
+            const spray = (await pool.query(queryString)).rows[0]
+            return spray
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
@@ -98,14 +98,67 @@ class SprayRepository {
     ) {
         const queryString = `UPDATE spray_schema.sprays
                             SET caption = '${newCaption}'
-                            WHERE id = ${id}`
+                            WHERE id = ${id}
+                            RETURNING *`
 
         try {
-            await pool.query(queryString)
-            return true
+            const spray = (await pool.query(queryString)).rows[0]
+            return spray
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
+        }
+    }
+
+    async editViewPermission(
+        id: number,
+        viewPermission: number
+    ) {
+        const queryString = `UPDATE spray_schema.sprays
+                            SET view_permission = ${viewPermission}
+                            WHERE id = ${id}
+                            RETURNING *`
+
+        try {
+            const spray = (await pool.query(queryString)).rows[0]
+            return spray
+        } catch (e) {
+            throw e
+        }
+    }
+
+    async editDrawPermission(
+        id: number,
+        drawPermission: number
+    ) {
+        const queryString = `UPDATE spray_schema.sprays
+                            SET draw_permission = ${drawPermission}
+                            WHERE id = ${id}
+                            RETURNING *`
+
+        try {
+            const spray = (await pool.query(queryString)).rows[0]
+            return spray
+        } catch (e) {
+            throw e
+        }
+    }
+
+    async editLimitation(
+        id: number,
+        limitation: boolean,
+        deadline?: Date | string
+    ) {
+        const queryString = `UPDATE spray_schema.sprays
+                                SET limited = ${limitation}
+                                    deadline = '${deadline}'::TIMESTAMP
+                                WHERE id = ${id}
+                                RETURNING *`
+
+        try {
+            const spray = (await pool.query(queryString)).rows[0]
+            return spray
+        } catch (e) {
+            throw e
         }
     }
 
@@ -113,14 +166,14 @@ class SprayRepository {
         id: number
     ) {
         const queryString = `DELETE FROM spray_schema.sprays
-                            WHERE id = ${id}`
+                            WHERE id = ${id}
+                            RETURNING *`
 
         try {
-            await pool.query(queryString)
-            return true
+            const spray = (await pool.query(queryString)).rows[0]
+            return spray
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
@@ -128,14 +181,12 @@ class SprayRepository {
         id: number
     ) {
         const queryString = `DELETE FROM spray_schema.sprays
-                            WHERE creator_id = ${id}`
+                            WHERE user_id = ${id}`
 
         try {
             await pool.query(queryString)
-            return true
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 }
