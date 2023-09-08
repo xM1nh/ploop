@@ -16,8 +16,8 @@ export const typeDef = `#graphql
     }
     type Query {
         user(id: ID!): User,
-        followers(id: ID!, pagination: PaginationInput!): [Follow]
-        followings(id: ID!, pagination: PaginationInput!): [Follow]
+        followers(id: ID!, pagination: PaginationInput!): [User]
+        followings(id: ID!, pagination: PaginationInput!): [User]
         follow(id: ID!, followeeId: ID!): Boolean
     }
     type Mutation {

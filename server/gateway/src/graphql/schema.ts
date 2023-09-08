@@ -1,16 +1,17 @@
 import _ from 'lodash'
 
-import { typeDef as sprayTypeDef } from "./spray";
-import { typeDef as userTypeDef } from "./user";
+import { sprayTypeDef, sprayResolvers } from "./spray";
+import { userTypeDef, userResolvers } from "./user";
+import { commentTypeDef, commentResolvers } from './spray';
 
-import { resolvers as sprayResolvers } from './spray';
-import { resolvers as userResolvers } from './user';
 
 export const typeDefs = [
+    userTypeDef,
     sprayTypeDef, 
-    userTypeDef
+    commentTypeDef
 ]
 export const resolvers = _.merge({}, 
-    sprayResolvers, 
-    userResolvers
+    userResolvers,
+    sprayResolvers,
+    commentResolvers
 )

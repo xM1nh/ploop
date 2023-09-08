@@ -1,7 +1,7 @@
-import { resolvers } from "./resolvers";
-import { typeDef } from "./schema";
+import { resolvers as userResolvers } from "./resolvers";
+import { typeDef as userTypeDef} from "./schema";
 
 export {
-    typeDef,
-    resolvers
+    userTypeDef,
+    userResolvers
 }
