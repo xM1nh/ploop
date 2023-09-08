@@ -26,7 +26,7 @@ class UserService {
         return user
     }
 
-    async getProfile(id: number) {
+    async getUserById(id: number) {
         const user = await this.repository.findUserById(id)
         return user
     }

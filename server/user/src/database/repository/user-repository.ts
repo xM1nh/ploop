@@ -35,7 +35,7 @@ class UserRepository {
     async deleteUser(id: number) {
         const queryString = `DELETE FROM user_schema.users
                             WHERE id = ${id}
-                            RETURNING id`
+                            RETURNING *`
         
         try {
             const user = (await pool.query(queryString)).rows[0]
@@ -67,7 +67,7 @@ class UserRepository {
         const queryString = `UPDATE user_schema.users
                             SET username = '${username}'
                             WHERE id = ${id}
-                            RETURNING id`
+                            RETURNING *`
 
         try {
             const user = (await pool.query(queryString)).rows[0]
@@ -81,7 +81,7 @@ class UserRepository {
         const queryString = `UPDATE user_schema.users
                             SET avatar_url = '${avatar_url}'
                             WHERE id = ${id}
-                            RETURNING id`
+                            RETURNING *`
 
         try {
             const user = (await pool.query(queryString)).rows[0]
@@ -95,7 +95,7 @@ class UserRepository {
         const queryString = `UPDATE user_schema.users
                             SET nickname = '${nickname}'
                             WHERE id = ${id}
-                            RETURNING id`
+                            RETURNING *`
 
         try {
             const user = (await pool.query(queryString)).rows[0]
@@ -109,7 +109,7 @@ class UserRepository {
         const queryString = `UPDATE user_schema.users
                             SET bio = '${bio}'
                             WHERE id = ${id}
-                            RETURNING id`
+                            RETURNING *`
 
         try {
             const user = (await pool.query(queryString)).rows[0]
@@ -127,7 +127,7 @@ class UserRepository {
                                 ${followerId},
                                 ${followeeId}
                             ) 
-                            RETURNING id`
+                            RETURNING *`
         
         try {
             const follow = (await pool.query(queryString)).rows[0]
@@ -140,7 +140,7 @@ class UserRepository {
     async deleteFollow(followerId: number, followeeId: number) {
         const queryString = `DELETE FROM user_schema.follows
                             WHERE follower_id = ${followerId} AND followee_id = ${followeeId}
-                            RETURNING id`
+                            RETURNING *`
 
         try {
             const follow = (await pool.query(queryString)).rows[0]
@@ -166,7 +166,12 @@ class UserRepository {
     ) {
         const queryString = `SELECT
                                 u.id, 
-                                u.username
+                                u.username,
+                                u.nickname,
+                                u.avatar_url,
+                                u.bio,
+                                u.followings,
+                                u.followers
                             FROM user_schema.follows f
                             INNER JOIN user_schema.users AS u ON f.follower_id = u.id
                             WHERE followee_id = ${id}
@@ -183,8 +188,13 @@ class UserRepository {
         offset: number
     ) {
         const queryString = `SELECT
-                                u.id,
-                                u.username
+                                u.id, 
+                                u.username,
+                                u.nickname,
+                                u.avatar_url,
+                                u.bio,
+                                u.followings,
+                                u.followers
                             FROM user_schema.follows f
                             INNER JOIN user_schema.users AS u ON f.followee_id = u.id
                             WHERE follower_id = ${id}
@@ -198,12 +208,10 @@ class UserRepository {
     async increaseFollowers(id: number) {
         const queryString = `UPDATE user_schema.users
                             SET followers = followers + 1
-                            WHERE id = ${id}
-                            RETURNING id`
+                            WHERE id = ${id}`
 
         try {
-            const user = (await pool.query(queryString)).rows[0]
-            return user
+            await pool.query(queryString)
         } catch (e) {
             throw e
         }
@@ -212,12 +220,10 @@ class UserRepository {
     async decreaseFollowers(id: number) {
         const queryString = `UPDATE user_schema.users
                             SET followers = followers - 1
-                            WHERE id = ${id}
-                            RETURNING id`
+                            WHERE id = ${id}`
 
         try {
-            const user = (await pool.query(queryString)).rows[0]
-            return user
+            await pool.query(queryString)
         } catch (e) {
             throw e
         }
@@ -229,8 +235,7 @@ class UserRepository {
                             WHERE id = ${id}`
 
         try {
-            const user = (await pool.query(queryString)).rows[0]
-            return user
+            await pool.query(queryString)
         } catch (e) {
             throw e
         }
@@ -242,8 +247,7 @@ class UserRepository {
                             WHERE id = ${id}`
 
         try {
-            const user = (await pool.query(queryString)).rows[0]
-            return user
+            await pool.query(queryString)
         } catch (e) {
             throw e
         }

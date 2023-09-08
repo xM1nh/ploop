@@ -13,7 +13,7 @@ const user = (app: Express, channel: Channel) => {
     app.get('/users/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const id = parseInt(req.params.id)
 
-        const user = await service.getProfile(id)
+        const user = await service.getUserById(id)
 
         res.status(200).json(user)
     }))
@@ -51,10 +51,12 @@ const user = (app: Express, channel: Channel) => {
             }
             publishMessage(channel, AUTH_ROUTING_KEY, message)
         }
-        if (nickname) await service.changeNickname(id, nickname)
-        if (bio) await service.changeBio(id, bio)
 
-        res.sendStatus(200)
+        let user
+        if (nickname) user = await service.changeNickname(id, nickname)
+        if (bio) user = await service.changeBio(id, bio)
+
+        res.status(200).json(user)
         })
     )
 
