@@ -61,7 +61,7 @@ class CommentService {
     ) {
         const deletedComments = await this.repository.deleteCommentsByUserId(id)
         const groupedBySprayId: {
-            [comment: number]: number
+            [key: string]: number
         } = {}
 
         deletedComments.forEach((comment: {spray_id: number}) => {

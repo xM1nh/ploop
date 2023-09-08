@@ -21,7 +21,6 @@ class LikeService {
         userId: number
     ) {
         const like = await this.repository.findLikeByUserIdAndSprayId(sprayId, userId)
-
         return like
     }
 
@@ -31,8 +30,10 @@ class LikeService {
     ) {
         const isLike = await this.repository.findLikeByUserIdAndSprayId(sprayId, userId)
         if (isLike) return
-        await this.repository.addLike(sprayId, userId)
-        await this.repository.increaseCount(sprayId)
+
+        const response = await this.repository.addLike(sprayId, userId)
+        await this.repository.increaseCount(sprayId, 1)
+        return response
     }
 
     async unlike(
@@ -41,14 +42,28 @@ class LikeService {
     ) {
         const isLike = await this.repository.findLikeByUserIdAndSprayId(sprayId, userId)
         if (!isLike) return
-        await this.repository.deleteLikeByUserIdAndSprayId(sprayId, userId)
-        await this.repository.decreaseCount(sprayId)
+
+        const response = await this.repository.deleteLikeByUserIdAndSprayId(sprayId, userId)
+        await this.repository.decreaseCount(sprayId, 1)
+        return response
     }
 
     async removeAllLikesByUserId(
         id: number
     ) {
-        await this.repository.deleteLikesByUserId(id)
+        const deleteLikes = await this.repository.deleteLikesByUserId(id)
+        const groupedBySprayId: {
+            [key: string]: number
+        } = {}
+
+        deleteLikes.forEach((like: {spray_id: number}) => {
+            if (groupedBySprayId[like.spray_id]) groupedBySprayId[like.spray_id]++
+            else groupedBySprayId[like.spray_id] = 1
+        })
+
+        for (const key in Object.entries(groupedBySprayId)) {
+            await this.repository.decreaseCount(parseInt(key), groupedBySprayId[key])
+        }
     }
 
     async subscribeEvents(payload: string) {

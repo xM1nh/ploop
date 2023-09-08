@@ -34,3 +34,9 @@ export type Comment = {
     likes: number,
     description: string
 }
+
+export type Like = {
+    id: number,
+    spray_id: number,
+    user_id: number
+}

@@ -1,22 +1,24 @@
 import axios from 'axios'
-import { Comment } from '../../../../utils/types'
+
+import { Like } from '../../../../utils/types'
 
 export const resolvers = {
     Query: {
-        async comments(_: any, args: {sprayId: number, pagination: {page: number, count: number}}) {
+        async likes(_: any, { pagination }: {pagination: {page: number, count: number}}) {
             try {
-                const {sprayId, pagination: {page, count}} = args
+                const { page, count} = pagination
                 const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8005/comments?sprayId=${sprayId}&page=${page}&count=${count}`, {headers})
+                const response = await axios.get(`http://127.0.0.1:8005/likes?page=${page}&count=${count}`, {headers})
                 return response.data
             } catch (e) {
                 throw new Error(`Failed to fetch data from the REST API ${e}`)
-            } 
+            }
         },
-        async comment(_: any, args: {commentId: number}) {
+        async like(_: any, args: {sprayId: number, userId: number}) {
             try {
+                const { sprayId, userId } = args
                 const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8005/comments/${args.commentId}`, {headers})
+                const response = await axios.get(`http://127.0.0.1:8005/likes/${sprayId}?userId=${userId}`, {headers})
                 return response.data
             } catch (e) {
                 throw new Error(`Failed to fetch data from the REST API ${e}`)
@@ -24,56 +26,34 @@ export const resolvers = {
         }
     },
     Mutation: {
-        async addComment(_: any, args: {
-            sprayId: number, 
-            actorId: number, 
-            notifierId: number,
-            comment: string
-        }) {
+        async like(_: any, args: {sprayId: number, userId: number, notifierId: number}) {
             try {
-                const {sprayId, actorId, notifierId, comment} = args
+                const { sprayId, userId, notifierId } = args
                 const body = {
                     sprayId,
-                    actorId,
-                    notifierId,
-                    comment
+                    userId,
+                    notifierId
                 }
                 const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.post(`http://127.0.0.1:8005/comments`, body, {headers})
+                const response = await axios.post(`http://127.0.0.1:8005/likes`, body, {headers})
                 return response.data
             } catch (e) {
                 throw new Error(`Failed to fetch data from the REST API ${e}`)
-            } 
+            }
         },
-        async editComment(_: any, args: {
-            commentId: number,
-            newComment: string
-        }) {
+        async unlike(_: any, args: {sprayId: number, userId: number}) {
             try {
-                const {commentId, newComment} = args
-                const body = {
-                    newComment
-                }
+                const { sprayId, userId } = args
                 const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.put(`http://127.0.0.1:8005/comments/${commentId}`, body, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            } 
-        },
-        async deleteComment(_: any, args: {commentId: number, sprayId: number}) {
-            try {
-                const {commentId, sprayId} = args
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.delete(`http://127.0.0.1:8005/comments/${commentId}?sprayId=${sprayId}`, {headers})
+                const response = await axios.delete(`http://127.0.0.1:8005/likes?sprayId=${sprayId}&userId=${userId}`, {headers})
                 return response.data
             } catch (e) {
                 throw new Error(`Failed to fetch data from the REST API ${e}`)
             }
         }
     },
-    Comment: {
-        async spray(parent: Comment) {
+    Like: {
+        async spray(parent: Like) {
             try {
                 const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
                 const response = await axios.get(`http://127.0.0.1:8005/sprays/${parent.spray_id}`, {headers})
@@ -83,7 +63,7 @@ export const resolvers = {
                 throw new Error(`Failed to fetch data from the REST API ${e}`)
             }
         },
-        async user(parent: Comment) {
+        async user(parent: Like) {
             try {
                 const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
                 const response = await axios.get(`http://127.0.0.1:8002/users/${parent.user_id}`, {headers})

@@ -2,16 +2,14 @@ import { Channel } from "amqplib";
 import { Express, Request, Response, NextFunction } from "express";
 import LikeService from "../services/like-services";
 import asyncHandler from 'express-async-handler'
-import { subscribeMessage, publishMessage } from "../../../utils";
-import { SPRAY_QUEUE, SPRAY_ROUTING_KEY, NOTIFICATION_ROUTING_KEY } from "../../../config";
+import { publishMessage } from "../../../utils";
+import { NOTIFICATION_ROUTING_KEY } from "../../../config";
 
 export default (app: Express, channel: Channel) => {
     const service = new LikeService()
 
-    //subscribeMessage(channel, service, SPRAY_QUEUE, SPRAY_ROUTING_KEY)
-
-    app.get('/likes/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const id = parseInt(req.params.id)
+    app.get('/likes', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const id = parseInt(req.query.sprayId as string)
         const limit = parseInt(req.query.count as string)
         const offset = limit * parseInt(req.query.page as string)
 
@@ -20,8 +18,8 @@ export default (app: Express, channel: Channel) => {
         res.status(200).json(likes)
     }))
 
-    app.get('/like', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const sprayId = parseInt(req.query.sprayId as string)
+    app.get('/likes/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const sprayId = parseInt(req.params.id)
         const userId = parseInt(req.query.userId as string)
 
         const like = await service.getLike(sprayId, userId)
@@ -29,33 +27,32 @@ export default (app: Express, channel: Channel) => {
         res.status(200).json(like)
     }))
 
-    app.post('/like/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const id = parseInt(req.params.id)
-        const {actorId, notifierId} = req.body
+    app.post('/likes', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const {sprayId, userId, notifierId} = req.body
 
-        await service.like(id, actorId)
+        const like = await service.like(sprayId, userId)
 
         const message = {
             event: 'CREATE_NOTIFICATION',
             data: {
                 entityTypeId: 300,
-                entityId: id,
-                actorId,
+                entityId: sprayId,
+                userId,
                 notifierId
             }
         }
 
         publishMessage(channel, NOTIFICATION_ROUTING_KEY, message)
 
-        res.sendStatus(200)
+        res.status(200).json(like)
     }))
     
-    app.delete('/like/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const id = parseInt(req.params.id)
-        const {actorId, notifierId} = req.body
+    app.delete('/likes', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const sprayId = parseInt(req.query.sprayId as string)
+        const actorId = parseInt(req.query.userId as string)
 
-        await service.unlike(id, actorId)
+        const like = await service.unlike(sprayId, actorId)
 
-        res.sendStatus(200)
+        res.status(200).json(like)
     }))
 }

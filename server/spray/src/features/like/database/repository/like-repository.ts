@@ -11,9 +11,9 @@ class LikeRepository {
                             ) VALUES (
                                 ${sprayId},
                                 ${userId}
-                            ) RETURNING id`
+                            ) RETURNING *`
 
-        const like = (await pool.query(queryString)).rows[0].id
+        const like = (await pool.query(queryString)).rows[0]
         return like
     }
 
@@ -37,7 +37,7 @@ class LikeRepository {
         sprayId: number,
         userId: number
     ) {
-        const queryString = `SELECT 1
+        const queryString = `SELECT *
                             FROM spray_schema.likes
                             WHERE spray_id = ${sprayId} AND user_id = ${userId}`
 
@@ -50,14 +50,14 @@ class LikeRepository {
         userId: number
     ) {
         const queryString = `DELETE FROM spray_schema.likes
-                            WHERE spray_id = ${sprayId} AND user_id = ${userId}`
+                            WHERE spray_id = ${sprayId} AND user_id = ${userId}
+                            RETURNING *`
 
         try {
-            await pool.query(queryString)
-            return true
+            const response = (await pool.query(queryString)).rows[0]
+            return response
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
@@ -65,14 +65,14 @@ class LikeRepository {
         id: number
     ) {
         const queryString = `DELETE FROM spray_schema.likes
-                            WHERE user_id = ${id}`
+                            WHERE user_id = ${id}
+                            RETURNING spray_id`
 
         try {
-            await pool.query(queryString)
-            return true
+            const response = (await pool.query(queryString)).rows
+            return response
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
@@ -84,42 +84,38 @@ class LikeRepository {
 
         try {
             await pool.query(queryString)
-            return true
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
     async increaseCount(
         id: number,
+        amount: number
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                            SET likes = likes + 1
+                            SET likes = likes + ${amount}
                             WHERE id = ${id}`
 
         try {
             await pool.query(queryString)
-            return true
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
     async decreaseCount(
         id: number,
+        amount: number
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                            SET likes = likes - 1
+                            SET likes = likes - ${amount}
                             WHERE id = ${id}`
 
         try {
             await pool.query(queryString)
-            return true
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 }

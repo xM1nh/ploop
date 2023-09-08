@@ -3,7 +3,7 @@ import {Spray} from '../../../../utils/types'
 
 export const resolvers = {
     Query: {
-        async sprays(_: any, args: {pagination: {page: String, count: String}}) {
+        async sprays(_: any, args: {pagination: {page: number, count: number}}) {
             try {
                 const { page, count} = args.pagination
                 const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
@@ -13,7 +13,7 @@ export const resolvers = {
                 throw new Error(`Failed to fetch data from the REST API ${e}`)
             }
         },
-        async userSprays(_: any, args: {id: string, pagination: {page: string, count: string}}) {
+        async userSprays(_: any, args: {id: number, pagination: {page: number, count: number}}) {
             try {
                 const {id, pagination: {page, count}} = args 
                 const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
@@ -23,7 +23,7 @@ export const resolvers = {
                 throw new Error(`Failed to fetch data from the REST API ${e}`)
             }
         },
-        async spray(_: any, {id}: {id: string}) {
+        async spray(_: any, {id}: {id: number}) {
             try {
                 const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
                 const response = await axios.get(`http://127.0.0.1:8005/sprays/${id}`, {headers})
@@ -35,7 +35,7 @@ export const resolvers = {
         }
     },
     Mutation: {
-        async deleteSpray(_: any, id: string) {
+        async deleteSpray(_: any, id: number) {
             try {
                 const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
                 const response = await axios.delete(`http://127.0.0.1:8005/sprays/${id}`, {headers})
@@ -45,7 +45,7 @@ export const resolvers = {
             }
         },
         async updateSpray(_: any, args: {
-            id: string, 
+            id: number, 
             caption: string, 
             viewPermission: number, 
             drawPermission: number, 
