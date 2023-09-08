@@ -9,14 +9,15 @@ if (process.env.NODE_ENV !== 'prod') {
 }
 
 //Cors
-const whitelist = ['http://localhost:5173'];
+const whitelist = ['http://localhost:5173', 'http://localhost:8000'];
 export const corsOptions: CorsOptions = {
     credentials: true,
     origin: (origin, callback) => {
-    if(whitelist.includes(origin as string))
-        return callback(null, true)
-
-        callback(new Error('Not allowed by CORS'))
+        if (whitelist.includes(origin as string)) {
+            return callback(null, true)
+        } else {
+            callback(new Error(`Not allowed by CORS ${origin}`))
+        }
     }
 }
 

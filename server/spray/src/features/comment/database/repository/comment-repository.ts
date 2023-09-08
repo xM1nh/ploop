@@ -14,9 +14,20 @@ class CommentRepository {
                                 ${sprayId},
                                 ${userId},
                                 '${description}'
-                            ) RETURNING id`
+                            ) RETURNING *`
 
-        const comment = (await pool.query(queryString)).rows[0].id
+        const comment = (await pool.query(queryString)).rows[0]
+        return comment
+    }
+
+    async findCommentById(
+        id: number
+    ) {
+        const queryString = `SELECT *   
+                            FROM spray_schema.comments
+                            WHERE id = ${id}`
+
+        const comment = (await pool.query(queryString)).rows[0]
         return comment
     }
 
@@ -25,15 +36,10 @@ class CommentRepository {
         limit: number,
         offset: number
     ) {
-        const queryString = `SELECT 
-                                c.id,
-                                u.username,
-                                c.description,
-                                c.created_on
-                            FROM spray_schema.comments c
-                                INNER JOIN user_scheme.users AS u ON c.user_id = u.id
-                            WHERE c.spray_id = ${id}
-                            ORDER BY c.created_on
+        const queryString = `SELECT *   
+                            FROM spray_schema.comments
+                            WHERE spray_id = ${id}
+                            ORDER BY created_on
                             LIMIT ${limit} OFFSET ${offset}`
 
         const comments = (await pool.query(queryString)).rows
@@ -46,14 +52,14 @@ class CommentRepository {
     ) {
         const queryString = `UPDATE spray_schema.comments
                             SET description = '${newComment}'
-                            WHERE id = ${id}`
+                            WHERE id = ${id}
+                            RETURNING *`
 
         try {
-            await pool.query(queryString)
-            return true
+            const response = (await pool.query(queryString)).rows[0]
+            return response
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
@@ -61,14 +67,14 @@ class CommentRepository {
         id: number
     ) {
         const queryString = `DELETE FROM spray_schema.comments
-                            WHERE id = ${id}`
+                            WHERE id = ${id}
+                            RETURNING *`
 
         try {
-            await pool.query(queryString)
-            return true
+            const response = (await pool.query(queryString)).rows[0]
+            return response
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
@@ -76,14 +82,14 @@ class CommentRepository {
         id: number
     ) {
         const queryString = `DELETE FROM spray_schema.comments
-                            WHERE user_id = ${id}`
+                            WHERE user_id = ${id}
+                            RETURNING spray_id`
 
         try {
-            await pool.query(queryString)
-            return true
+            const deletedComments = (await pool.query(queryString)).rows
+            return deletedComments
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
@@ -95,42 +101,38 @@ class CommentRepository {
 
         try {
             await pool.query(queryString)
-            return true
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
     async increaseCount(
         id: number,
+        amount: number
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                            SET comments = comments + 1
+                            SET comments = comments + ${amount}
                             WHERE id = ${id}`
 
         try {
             await pool.query(queryString)
-            return true
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
     async decreaseCount(
         id: number,
+        amount: number
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                            SET comments = comments + 1
+                            SET comments = comments - ${amount}
                             WHERE id = ${id}`
 
         try {
             await pool.query(queryString)
-            return true
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 }

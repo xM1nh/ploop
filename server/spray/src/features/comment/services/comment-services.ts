@@ -13,8 +13,14 @@ class CommentService {
         offset: number
     ) {
         const comments = await this.repository.findCommentsBySprayId(id, limit, offset)
-
         return comments
+    }
+
+    async getComment(
+        id: number
+    ) {
+        const comment = await this.repository.findCommentById(id)
+        return comment
     }
 
     async comment(
@@ -23,8 +29,7 @@ class CommentService {
         comment: string
     ) {
         const commentId = await this.repository.addComment(sprayId, userId, comment)
-        await this.repository.increaseCount(sprayId)
-
+        await this.repository.increaseCount(sprayId, 1)
         return commentId
     }
 
@@ -32,27 +37,41 @@ class CommentService {
         id: number,
         newComment: string
     ) {
-        await this.repository.editComment(id, newComment)
+        const comment = await this.repository.editComment(id, newComment)
+        return comment
     }
 
     async deleteComment(
         sprayId: number,
         commentId: number
     ) {
-        await this.repository.deleteCommentById(commentId)
-        await this.repository.decreaseCount(sprayId)
+        const comment = await this.repository.deleteCommentById(commentId)
+        await this.repository.decreaseCount(sprayId, 1)
+        return comment
     }
 
     async deleteAllCommentsBySprayId(
         id: number
     ) {
-        await this.repository.deleteCommentsBySprayId(id)
+        const count = await this.repository.deleteCommentsBySprayId(id)
     }
 
     async deleteAllCommentsByUserId(
         id: number
     ) {
-        await this.repository.deleteCommentsByUserId(id)
+        const deletedComments = await this.repository.deleteCommentsByUserId(id)
+        const groupedBySprayId: {
+            [comment: number]: number
+        } = {}
+
+        deletedComments.forEach((comment: {spray_id: number}) => {
+            if (groupedBySprayId[comment.spray_id]) groupedBySprayId[comment.spray_id]++
+            else groupedBySprayId[comment.spray_id] = 1
+        })
+
+        for (const key in Object.entries(groupedBySprayId)) {
+            await this.repository.decreaseCount(parseInt(key), groupedBySprayId[key])
+        }
     }
 
     async subscribeEvents(payload: string) {

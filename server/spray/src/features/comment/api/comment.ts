@@ -2,35 +2,40 @@ import { Channel } from "amqplib";
 import { Express, Request, Response, NextFunction } from "express";
 import CommentService from "../services/comment-services";
 import asyncHandler from 'express-async-handler'
-import { subscribeMessage, publishMessage } from "../../../utils";
-import { SPRAY_QUEUE, SPRAY_ROUTING_KEY, NOTIFICATION_ROUTING_KEY } from "../../../config";
+import { publishMessage } from "../../../utils";
+import { NOTIFICATION_ROUTING_KEY } from "../../../config";
 
 export default (app: Express, channel: Channel) => {
     const service = new CommentService()
 
-    //subscribeMessage(channel, service, SPRAY_QUEUE, SPRAY_ROUTING_KEY)
-
-    app.get('/comment/:sprayId', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const id = parseInt(req.params.sprayId)
+    app.get('/comments', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const sprayId = parseInt(req.query.sprayId as string)
         const limit = parseInt(req.query.count as string)
-        const offset = limit * parseInt(req.query.page as string)
+        const offset = limit * (parseInt(req.query.page as string) - 1)
 
-        const comments = await service.getComments(id, limit, offset)
+        const comments = await service.getComments(sprayId, limit, offset)
 
         res.status(200).json(comments)
     }))
 
-    app.post('/comment/:sprayId', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const id = parseInt(req.params.sprayId)
-        const {actorId, notifierId, comment} = req.body
+    app.get('/comments/:commentId', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const id = parseInt(req.params.commentId)
 
-        const commentId = await service.comment(id, actorId, comment)
+        const comment = await service.getComment(id)
+
+        res.status(200).json(comment)
+    }))
+
+    app.post('/comments', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const {sprayId, actorId, notifierId, comment} = req.body
+
+        const response = await service.comment(sprayId, actorId, comment)
 
         const message = {
             event: 'CREATE_NOTIFICATION',
             data: {
                 entityTypeId: 301,
-                entityId: id,
+                entityId: sprayId,
                 actorId,
                 notifierId
             }
@@ -38,24 +43,24 @@ export default (app: Express, channel: Channel) => {
 
         publishMessage(channel, NOTIFICATION_ROUTING_KEY, message)
 
-        res.status(200).json(commentId)
+        res.status(200).json(response)
     }))
 
-    app.put('/comment/:commentId', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    app.put('/comments/:commentId', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const id = parseInt(req.params.commentId)
         const {newComment} = req.body
 
-        await service.editComment(id, newComment)
+        const response = await service.editComment(id, newComment)
 
-        res.sendStatus(200)
+        res.status(200).json(response)
     }))
 
-    app.delete('/comment/:commentId', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    app.delete('/comments/:commentId', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const id = parseInt(req.params.commentId)
-        const {commentId} = req.body
+        const sprayId = parseInt(req.query.sprayId as string)
 
-        await service.deleteComment(id, commentId)
+        const response = await service.deleteComment(sprayId, id)
 
-        res.sendStatus(200)
+        res.status(200).json(response)
     }))
 }
