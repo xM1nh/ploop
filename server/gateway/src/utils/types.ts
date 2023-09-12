@@ -23,7 +23,7 @@ export type Spray = {
     view_permission: number,
     draw_permission: number,
     limited: boolean,
-    deadline: string
+    deadline: Date
 }
 
 export type Comment = {
@@ -39,4 +39,11 @@ export type Like = {
     id: number,
     spray_id: number,
     user_id: number
+}
+
+export type Save = {
+    id: number,
+    spray_id: number,
+    user_id: number,
+    created_on: Date
 }

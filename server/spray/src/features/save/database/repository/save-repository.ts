@@ -11,9 +11,9 @@ class SaveRepository {
                             ) VALUES (
                                 ${sprayId},
                                 ${userId}
-                            ) RETURNING id`
+                            ) RETURNING *`
 
-        const save = (await pool.query(queryString)).rows[0].id
+        const save = (await pool.query(queryString)).rows[0]
         return save
     }
 
@@ -22,21 +22,10 @@ class SaveRepository {
         limit: number,
         offset: number
     ) {
-        const queryString = `SELECT 
-                                sp.id,
-                                sp.url,
-                                sp.created_on,
-                                sp.creator_id,
-                                sp.caption,
-                                sp.likes,
-                                sp.edits,
-                                sp.comments,
-                                sp.saves,
-                                sp.shares
-                            FROM spray_schema.saves sa
-                                INNER JOIN spray_schema.sprays AS sp WHERE sa.spray_id = sp.id
-                            WHERE sa.user_id = ${id}
-                            ORDER BY sa.created_on
+        const queryString = `SELECT *
+                            FROM spray_schema.saves
+                            WHERE user_id = ${id}
+                            ORDER BY created_on
                             LIMIT ${limit} OFFSET ${offset}`
 
         const saves = (await pool.query(queryString)).rows
@@ -47,7 +36,7 @@ class SaveRepository {
         sprayId: number,
         userId: number
     ) {
-        const queryString = `SELECT 1
+        const queryString = `SELECT *
                             FROM spray_schema.saves
                             WHERE spray_id = ${sprayId} AND user_id = ${userId}`
 
@@ -60,14 +49,14 @@ class SaveRepository {
         userId: number
     ) {
         const queryString = `DELETE FROM spray_schema.saves
-                            WHERE spray_id = ${sprayId} AND user_id = ${userId}`
+                            WHERE spray_id = ${sprayId} AND user_id = ${userId}
+                            RETURNING *`
 
         try {
-            await pool.query(queryString)
-            return true
+            const response = (await pool.query(queryString)).rows[0]
+            return response
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
@@ -75,14 +64,14 @@ class SaveRepository {
         id: number
     ) {
         const queryString = `DELETE FROM spray_schema.saves
-                            WHERE user_id = ${id}`
+                            WHERE user_id = ${id}
+                            RETURNING spray_id`
 
         try {
-            await pool.query(queryString)
-            return true
+            const response = (await pool.query(queryString)).rows
+            return response
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
@@ -94,42 +83,38 @@ class SaveRepository {
 
         try {
             await pool.query(queryString)
-            return true
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
     async increaseCount(
         id: number,
+        amount: number
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                            SET saves = saves + 1
+                            SET saves = saves + ${amount}
                             WHERE id = ${id}`
 
         try {
             await pool.query(queryString)
-            return true
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 
     async decreaseCount(
         id: number,
+        amount: number
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                            SET saves = saves - 1
+                            SET saves = saves - ${amount}
                             WHERE id = ${id}`
 
         try {
             await pool.query(queryString)
-            return true
         } catch (e) {
-            console.error(e)
-            return e
+            throw e
         }
     }
 }

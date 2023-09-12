@@ -8,20 +8,18 @@ import { SPRAY_QUEUE, SPRAY_ROUTING_KEY } from "../../../config";
 export default (app: Express, channel: Channel) => {
     const service = new SaveService()
 
-    //subscribeMessage(channel, service, SPRAY_QUEUE, SPRAY_ROUTING_KEY)
-
-    app.get('/saves/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const id = parseInt(req.params.id)
+    app.get('/saves', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const userId = parseInt(req.query.userId as string)
         const limit = parseInt(req.query.count as string)
         const offset = limit * parseInt(req.query.page as string)
 
-        const saves = await service.getSaves(id, limit, offset)
+        const saves = await service.getSaves(userId, limit, offset)
         
         res.status(200).json(saves)
     }))
 
-    app.get('/save', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const sprayId = parseInt(req.query.sprayId as string)
+    app.get('/saves/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const sprayId = parseInt(req.params.sprayId)
         const userId = parseInt(req.query.userId as string)
 
         const save = await service.getSave(sprayId, userId)
@@ -29,31 +27,20 @@ export default (app: Express, channel: Channel) => {
         res.status(200).json(save)
     }))
 
-    app.post('/save/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const id = parseInt(req.params.id)
-        const {actorId, notifierId} = req.body
+    app.post('/saves', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const {userId, sprayId} = req.body
 
-        await service.save(id, actorId)
+        const save = await service.save(sprayId, userId)
 
-        const message = {
-            event: 'CREATE_NOTIFICATION',
-            data: {
-                entityTypeId: 300,
-                entityId: id,
-                actorId,
-                notifierId
-            }
-        }
-
-        res.sendStatus(200)
+        res.status(200).json(save)
     }))
     
-    app.delete('/save/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    app.delete('/saves/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const id = parseInt(req.params.id)
-        const {actorId, notifierId} = req.body
+        const actorId = parseInt(req.query.userId as string)
 
-        await service.unsave(id, actorId)
+        const save = await service.unsave(id, actorId)
 
-        res.sendStatus(200)
+        res.status(200).json(save)
     }))
 }

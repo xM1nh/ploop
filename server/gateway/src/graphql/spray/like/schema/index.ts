@@ -5,7 +5,7 @@ export const typeDef = `#graphql
         user: User! #Reference User type from userTypeDef
     }
     type Query {
-        likes(sprayId: ID!, limit: Int!, offset: Int!): [Like!],
+        likes(sprayId: ID!, limit: Int!, offset: Int!): [Like]!,
         like(sprayId: ID!, userId: ID!): Like
     }
     type Mutation {
