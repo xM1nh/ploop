@@ -26,7 +26,7 @@ class SprayService {
         offset: number
     ) {
         const sprays = await this.repository.getPublicSprays(limit, offset)
-        const response = sprays.map(spray => ({
+        const response = sprays.map((spray: any) => ({
             ...spray,
             deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
         }))
@@ -43,7 +43,7 @@ class SprayService {
         }
     }
 
-    async getSpraysForUser(
+    async getOriginalSpraysForUser(
         id: number,
         limit: number,
         offset: number
@@ -53,7 +53,33 @@ class SprayService {
             ...spray,
             deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
         }))
-        return sprays
+        return response
+    }
+
+    async getRespraysForUser(
+        id: number,
+        limit: number,
+        offset: number
+    ) {
+        const sprays = await this.repository.findRespraysByUserId(id, limit, offset)
+        const response = sprays.map(spray => ({
+            ...spray,
+            deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
+        }))
+        return response
+    }
+
+    async getRespraysForSpray(
+        id: number,
+        limit: number,
+        offset: number
+    ) {
+        const sprays = await this.repository.findRespraysByOriginalId(id, limit, offset)
+        const response = sprays.map(spray => ({
+            ...spray,
+            deadline: spray.deadline === Infinity ? 'Infinity' : spray.deadline,
+        }))
+        return response
     }
 
     async deleteSpray(

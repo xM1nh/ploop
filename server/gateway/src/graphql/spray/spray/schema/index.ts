@@ -14,15 +14,18 @@ export const typeDef = `#graphql
         view_permission: Int!,
         draw_permission: Int!,
         limited: Boolean!,
-        deadline: String!
+        deadline: String!,
+        original_id: Int
     }
     type Query {
         sprays(pagination: PaginationInput!): [Spray!],
-        userSprays(id: ID!, pagination: PaginationInput): [Spray!],
-        spray(id: ID!): Spray!
+        resprays(id: ID!, pagination: PaginationInput): [Spray]!
+        userSprays(id: ID!, pagination: PaginationInput): [Spray]!,
+        userRespray(id: ID!, pagination: PaginationInput): [Spray]!,
+        spray(id: ID!): Spray!,
     }
     type Mutation {
-        deleteSpray(id: ID!): [Spray!],
+        deleteSpray(id: ID!): Spray!,
         updateSpray(
             id: ID!, 
             caption: String, 

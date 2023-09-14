@@ -30,7 +30,26 @@ export default (app: Express, channel: Channel) => {
         const limit = parseInt(req.query.count as string)
         const offset = limit * parseInt(req.query.page as string)
 
-        const sprays = await service.getSpraysForUser(id, limit, offset)
+        const sprays = await service.getOriginalSpraysForUser(id, limit, offset)
+
+        res.status(200).json(sprays)
+    }))
+
+    app.get('/sprays/resprays/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const id = parseInt(req.params.id)
+        const limit = parseInt(req.query.count as string)
+        const offset = limit * (parseInt(req.query.page as string) - 1)
+        const sprays = await service.getRespraysForSpray(id, limit, offset)
+
+        res.status(200).json(sprays)
+    }))
+
+    app.get('/sprays/reprays/users/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const id = parseInt(req.params.id)
+        const limit = parseInt(req.query.count as string)
+        const offset = limit * parseInt(req.query.page as string)
+
+        const sprays = await service.getRespraysForUser(id, limit, offset)
 
         res.status(200).json(sprays)
     }))

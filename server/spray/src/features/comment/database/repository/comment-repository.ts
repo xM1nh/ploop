@@ -15,9 +15,12 @@ class CommentRepository {
                                 ${userId},
                                 '${description}'
                             ) RETURNING *`
-
-        const comment = (await pool.query(queryString)).rows[0]
-        return comment
+        try {
+            const comment = (await pool.query(queryString)).rows[0]
+            return comment
+        } catch (e) {
+            throw e
+        }
     }
 
     async findCommentById(
@@ -27,8 +30,12 @@ class CommentRepository {
                             FROM spray_schema.comments
                             WHERE id = ${id}`
 
-        const comment = (await pool.query(queryString)).rows[0]
-        return comment
+        try {
+            const comment = (await pool.query(queryString)).rows[0]
+            return comment
+        } catch (e) {
+            throw e
+        }
     }
 
     async findCommentsBySprayId(
@@ -42,8 +49,12 @@ class CommentRepository {
                             ORDER BY created_on
                             LIMIT ${limit} OFFSET ${offset}`
 
-        const comments = (await pool.query(queryString)).rows
-        return comments
+        try {
+            const comment = (await pool.query(queryString)).rows
+            return comment
+        } catch (e) {
+            throw e
+        }
     }
 
     async editComment(

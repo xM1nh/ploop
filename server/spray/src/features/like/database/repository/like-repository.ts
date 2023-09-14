@@ -12,9 +12,12 @@ class LikeRepository {
                                 ${sprayId},
                                 ${userId}
                             ) RETURNING *`
-
-        const like = (await pool.query(queryString)).rows[0]
-        return like
+        try {
+            const like = (await pool.query(queryString)).rows[0]
+            return like
+        } catch (e) {
+            throw e
+        }
     }
 
     async findLikesBySprayId(
@@ -29,8 +32,12 @@ class LikeRepository {
                             WHERE l.spray_id = ${id}
                             LIMIT ${limit} OFFSET ${offset}`
 
-        const likes = (await pool.query(queryString)).rows
-        return likes
+        try {
+            const like = (await pool.query(queryString)).rows
+            return like
+        } catch (e) {
+            throw e
+        }
     }
 
     async findLikeByUserIdAndSprayId(
@@ -41,8 +48,12 @@ class LikeRepository {
                             FROM spray_schema.likes
                             WHERE spray_id = ${sprayId} AND user_id = ${userId}`
 
-        const like = (await pool.query(queryString)).rows[0]
-        return like
+        try {
+            const like = (await pool.query(queryString)).rows[0]
+            return like
+        } catch (e) {
+            throw e
+        }
     }
 
     async deleteLikeByUserIdAndSprayId(

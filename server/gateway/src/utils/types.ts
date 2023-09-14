@@ -23,7 +23,8 @@ export type Spray = {
     view_permission: number,
     draw_permission: number,
     limited: boolean,
-    deadline: Date
+    deadline: Date,
+    original_id: number
 }
 
 export type Comment = {

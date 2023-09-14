@@ -12,9 +12,12 @@ class SaveRepository {
                                 ${sprayId},
                                 ${userId}
                             ) RETURNING *`
-
-        const save = (await pool.query(queryString)).rows[0]
-        return save
+        try {
+            const save = (await pool.query(queryString)).rows[0]
+            return save
+        } catch (e) {
+            throw e
+        }
     }
 
     async findSavesByUserId(
@@ -28,8 +31,12 @@ class SaveRepository {
                             ORDER BY created_on
                             LIMIT ${limit} OFFSET ${offset}`
 
-        const saves = (await pool.query(queryString)).rows
-        return saves
+        try {
+            const saves = (await pool.query(queryString)).rows
+            return saves
+        } catch (e) {
+            throw e
+        }
     }
 
     async findSaveByUserIdAndSprayId(
@@ -40,8 +47,12 @@ class SaveRepository {
                             FROM spray_schema.saves
                             WHERE spray_id = ${sprayId} AND user_id = ${userId}`
 
-        const save = (await pool.query(queryString)).rows[0]
-        return save
+        try {
+            const save = (await pool.query(queryString)).rows[0]
+            return save
+        } catch (e) {
+            throw e
+        }
     }
 
     async deleteSaveByUserIdAndSprayId(

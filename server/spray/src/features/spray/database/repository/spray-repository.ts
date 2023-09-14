@@ -9,30 +9,59 @@ class SprayRepository {
         viewPermission: number,
         drawPermission: number,
         limited: boolean,
-        deadline: Date | string
+        deadline: Date | string,
+        originalId?: number
     ) {
-        const queryString = `INSERT INTO spray_schema.sprays (
-                                url,
-                                cover_url,
-                                user_id,
-                                caption,
-                                view_permission,
-                                draw_permission,
-                                limited,
-                                deadline
-                            ) VALUES (
-                                '${url}',
-                                '${coverUrl}',
-                                ${userId},
-                                '${caption}',
-                                ${viewPermission},
-                                ${drawPermission},
-                                ${limited},
-                                '${deadline}'::TIMESTAMP
-                            ) RETURNING id`
-        
-        const spray = (await pool.query(queryString)).rows[0].id
-        return spray
+        let queryString
+        if (originalId) {
+            queryString = `INSERT INTO spray_schema.sprays (
+                url,
+                cover_url,
+                user_id,
+                caption,
+                view_permission,
+                draw_permission,
+                limited,
+                deadline,
+                original_id
+            ) VALUES (
+                '${url}',
+                '${coverUrl}',
+                ${userId},
+                '${caption}',
+                ${viewPermission},
+                ${drawPermission},
+                ${limited},
+                '${deadline}'::TIMESTAMP,
+                ${originalId}
+            ) RETURNING *`
+        } else {
+            queryString = `INSERT INTO spray_schema.sprays (
+                url,
+                cover_url,
+                user_id,
+                caption,
+                view_permission,
+                draw_permission,
+                limited,
+                deadline
+            ) VALUES (
+                '${url}',
+                '${coverUrl}',
+                ${userId},
+                '${caption}',
+                ${viewPermission},
+                ${drawPermission},
+                ${limited},
+                '${deadline}'::TIMESTAMP
+            ) RETURNING *`
+        }
+        try {
+            const spray = (await pool.query(queryString)).rows[0]
+            return spray
+        } catch (e) {
+            throw e
+        }
     }
 
     async findSprayById(
@@ -42,8 +71,12 @@ class SprayRepository {
                             FROM spray_schema.sprays
                             WHERE id = ${id}`
 
-        const spray = (await pool.query(queryString)).rows[0]
-        return spray
+        try {
+            const spray = (await pool.query(queryString)).rows[0]
+            return spray
+        } catch (e) {
+            throw e
+        }
     }
 
     async findSpraysByUserId(
@@ -57,8 +90,50 @@ class SprayRepository {
                             ORDER BY created_on
                             LIMIT ${limit} OFFSET ${offset}`
 
-        const sprays = (await pool.query(queryString)).rows
-        return sprays
+        try {
+            const spray = (await pool.query(queryString)).rows
+            return spray
+        } catch (e) {
+            throw e
+        }
+    }
+
+    async findRespraysByOriginalId(
+        id: number,
+        limit: number,
+        offset: number
+    ) {
+        const queryString = `SELECT *
+                            FROM spray_schema.edits
+                            WHERE original_id = ${id} AND view_permission = 1
+                            ORDER BY created_on
+                            LIMIT ${limit} OFFSET ${offset}`
+
+        try {
+            const edit = (await pool.query(queryString)).rows
+            return edit
+        } catch (e) {
+            throw e
+        }
+    }
+
+    async findRespraysByUserId(
+        id: number,
+        limit: number,
+        offset: number
+    ) {
+        const queryString = `SELECT *
+                            FROM spray_schema.edits
+                            WHERE user_id = ${id} AND original_id IS NOT NULL
+                            ORDER BY created_on
+                            LIMIT ${limit} OFFSET ${offset}`
+
+        try {
+            const edit = (await pool.query(queryString)).rows
+            return edit
+        } catch (e) {
+            throw e
+        }
     }
 
     async getPublicSprays(
@@ -71,8 +146,12 @@ class SprayRepository {
                             ORDER BY created_on DESC
                             LIMIT ${limit} OFFSET ${offset}`
 
-        const sprays = (await pool.query(queryString)).rows
-        return sprays
+        try {
+            const spray = (await pool.query(queryString)).rows[0]
+            return spray
+        } catch (e) {
+            throw e
+        }
     }
 
     async editUrl(
