@@ -15,9 +15,10 @@ export const connect = async () => {
     }
 }
 
-export const publishMessage = (channel: Channel, routingKey: string, message: Buffer) => {
+export const publishMessage = (channel: Channel, routingKey: string, message: any) => {
+    const payload = JSON.stringify(message)
     try {
-        channel.publish(EXCHANGE_NAME, routingKey, message)
+        channel.publish(EXCHANGE_NAME, routingKey, Buffer.from(payload))
     } catch (e) {
         throw e
     }
