@@ -1,3 +1,6 @@
+import { SpraySource, CommentSource, LikeSource, SaveSource } from "../graphql/spray"
+import { UserSource } from "../graphql/user"
+
 export type User = {
     id: number,
     username: string
@@ -47,4 +50,24 @@ export type Save = {
     spray_id: number,
     user_id: number,
     created_on: Date
+}
+
+export type Pagination = {
+    page: number,
+    count: number
+}
+
+export type Follow = {
+    id: number,
+    follower_id: number,
+    followee_id: number,
+    created_on: Date
+}
+
+export type DataSource = {
+    userApi: UserSource,
+    sprayApi: SpraySource,
+    commentApi: CommentSource,
+    likeApi: LikeSource,
+    saveApi: SaveSource
 }

@@ -1,24 +1,29 @@
 import _ from 'lodash'
+import {makeExecutableSchema} from '@graphql-tools/schema'
 
 import { 
     sprayTypeDef, sprayResolvers, 
     commentTypeDef, commentResolvers,
     likeTypeDef, likeResolvers,
     saveTypeDef, saveResolvers  } from "./spray";
-import { userTypeDef, userResolvers } from "./user";
+import { typeDef as userTypeDef, resolvers as userResolvers } from "./user";
 
-
-export const typeDefs = [
+const typeDefs = [
     userTypeDef,
     sprayTypeDef, 
     commentTypeDef,
     likeTypeDef,
     saveTypeDef
 ]
-export const resolvers = _.merge({}, 
+const resolvers = [ 
     userResolvers,
     sprayResolvers,
     commentResolvers,
     likeResolvers,
     saveResolvers
-)
+]
+
+export const schema = makeExecutableSchema({
+    typeDefs,
+    resolvers
+})

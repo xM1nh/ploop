@@ -1,76 +1,30 @@
-import axios from 'axios'
-
-import { Like } from '../../../../utils/types'
+import { Like, DataSource, Pagination } from '../../../../utils/types'
 
 export const resolvers = {
     Query: {
-        async likes(_: any, { pagination }: {pagination: {page: number, count: number}}) {
-            try {
-                const { page, count} = pagination
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8005/likes?page=${page}&count=${count}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        likes: async (_: any, {sprayId, pagination}: {sprayId: string, pagination: Pagination}, {dataSources}: {dataSources: DataSource}) => {
+            const {page, count} = pagination
+            return dataSources.likeApi.getLikes(sprayId, page, count)
         },
-        async like(_: any, args: {sprayId: number, userId: number}) {
-            try {
-                const { sprayId, userId } = args
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8005/likes/${sprayId}?userId=${userId}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        like: async (_: any, {sprayId, userId}: {sprayId: string, userId: string}, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.likeApi.getLike(sprayId, userId)
         }
     },
     Mutation: {
-        async like(_: any, args: {sprayId: number, userId: number, notifierId: number}) {
-            try {
-                const { sprayId, userId, notifierId } = args
-                const body = {
-                    sprayId,
-                    userId,
-                    notifierId
-                }
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.post(`http://127.0.0.1:8005/likes`, body, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        like: async (_: any, args: {sprayId: string, userId: string, notifierId: string}, {dataSources}: {dataSources: DataSource}) => {
+            const { sprayId, userId, notifierId } = args
+            return dataSources.likeApi.like(sprayId, userId, notifierId)
         },
-        async unlike(_: any, args: {sprayId: number, userId: number}) {
-            try {
-                const { sprayId, userId } = args
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.delete(`http://127.0.0.1:8005/likes?sprayId=${sprayId}&userId=${userId}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        unlike: async (_: any, {sprayId, userId}: {sprayId: string, userId: string}, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.likeApi.unlike(sprayId, userId)
         }
     },
     Like: {
-        async spray(parent: Like) {
-            try {
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8005/sprays/${parent.spray_id}`, {headers})
-                console.log(response.data)
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        spray: async (parent: Like, _: any, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.sprayApi.getSpray(parent.spray_id.toString())
         },
-        async user(parent: Like) {
-            try {
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8002/users/${parent.user_id}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        user: async (parent: Like, _: any, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.userApi.getUser(parent.user_id.toString())
         }
     }
 }

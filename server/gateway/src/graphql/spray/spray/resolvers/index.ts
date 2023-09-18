@@ -1,101 +1,53 @@
-import axios from 'axios'
-import {Spray} from '../../../../utils/types'
+import {Pagination, Spray, DataSource} from '../../../../utils/types'
 
 export const resolvers = {
     Query: {
-        async sprays(_: any, args: {pagination: {page: number, count: number}}) {
-            try {
-                const { page, count} = args.pagination
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8005/sprays?page=${page}&count=${count}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        sprays: async (_: any, {pagination}: { pagination: Pagination }, { dataSources }: { dataSources: DataSource}) => {
+            const {page, count} = pagination
+            return dataSources.sprayApi.getSprays(page, count)
         },
-        async userSprays(_: any, args: {id: number, pagination: {page: number, count: number}}) {
-            try {
-                const {id, pagination: {page, count}} = args 
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8005/sprays/users/${id}?page=${page}&count=${count}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        userSprays: async (_: any, {userId, pagination}: { userId: string, pagination: Pagination }, { dataSources }: { dataSources: DataSource }) => {
+            const {page, count} = pagination
+            return dataSources.sprayApi.getUserSprays(userId, page, count)
         },
-        async spray(_: any, {id}: {id: number}) {
-            try {
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8005/sprays/${id}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        spray: async (_: any, {id}: {id: string}, { dataSources }: { dataSources: DataSource }) => {
+            return dataSources.sprayApi.getSpray(id)
         },
-        async resprays(_: any, args: {id: number, pagination: {page: number, count: number}}) {
-            try {
-                const { id, pagination:{ page, count } } = args
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8005/sprays/resprays/${id}?page=${page}&count=${count}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        resprays: (_: any, {id, pagination}: {id: string, pagination: Pagination}, { dataSources }: { dataSources: DataSource}) => {
+            const { page, count } = pagination
+            return dataSources.sprayApi.getResprays(id, page, count)
         },
-        async userResprays(_: any, args: {id: number, pagination: {page: number, count: number}}) {
-            try {
-                const { id, pagination:{ page, count } } = args
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8005/sprays/resprays/users/${id}?page=${page}&count=${count}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        userResprays: async (_: any, {userId, pagination}: {userId: string, pagination: Pagination}, { dataSources }: { dataSources: DataSource }) => {
+            const{ page, count } = pagination
+            return dataSources.sprayApi.getUserResprays(userId, page, count)
         },
     },
     Mutation: {
-        async deleteSpray(_: any, id: number) {
-            try {
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.delete(`http://127.0.0.1:8005/sprays/${id}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        deleteSpray: async (_: any, {id}: {id: string}, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.sprayApi.deleteSpray(id)
         },
-        async updateSpray(_: any, args: {
-            id: number, 
-            caption: string, 
-            viewPermission: number, 
-            drawPermission: number, 
-            limited: boolean, 
-            deadline: string
-        }) {
-            try {
-                const body = {
-                    caption: args.caption,
-                    viewPermission: args.viewPermission,
-                    drawPermission: args.drawPermission,
-                    limited: args.limited,
-                    deadline: args.deadline
-                }
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.put(`http://127.0.0.1:8005/sprays/${args.id}`, body, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
-        }
+        editSpray: async (_: any, args: {
+            id: string,
+            caption: string | null | undefined, 
+            viewPermission: string | null | undefined, 
+            drawPermission: string | null | undefined, 
+            limited: string | null | undefined,
+            deadline: string | null | undefined
+        }, {dataSources}: {dataSources: DataSource}) => {
+            const {
+                id,
+                caption,
+                viewPermission,
+                drawPermission,
+                limited,
+                deadline
+            } = args
+            return dataSources.sprayApi.editSpray(id, caption, viewPermission, drawPermission, limited, deadline)
+        },
     },
     Spray: {
-        async user(parent: Spray) {
-            try {
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8002/users/${parent.user_id}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        user: async (parent: Spray, _: any, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.userApi.getUser(parent.user_id.toString())
         }
     }
 }

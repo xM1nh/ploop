@@ -12,8 +12,11 @@ export const typeDef = `#graphql
         comment(commentId: ID!): Comment!
     }
     type Mutation {
-        addComment(sprayId: ID!, actorId: ID!, notifierId: ID!, comment: String!): Comment!,
+        addComment(sprayId: ID!, userId: ID!, notifierId: ID!, comment: String!): Comment!,
         editComment(commentId: ID!, newComment: String!): Comment!,
         deleteComment(commentId: ID!, sprayId: String!): Comment!
+    }
+    type Subscription {
+        commentAdded(sprayId: ID!): Comment
     }
 `

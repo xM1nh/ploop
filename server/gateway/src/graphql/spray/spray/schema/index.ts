@@ -20,13 +20,13 @@ export const typeDef = `#graphql
     type Query {
         sprays(pagination: PaginationInput!): [Spray!],
         resprays(id: ID!, pagination: PaginationInput): [Spray]!
-        userSprays(id: ID!, pagination: PaginationInput): [Spray]!,
-        userRespray(id: ID!, pagination: PaginationInput): [Spray]!,
+        userSprays(userId: ID!, pagination: PaginationInput!): [Spray]!,
+        userResprays(userId: ID!, pagination: PaginationInput!): [Spray]!,
         spray(id: ID!): Spray!,
     }
     type Mutation {
         deleteSpray(id: ID!): Spray!,
-        updateSpray(
+        editSpray(
             id: ID!, 
             caption: String, 
             viewPermission: Int, 

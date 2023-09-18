@@ -1,88 +1,45 @@
-import axios from 'axios'
+import { DataSource, Pagination } from '../../../utils/types'
 
 export const resolvers = {
     Query: {
-        async user(_: any, args: {id: string}) {
-            try {
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8002/users/${args.id}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        user: async (_: any, {id}: {id: string}, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.userApi.getUser(id)
         },
-        async follow(_: any, args: {id: string, followeeId: string}) {
-            try {
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8002/users/${args.id}/follow?followeeId=${args.followeeId}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        follow: async (_: any, {id, followeeId}: {id: string, followeeId: string}, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.userApi.getFollow(id, followeeId)
         },
-        async followers(_: any, args: {id: string, pagination: {page: string, count: string}}) {
-            try {
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8002/users/${args.id}/followers?page=${args.pagination.page}&count=${args.pagination.count}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        followers: async (_: any, {id, pagination}: {id: string, pagination: Pagination}, {dataSources}: {dataSources: DataSource}) => {
+            const {page, count} = pagination
+            return dataSources.userApi.getFollowers(id, page, count)
         },
-        async followings(_: any, args: {id: string, pagination: {page: string, count: string}}) {
-            try {
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.get(`http://127.0.0.1:8002/users/${args.id}/followings?page=${args.pagination.page}&count=${args.pagination.count}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        followings: async (_: any, {id, pagination}: {id: string, pagination: Pagination}, {dataSources}: {dataSources: DataSource}) => {
+            const {page, count} = pagination
+            return dataSources.userApi.getFollowings(id, page, count)
         }
     },
     Mutation: {
-        async editUser(_: any, args: {id: string, username: string, nickname: string, bio: string}) {
-            try {
-                const body = {
-                    username: args.username,
-                    nickname: args.nickname,
-                    bio: args.bio
-                }
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.put(`http://127.0.0.1:8002/users/${args.id}/`, body, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        editUser: async (_: any, args: {
+            id: string,
+            username: string | null | undefined,
+            nickname: string | null | undefined,
+            bio: string | null | undefined
+        }, {dataSources}: {dataSources: DataSource}) => {
+            const {
+                id,
+                username,
+                nickname,
+                bio
+            } = args
+            return dataSources.userApi.editUser(id, username, nickname, bio)
         },
-        async deleteUser(_: any, args: {id: string}) {
-            try {
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.delete(`http://127.0.0.1:8002/users/${args.id}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        deleteUser: async (_: any, {id}: {id: string}, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.userApi.deleteUser(id)
         },
-        async follow(_: any, args: {id: string, followeeId: string}) {
-            try {
-                const body = {
-                    followeeId: args.followeeId
-                }
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.post(`http://127.0.0.1:8002/users/${args.id}/follow`, body, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        follow: async (_: any, {id, followeeId}: {id: string, followeeId: string}, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.userApi.follow(id, followeeId)
         },
-        async unfollow(_: any, args: {id: string, followeeId: string}) {
-            try {
-                const headers = { 'Content-Type': 'application/json', 'Origin': 'http://localhost:8000' }
-                const response = await axios.delete(`http://127.0.0.1:8002/users/${args.id}/follow?followeeId=${args.followeeId}`, {headers})
-                return response.data
-            } catch (e) {
-                throw new Error(`Failed to fetch data from the REST API ${e}`)
-            }
+        unfollow: async (_: any, {id, followeeId}: {id: string, followeeId: string}, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.userApi.unfollow(id, followeeId)
         },
     }
 }
