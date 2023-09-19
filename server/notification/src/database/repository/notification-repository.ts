@@ -2,8 +2,8 @@ import {pool} from '..'
 
 class NotificationRepository {
     async createNotificationObject(
-        entity_type_id: number,
-        entity_id: number,
+        entityTypeId: number,
+        entityId: number,
         status: number,
     ) {
         const queryString = `INSERT INTO notification_schema.notification_objects (
@@ -11,8 +11,8 @@ class NotificationRepository {
                                 entity_id,
                                 status
                             ) VALUES (
-                                ${entity_type_id},
-                                ${entity_id},
+                                ${entityTypeId},
+                                ${entityId},
                                 ${status}
                             )
                             RETURNING id`

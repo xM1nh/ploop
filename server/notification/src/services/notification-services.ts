@@ -15,7 +15,8 @@ class NotificationService {
     NOTIFICATION_MESSAGE: NotificationMessage = {
         //System notifications
         100: `Your spray has been successfully uploaded. You will be able to view your spray after we're done processing.`,
-        101: `There's an error occurred during your upload. Please try again later.`,
+        101: `Your spray has been successfully processed. You can now view your spray.`,
+        102: `There's an error occurred during your upload. Please try again later.`,
     
         //Non-system notifications
         200: `started following you`,
@@ -28,14 +29,14 @@ class NotificationService {
     }
 
     async createNewNotification(
-        entity_type_id: number,
-        entity_id: number,
+        entityTypeId: number,
+        entityId: number,
         actorId: number,
         notifierId: number,
     ) {
         const status = 0 //Create an unread notification by default
 
-        const notificationObjectId = await this.repository.createNotificationObject(entity_type_id, entity_id, status)
+        const notificationObjectId = await this.repository.createNotificationObject(entityTypeId, entityId, status)
         await this.repository.createNotificationChange(notificationObjectId, actorId)
         await this.repository.createNotification(notificationObjectId, notifierId)
 
@@ -67,21 +68,21 @@ class NotificationService {
     }
     
     async generateNotificationPackage (
-        entity_type_id: number,
+        entityTypeId: number,
         actor: string,
         created_on: string
     ) {
-        if (entity_type_id < 200) {
+        if (entityTypeId < 200) {
             return {
                 actor: 'System Notification',
-                message: this.NOTIFICATION_MESSAGE[entity_type_id],
+                message: this.NOTIFICATION_MESSAGE[entityTypeId],
                 created_on: stringToDate(created_on)
             }
         }
         else {
             return {
                 actor,
-                message: this.NOTIFICATION_MESSAGE[entity_type_id],
+                message: this.NOTIFICATION_MESSAGE[entityTypeId],
                 created_on: stringToDate(created_on),
             }
         }
@@ -90,30 +91,25 @@ class NotificationService {
     async subscribeEvents(payload: string) {
         const message = JSON.parse(payload)
 
-        const {pubEvent, subEvent, data} = message
+        const {event, data} = message
 
         const {
             id,
-            entity_type_id,
-            entity_id,
-            actor_id,
-            notifier_id,
-            actorName,
-            created_on
+            entityTypeId,
+            entityId,
+            actorId,
+            notifierId,
         } = data
 
-        switch(pubEvent || subEvent) {
+        switch(event) {
             case 'CREATE_NOTIFICATION':
-                await this.createNewNotification(entity_type_id, entity_id, actor_id, notifier_id)
+                await this.createNewNotification(entityTypeId, entityId, actorId, notifierId)
                 break
             case 'DELETE_NOTIFICATIONS':
-                await this.deleteNotificationsOfUser(notifier_id)
+                await this.deleteNotificationsOfUser(notifierId)
                 break
             case 'MARK_AS_READ':
                 await this.markAsRead(id)
-            case 'NOTIFICATION_READY':
-                await this.generateNotificationPackage(entity_type_id, actorName, created_on)
-                break
             default: 
                 break
         }

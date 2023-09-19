@@ -10,7 +10,7 @@ export default (app: Express, channel: Channel) => {
 
     subscribeMessage(channel, QUEUE_NAME, service, NOTIFICATION_ROUTING_KEY)
 
-    app.get('/notification', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    app.get('/', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const {id} = req.body
         const {page} = req.query
 
