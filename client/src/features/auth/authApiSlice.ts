@@ -5,21 +5,21 @@ const authApiSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
         signup: builder.mutation({
             query: credentials => ({
-                url: '/auth/signup',
+                url: 'http://127.0.0.1:8001/signup',
                 method: 'POST',
                 body: {...credentials}
             })
         }),
         login: builder.mutation({
             query: credentials => ({
-                url: '/auth/login',
+                url: 'http://127.0.0.1:8001/login',
                 method: 'POST',
                 body: {...credentials}
             })
         }),
         sendLogout: builder.mutation({
             query: () => ({
-                url: '/auth/logout',
+                url: 'http://127.0.0.1:8001/logout',
                 method: 'POST'
             }),
             async onQueryStarted(_arg, { dispatch, queryFulfilled}) {
@@ -34,16 +34,17 @@ const authApiSlice = apiSlice.injectEndpoints({
                 }
             }
         }),
-        refresh: builder.mutation<{accessToken: string, user: object}, void>({
+        refresh: builder.mutation<{accessToken: string, userId: object}, void>({
             query: () => ({
-                url: '/auth/refresh',
+                url: 'http://127.0.0.1:8001/refresh',
                 method: 'GET'
             }),
             async onQueryStarted(_arg, {dispatch, queryFulfilled}) {
                 try {
                     const {data} = await queryFulfilled
-                    const {accessToken, user} = data
-                    dispatch(setCredentials({accessToken, user}))
+                    const {accessToken, userId} = data
+
+                    dispatch(setCredentials({accessToken, userId}))
                 } catch (e) {
                     console.error(e)
                 }

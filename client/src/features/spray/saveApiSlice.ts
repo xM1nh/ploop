@@ -1,16 +1,16 @@
 import apiSlice from "../../app/api/apiSlice"
-import { Like } from "../../utils/types"
+import { Save } from "../../utils/types"
 
-const likeApiSlice = apiSlice.injectEndpoints({
+const saveApiSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
-        getLikes: builder.query<Like[], {sprayId: string, page: number, count: number}>({
+        getSaves: builder.query<Save[], {sprayId: string, page: number, count: number}>({
             query: ({sprayId, page, count}) => ({
                 url: '/graphql',
                 method: 'POST',
                 body: {
                     query: `
-                        query GetLikes($sprayId: ID!, $pagination: PaginationInput!) {
-                            likes(sprayId: $sprayId, pagination: $pagination) {
+                        query GetSaves($sprayId: ID!, $pagination: PaginationInput!) {
+                            saves(sprayId: $sprayId, pagination: $pagination) {
                                 user: {
                                     avatar_url
                                     nickname
@@ -29,16 +29,16 @@ const likeApiSlice = apiSlice.injectEndpoints({
                     }
                 }
             }),
-            transformResponse: (response: {data: {likes: Like[]}}) => response.data.likes
+            transformResponse: (response: {data: {saves: Save[]}}) => response.data.saves
         }),
-        getLike: builder.query<Like | null, {sprayId: string, userId: string}>({
+        getSave: builder.query<Save | null, {sprayId: string, userId: string}>({
             query: ({sprayId, userId}) => ({
                 url: '/graphql',
                 method: 'POST',
                 body: {
                     query: `
-                        query GetLike($sprayId: ID!, $userId: ID!) {
-                            like(sprayId: $sprayId, userId: $userId) {
+                        query GetSave($sprayId: ID!, $userId: ID!) {
+                            save(sprayId: $sprayId, userId: $userId) {
                                 id
                             }
                         }
@@ -49,18 +49,18 @@ const likeApiSlice = apiSlice.injectEndpoints({
                     }
                 }
             }),
-            transformResponse: (response: {data: {like: Like}}) => response.data.like
+            transformResponse: (response: {data: {save: Save}}) => response.data.save
         }),
-        like: builder.mutation<Like, {sprayId: string, userId: string, notifierId: string}>({
-            query: ({sprayId, userId, notifierId}) => ({
+        save: builder.mutation<Save, {sprayId: string, userId: string}>({
+            query: ({sprayId, userId}) => ({
                 url: '/graphql',
                 method: 'POST',
                 body: {
                     query: `
-                        mutation Like($sprayId: ID!, userId: ID!, notifierId: ID!) {
-                            like(sprayId: $sprayId, userId: $userId, notifierId: $notifierId) {
+                        mutation Save($sprayId: ID!, userId: ID!) {
+                            save(sprayId: $sprayId, userId: $userId) {
                                 spray {
-                                    likes
+                                    saves
                                 }
                             }
                         }
@@ -68,22 +68,21 @@ const likeApiSlice = apiSlice.injectEndpoints({
                     variables: {
                         sprayId,
                         userId,
-                        notifierId
                     }
                 }
             }),
-            transformResponse: (response: {data: {like: Like}}) => response.data.like
+            transformResponse: (response: {data: {save: Save}}) => response.data.save
         }),
-        unlike: builder.mutation<Like, {sprayId: string, userId: string}>({
+        unsave: builder.mutation<Save, {sprayId: string, userId: string}>({
             query: ({sprayId, userId}) => ({
                 url: '/graphql',
                 method: 'POST',
                 body: {
                     query: `
-                        mutation Unlike($sprayId: ID!, $userId: ID!) {
-                            unlike(sprayId: $sprayId, userId: $userId) {
+                        mutation Unsave($sprayId: ID!, $userId: ID!) {
+                            unsave(sprayId: $sprayId, userId: $userId) {
                                 spray {
-                                    likes
+                                    saves
                                 }
                             }
                         }
@@ -94,15 +93,15 @@ const likeApiSlice = apiSlice.injectEndpoints({
                     }
                 }
             }),
-            transformResponse: (response: {data: {unlike: Like}}) => response.data.unlike
+            transformResponse: (response: {data: {unsave: Save}}) => response.data.unsave
         })
     })
 })
 
 export const {
-    useGetLikesQuery,
-    useGetLikeQuery,
-    useLazyGetLikeQuery,
-    useLikeMutation,
-    useUnlikeMutation
-} = likeApiSlice
+    useGetSavesQuery,
+    useGetSaveQuery,
+    useLazyGetSaveQuery,
+    useSaveMutation,
+    useUnsaveMutation
+} = saveApiSlice

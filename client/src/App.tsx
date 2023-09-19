@@ -6,6 +6,7 @@ import { useSelector } from "react-redux"
 import { selectUser } from "./features/auth/authSlice"
 
 import HomeItemContainer from "./components/spray/HomeItemContainer"
+import { Spray } from "./utils/types"
 
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
         itemRef,
         isFetching,
         isLoading
-    } = useInfiniteScroll(useLazyGetSpraysQuery)
+    } = useInfiniteScroll(useLazyGetSpraysQuery, {userId: user})
 
     const loading = <div>Loading...</div>
 
@@ -23,11 +24,11 @@ function App() {
         <Layout>
             <div className="home">
                 {
-                sprays.map((spray, i: number) => 
+                sprays.map((spray: Spray, i: number) => 
                     <HomeItemContainer 
                         key={i}
                         spray={spray} 
-                        userId={user?.id}
+                        userId={user}
                         ref={i === sprays.length - 1 ? itemRef : null}
                     />
                 )

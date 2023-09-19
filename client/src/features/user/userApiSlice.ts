@@ -1,26 +1,95 @@
 import apiSlice from "../../app/api/apiSlice"
+import { User, Follow } from "../../utils/types"
 
 const userApiSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
-        getUser: builder.query({
-            query: userId => `/user/${userId}`,
-        }),
-        follow: builder.mutation({
-            query: (body) => ({
-                url: `/user/follow`,
+        getUser: builder.query<User, {userId: string}>({
+            query: ({userId}) => ({
+                url: '/graphql',
                 method: 'POST',
-                body: {...body}
+                body: {
+                    query: `
+                        query GetUser($userId: ID!) {
+                            user(id: $userId) {
+                                id
+                                username
+                                nickname
+                                avatar_url
+                                bio
+                                followings
+                                followers
+                                isFollow: {
+                                    id
+                                }
+                            }
+                        }
+                    `,
+                    variables: {
+                        userId
+                    }
+                }
             }),
+            transformResponse: (response: {data: {user: User}}) => response.data.user
         }),
-        unfollow: builder.mutation({
-            query: (body) => ({
-                url: `/user/follow`,
-                method: 'DELETE',
-                body: {...body}
-            })
+        follow: builder.mutation<Follow, {userId: string, followeeId: string}>({
+            query: ({userId, followeeId}) => ({
+                url: `/graphql`,
+                method: 'POST',
+                body: {
+                    mutation: `
+                        mutation Follow($id: ID!, $followeeId: ID!) {
+                            follow(id: $id, followeeId: $followeeId) {
+                                id
+                            }
+                        }
+                    `,
+                    variables: {
+                        id: userId,
+                        followeeId
+                    }
+                }
+            }),
+            transformResponse: (response: {data: {follow: Follow}}) => response.data.follow
         }),
-        getFollow: builder.query({
-            query: ({followerId, followeeId}) => `/user/follow?followerId=${followerId}&followeeId=${followeeId}`
+        unfollow: builder.mutation<Follow, {userId: string, followeeId: string}>({
+            query: ({userId, followeeId}) => ({
+                url: `/graphql`,
+                method: 'POST',
+                body: {
+                    mutation: `
+                        mutation Unfollow($id: ID!, $followeeId: ID!) {
+                            unfollow(id: $id, followeeId: $followeeId) {
+                                id
+                            }
+                        }
+                    `,
+                    variables: {
+                        id: userId,
+                        followeeId
+                    }
+                }
+            }),
+            transformResponse: (response: {data: {follow: Follow}}) => response.data.follow
+        }),
+        getFollow: builder.query<Follow, {userId: string, followeeId: string}>({
+            query: ({userId, followeeId}) => ({
+                url: '/graphql',
+                method: 'POST',
+                body: {
+                    query: `
+                        query GetFollow($userId: ID!, $followeeId: ID!) {
+                            follow(id: $userId, followeeId: $followeeId) {
+                                id
+                            }
+                        }
+                    `,
+                    variables: {
+                        id: userId,
+                        followeeId
+                    }
+                }
+            }),
+            transformResponse: (response: {data: {follow: Follow}}) => response.data.follow
         })
     })
 })
@@ -31,5 +100,6 @@ export const {
     useGetUserQuery,
     useFollowMutation,
     useUnfollowMutation,
-    useGetFollowQuery
+    useGetFollowQuery,
+    useLazyGetFollowQuery,
 } = userApiSlice

@@ -76,3 +76,7 @@ input {
     flex-direction: column;
     align-items: center;
 }
+
+.app .mainContent {
+    align-self: auto;
+}

@@ -1,11 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit'
-
 import { RootState } from '../../app/store'
 
-const initialState = {
+const initialState: {
+    isAuthenticated: boolean,
+    token: null | string,
+    user: null | number
+} = {
     isAuthenticated: false,
     token: null,
-    user: null
+    user: 0
 }
 
 const authSlice = createSlice({
@@ -13,10 +16,10 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         setCredentials: (state, action) => {
-            const {accessToken, user} = action.payload
+            const {accessToken, userId} = action.payload
             state.isAuthenticated = true
             state.token = accessToken
-            state.user = user
+            state.user = userId
         },
         logOut: (state) => {
             state.isAuthenticated = false,
@@ -32,4 +35,4 @@ export default authSlice.reducer
 
 export const selectCurrentToken = (state :RootState) => state.auth.token
 export const selectAuthentication = (state :RootState) => state.auth.isAuthenticated
-export const selectUser = (state: RootState) => state.auth.user
+export const selectUser = (state: RootState) => state.auth.user?.toString()

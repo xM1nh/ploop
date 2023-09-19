@@ -2,8 +2,11 @@ import './_HomeItemContainer.css'
 
 import { Link, useLocation } from 'react-router-dom'
 import { forwardRef, useEffect, useState } from 'react';
-import { useLikeMutation, useUnlikeMutation, useLazyGetLikeQuery } from '../../features/spray/likeApiSlice';
-import { useGetUserQuery, useFollowMutation, useUnfollowMutation } from '../../features/user/userApiSlice';
+import { useLikeMutation, useUnlikeMutation } from '../../features/spray/likeApiSlice';
+import { useFollowMutation, useUnfollowMutation } from '../../features/user/userApiSlice';
+import { useSaveMutation, useUnsaveMutation } from '../../features/spray/saveApiSlice';
+import { toggleAuth } from '../../features/modal/modalSlice';
+import { useDispatch } from 'react-redux';
 
 import Avatar from '../avatar/Avatar';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -11,22 +14,11 @@ import TextsmsIcon from '@mui/icons-material/Textsms';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ReplyIcon from '@mui/icons-material/Reply';
 import EditIcon from '@mui/icons-material/Edit';
+import { Follow, Like, Save, Spray } from '../../utils/types';
 
 type HomeItemContainerProps = {
-    userId: number,
-    spray: {
-        id: number,
-        url: string,
-        cover_url: string,
-        created_on: string,
-        creator_id: number,
-        caption: string,
-        likes: number,
-        edits: number,
-        comments: number,
-        saves: number,
-        shares: number
-    }
+    userId: string | undefined,
+    spray: Spray
 }
 
 const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerProps>(({
@@ -34,45 +26,75 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
     spray
 }: HomeItemContainerProps, ref) => {
     const location = useLocation()
-    const [isLiked, setIsLiked] = useState(false)
-    const [getLike] = useLazyGetLikeQuery()
-    const {
-        data: user,
-        isLoading: userIsLoading,
-        isSuccess: userIsSuccess
-    } = useGetUserQuery(spray.creator_id)
+    const dispatch = useDispatch()
     const [like] = useLikeMutation()
     const [unlike] = useUnlikeMutation()
     const [follow] = useFollowMutation()
     const [unfollow] = useUnfollowMutation()
+    const [save] = useSaveMutation()
+    const [unsave] = useUnsaveMutation()
 
-    const handleFollowButtonClick = () => {
-        //
+    const [isLike, setIsLike] = useState<Like | null | undefined>(null)
+    const [isFollow, setIsFollow] = useState<Follow | null | undefined>(null)
+    const [isSave, setIsSave] = useState<Save | null | undefined>(null)
+    const [likeCount, setLikeCount] = useState<number>()
+    const [saveCount, setSaveCount] = useState<number>()
+    const [shareCount, setShareCount] = useState<number>()
+
+    const handleFollowButtonClick = async () => {
+        if (!userId) {
+            dispatch(toggleAuth)
+        } else {
+            if (!isFollow) {
+                const response = await follow({userId, followeeId: spray.user.id.toString()}).unwrap()
+                setIsFollow(response)
+            } else {
+                await unfollow({userId, followeeId: spray.user.id.toString()})
+                setIsFollow(null)
+            }
+        }
     }
 
     const handleLikeButtonClick = async () => {
-        if (!isLiked) {
-            const response = await like({id: spray.id, actorId: userId, notifierId: user.id}).unwrap()
-            console.log(response)
-            setIsLiked(response)
+        if (!userId) {
+            dispatch(toggleAuth)
+        } else {
+            if (!isLike) {
+                const response = await like({sprayId: spray.id.toString(), userId: userId.toString(), notifierId: spray.user.id.toString()}).unwrap()
+                setIsLike(response)
+            }
+            else {
+                await unlike({sprayId: spray.id.toString(), userId: userId.toString()}).unwrap()
+                setIsLike(null)
+            }
         }
-        else {
-            const response = await unlike({id: spray.id, actorId: userId}).unwrap()
-            setIsLiked(response)
+    }
+
+    const handleSaveButtonClick = async () => {
+        if (!userId) {
+            dispatch(toggleAuth)
+        } else {
+            if (!isSave) {
+                const response = await save({sprayId: spray.id.toString(), userId: userId.toString()}).unwrap()
+                setIsSave(response)
+            } else {
+                await unsave({sprayId: spray.id.toString(), userId: userId.toString()}).unwrap()
+                setIsSave(null)
+            }
         }
     }
 
     let followButton = 
-        <div className='followButton'>
+        <div className='followButton' onClick={handleFollowButtonClick}>
             <div className='followButtonContent'>
                 <div className='followButtonLabel'>
                     Follow
                 </div>
             </div>
         </div>
-    if (userId) {
+    if (isFollow) {
         followButton = 
-            <div className='followButton'>
+            <div className='followButton' onClick={handleFollowButtonClick}>
                 <div className='followButtonContent'>
                     <div className='followButtonLabel'>
                         Following
@@ -80,71 +102,47 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
                 </div>
             </div>
     }
+    if (userId && parseInt(userId) === spray.user.id) followButton = <></>
 
-    if (userId && userId === spray.creator_id) followButton = <></>
+    useEffect(() => {
+        setIsLike(spray.isLike)
+        setIsSave(spray.isSave)
+        setLikeCount(spray.likes)
+        setSaveCount(spray.saves)
+        setShareCount(spray.shares)
+    }, [spray.isLike, spray.isSave, spray.likes, spray.saves, spray.shares])
 
-    let userContent
-    if (userIsLoading) userContent = <>...</>
-    if (userIsSuccess) {
-        userContent = 
-            <div className='textInfoContainer'>
-                <div className='creatorContainer'>
-                    <Link className='creatorAnchor' to={`/${user.username}`}>
-                        <h3 className='creatorUsername'>
-                            {user.username}
-                        </h3>
-                        <h4 className='creatorNickname'>
-                            {user.nickname}
-                        </h4>
-                    </Link>
-                </div>
-                {followButton}
-                <div className='captionWrapper'>
-                    <div className='captionContainer'>
-                        <div className='captionText'>
-                            <span className='caption'>
-                                {spray.caption}
-                            </span>
+    return (
+        <div className='homeItemContainer' ref={ref}>
+            <Avatar url={spray.user.avatar_url} />
+            <div className='contentContainer'>
+                <div className='textInfoContainer'>
+                    <div className='creatorContainer'>
+                        <Link className='creatorAnchor' to={`/${spray.user.username}`}>
+                            <h3 className='creatorUsername'>
+                                {spray.user.username}
+                            </h3>
+                            <h4 className='creatorNickname'>
+                                {spray.user.nickname}
+                            </h4>
+                        </Link>
+                    </div>
+                    {followButton}
+                    <div className='captionWrapper'>
+                        <div className='captionContainer'>
+                            <div className='captionText'>
+                                <span className='caption'>
+                                    {spray.caption}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className='contributorWrapper'>
+                    <div className='contributorWrapper'>
                         <h4>
                             {`${new Date(spray.created_on).toLocaleString()}`}
                         </h4>
                     </div>
-            </div>
-    }
-
-    let likeButton = 
-        <button className='sprayActionButton'>
-            <span className='actionIconWrapper' onClick={handleLikeButtonClick}>
-                <FavoriteIcon />
-            </span>
-            <strong className='actionText'>{spray.likes}</strong>
-        </button>
-    if (userId && isLiked) {
-        likeButton = <button className='sprayActionButton'>
-            <span className='actionIconWrapper' onClick={handleLikeButtonClick}>
-                <FavoriteIcon sx={{
-                    color: 'red'
-                }}/>
-            </span>
-            <strong className='actionText'>{spray.likes}</strong>
-        </button>
-    }
-
-    useEffect(() => {
-        if (userId) {
-            getLike({sprayId: spray.id, userId}).then(result => setIsLiked(result.data))
-        }
-    }, [userId, getLike, spray.id])
-
-    return (
-        <div className='homeItemContainer' ref={ref}>
-            <Avatar url={user?.avatar_url} />
-            <div className='contentContainer'>
-                {userContent}
+                </div>
                 <div className='sprayWrapper'>
                     <div className='sprayContainer'>
                         <div className='videoWrapper'>
@@ -154,7 +152,12 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
                         </div>
                     </div>
                     <div className='sprayActionContainer'>
-                        {likeButton}
+                        <button className='sprayActionButton'>
+                            <span className='actionIconWrapper' onClick={handleLikeButtonClick}>
+                                {isLike ? <FavoriteIcon sx={{color: 'red'}}/> : <FavoriteIcon />}
+                            </span>
+                            <strong className='actionText'>{likeCount}</strong>
+                        </button>
                         <button className='sprayActionButton'>
                             <span className='actionIconWrapper'>
                                 <EditIcon />
@@ -169,17 +172,17 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
                                 <strong className='actionText'>{spray.comments}</strong>
                             </button>
                         </Link>
-                        <button className='sprayActionButton'>
+                        <button className='sprayActionButton' onClick={handleSaveButtonClick}>
                             <span className='actionIconWrapper'>
-                                <BookmarkIcon />
+                                {isSave ? <BookmarkIcon sx={{color: 'red'}}/> : <BookmarkIcon />}
                             </span>
-                            <strong className='actionText'>{spray.saves}</strong>
+                            <strong className='actionText'>{saveCount}</strong>
                         </button>
                         <button className='sprayActionButton'>
                             <span className='actionIconWrapper'>
                                 <ReplyIcon   />
                             </span>
-                            <strong className='actionText'>{spray.shares}</strong>
+                            <strong className='actionText'>{shareCount}</strong>
                         </button>
                     </div>
                 </div>

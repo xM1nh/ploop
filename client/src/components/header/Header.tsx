@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { selectAuthentication, selectUser } from '../../features/auth/authSlice';
 import { toggleAuth } from '../../features/modal/modalSlice';
 import { useDispatch } from 'react-redux';
+import { useGetUserQuery } from '../../features/user/userApiSlice';
 
 import Notification from '../modal/notification/Notification';
 import LogoWhite from '../../assets/Logo Header White.png'
@@ -16,11 +17,15 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
 const Header = () => {
-    const user = useSelector(selectUser)
+    const userId = useSelector(selectUser)
     const notificationRef = useRef<HTMLDivElement>(null)
     const [isNotiOpen, setIsNotiOpen] = useState(false)
     const dispatch = useDispatch()
     const isLoggedIn = useSelector(selectAuthentication)
+
+    const {
+        data: userData,
+    } = useGetUserQuery({userId: userId as string}, {skip: !userId})
 
     const toggleLoginModal = () => {
         dispatch(toggleAuth())
@@ -71,8 +76,8 @@ const Header = () => {
                     <Notification isOpen={isNotiOpen}/>
                     <sup>1</sup>
                 </div>
-                <Link to={`/${user?.id}`}>
-                <div className='profileContainer' style={{backgroundImage: `url(${user?.avatar_url})`}}></div>
+                <Link to={`/${userId}`}>
+                    <div className='profileContainer' style={{backgroundImage: `url(${userData?.avatar_url})`}}></div>
                 </Link>
             </div>
     }

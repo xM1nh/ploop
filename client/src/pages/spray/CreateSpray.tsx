@@ -3,10 +3,8 @@ import {v4 as uuidv4} from 'uuid'
 
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
-import { addSpray, discard } from '../../features/spray/createSpraySlice';
+import { useSelector } from 'react-redux';
 import { selectUser } from '../../features/auth/authSlice';
-import { RootState } from '../../app/store';
 
 import Layout from '../../components/layout/Layout';
 import CreateSprayCanvas from './CreateSprayCanvas';
@@ -21,14 +19,13 @@ export interface CanvasRef {
 const CreateSpray = () => {
     const canvasRef = useRef<CanvasRef>(null)
     const [step, setStep] = useState(0)
+    const [sprayHistory, setSprayHistory] = useState<string[][]>([])
     const [caption, setCaption] = useState('')
     const [viewPermission, setViewPermission] = useState('1')
     const [drawPermission, setDrawPermission] = useState('1')
     const [isLimited, setIsLimited] = useState(false)
     const [deadline, setDeadline] = useState<Event | null>(null)
 
-    const dispatch = useDispatch()
-    const sprayHistory = useSelector((state: RootState) => state.createSpray.spray)
     const user = useSelector(selectUser)
 
     const handleNext = () => {
@@ -38,7 +35,7 @@ const CreateSpray = () => {
                 setStep(1)
                 return
             }
-            dispatch(addSpray(data))
+            setSprayHistory(data)
         }
         setStep(1)
     }
@@ -48,7 +45,7 @@ const CreateSpray = () => {
     }
 
     const handleDiscard = () => {
-        dispatch(discard())
+        setSprayHistory([])
     }
 
     const handleCaptionChange = (e: ChangeEvent) =>  setCaption((e.target as HTMLInputElement).value)
@@ -74,7 +71,7 @@ const CreateSpray = () => {
             uploadWorker.terminate()
         }
         
-        //dispatch(addSpray([]))
+        setSprayHistory([])
     }
 
     useEffect(() => {
@@ -84,8 +81,8 @@ const CreateSpray = () => {
     })
 
     useEffect(() => {
-        dispatch(discard())
-    }, [dispatch])
+        setSprayHistory([])
+    }, [])
 
     let content
     if (step === 0) {

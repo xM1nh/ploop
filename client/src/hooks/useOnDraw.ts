@@ -6,7 +6,7 @@ export type Point = {
     y: number
 } | null
 
-export const useOnDraw = (tool: string, color: string, lineWidth: number) => {
+export const useOnDraw = (tool: string, color: string, lineWidth: number, initState?: Blob) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const permanentCanvasRef = useRef<HTMLCanvasElement | null>(null)
     const isDrawingRef = useRef<boolean | null>(false)
@@ -40,6 +40,15 @@ export const useOnDraw = (tool: string, color: string, lineWidth: number) => {
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
                 ctx.fillStyle = 'white'
                 ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+                if (initState) {
+                    const image = new Image()
+                    const blobUrl = URL.createObjectURL(initState)
+                    image.src = blobUrl
+                    image.onload = () => {
+                        ctx.drawImage(image, 0, 0, ctx.canvas.width, ctx.canvas.height)
+                        URL.revokeObjectURL(blobUrl)
+                    }
+                }
             }
         }
     }
@@ -119,6 +128,7 @@ export const useOnDraw = (tool: string, color: string, lineWidth: number) => {
         historyStep.current = -1
         init()
         save()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
