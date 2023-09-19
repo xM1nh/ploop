@@ -15,7 +15,9 @@ export const typeDef = `#graphql
         draw_permission: Int!,
         limited: Boolean!,
         deadline: String!,
-        original_id: Int
+        original_id: Int,
+        isLike: Like,
+        isSave: Save,
     }
     type Query {
         sprays(pagination: PaginationInput!): [Spray!],

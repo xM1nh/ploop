@@ -8,6 +8,4 @@ import { SPRAY_QUEUE, SPRAY_ROUTING_KEY } from "../../../config";
 export default (app: Express, channel: Channel) => {
     const service = new ShareService()
 
-    //subscribeMessage(channel, service, SPRAY_QUEUE, SPRAY_ROUTING_KEY)
-
 }

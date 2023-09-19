@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import {makeExecutableSchema} from '@graphql-tools/schema'
 
 import { 

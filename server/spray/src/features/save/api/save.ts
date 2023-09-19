@@ -19,10 +19,10 @@ export default (app: Express, channel: Channel) => {
     }))
 
     app.get('/saves/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const sprayId = parseInt(req.params.sprayId)
+        const id = parseInt(req.params.id)
         const userId = parseInt(req.query.userId as string)
 
-        const save = await service.getSave(sprayId, userId)
+        const save = await service.getSave(id, userId)
 
         res.status(200).json(save)
     }))

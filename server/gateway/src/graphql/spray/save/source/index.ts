@@ -18,11 +18,10 @@ export default class SaveSource extends RESTDataSource {
         return this.get<Save>(`${sprayId}?userId=${userId}`)
     }
 
-    async save(sprayId: string, userId: string, notifierId: string) {
+    async save(sprayId: string, userId: string) {
         const body = {
             sprayId,
             userId,
-            notifierId
         }
         return this.post<Save>(``, {body})
     }

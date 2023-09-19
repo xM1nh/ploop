@@ -11,9 +11,9 @@ export const resolvers = {
         }
     },
     Mutation: {
-        save: async (_: any, args: {sprayId: string, userId: string, notifierId: string}, {dataSources}: {dataSources: DataSource}) => {
-            const { sprayId, userId, notifierId } = args
-            return dataSources.saveApi.save(sprayId, userId, notifierId)
+        save: async (_: any, args: {sprayId: string, userId: string}, {dataSources}: {dataSources: DataSource}) => {
+            const { sprayId, userId } = args
+            return dataSources.saveApi.save(sprayId, userId)
         },
         unsave: async (_: any, {sprayId, userId}: {sprayId: string, userId: string}, {dataSources}: {dataSources: DataSource}) => {
             return dataSources.saveApi.unsave(sprayId, userId)

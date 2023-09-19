@@ -147,7 +147,7 @@ class SprayRepository {
                             LIMIT ${limit} OFFSET ${offset}`
 
         try {
-            const spray = (await pool.query(queryString)).rows[0]
+            const spray = (await pool.query(queryString)).rows
             return spray
         } catch (e) {
             throw e

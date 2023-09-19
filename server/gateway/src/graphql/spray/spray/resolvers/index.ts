@@ -48,6 +48,12 @@ export const resolvers = {
     Spray: {
         user: async (parent: Spray, _: any, {dataSources}: {dataSources: DataSource}) => {
             return dataSources.userApi.getUser(parent.user_id.toString())
+        },
+        isLike: async(parent: Spray, {userId}: {userId: string}, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.likeApi.getLike(parent.id.toString(), userId)
+        },
+        isSave: async(parent: Spray, {userId}: {userId: string}, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.saveApi.getSave(parent.id.toString(), userId)
         }
     }
 }

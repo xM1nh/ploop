@@ -7,6 +7,7 @@ export const typeDef = `#graphql
         bio: String!,
         followings: Int!,
         followers: Int!,
+        isFollow: Follow
     }
     type Follow {
         id: ID!,

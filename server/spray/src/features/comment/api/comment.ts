@@ -27,16 +27,16 @@ export default (app: Express, channel: Channel) => {
     }))
 
     app.post('/comments', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const {sprayId, actorId, notifierId, comment} = req.body
+        const {sprayId, userId, notifierId, comment} = req.body
 
-        const response = await service.comment(sprayId, actorId, comment)
+        const response = await service.comment(sprayId, userId, comment)
 
         const message = {
             event: 'CREATE_NOTIFICATION',
             data: {
                 entityTypeId: 301,
                 entityId: sprayId,
-                actorId,
+                actorId: userId,
                 notifierId
             }
         }
