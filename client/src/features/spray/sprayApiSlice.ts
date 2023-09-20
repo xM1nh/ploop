@@ -10,7 +10,7 @@ const sprayApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
                 body: {
                     query: `
-                        query GetSprays($pagination: PaginationInput!) {
+                        query GetSprays($userId: ID!, $pagination: PaginationInput!) {
                             sprays(pagination: $pagination) {
                                 caption
                                 comments
@@ -27,14 +27,18 @@ const sprayApiSlice = apiSlice.injectEndpoints({
                                 shares
                                 url
                                 view_permission
-                                isLike,
-                                isSave,
+                                isLike(userId: $userId) {
+                                    id
+                                }
+                                isSave(userId: $userId) {
+                                    id
+                                }
                                 user {
                                     avatar_url
                                     nickname
                                     username
                                     id
-                                    isFollow: {
+                                    isFollow(followeeId: $userId) {
                                         id
                                     }
                                 }
@@ -45,28 +49,41 @@ const sprayApiSlice = apiSlice.injectEndpoints({
                         pagination: {
                             page,
                             count,
-                            userId
-                        }
+                        },
+                        userId
                     }
                 }
             }),
-            transformResponse: (response: {data: {sprays: Spray[]}}) => response.data.sprays
+            transformResponse: (response: {data: {sprays: Spray[]}}) => response.data.sprays,
+            serializeQueryArgs: ({ endpointName }) => {
+                return endpointName
+            },
+            merge: (currentCache, newItems, {arg}) => {
+                if (arg.page > 1) {
+                    currentCache.push(...newItems)
+                    return currentCache
+                }
+                return newItems
+            },
+            forceRefetch({currentArg, previousArg}) {
+                return currentArg?.page !== previousArg?.page
+            },
         }),
-        getSpray: builder.query<Spray, {id: string}>({
-            query: id => ({
+        getSpray: builder.query<Spray, {id: string, userId: string}>({
+            query: ({id, userId}) => ({
                 url: '/graphql',
                 method: 'POST',
                 body: {
                     query: `
-                        query GetSpray($id: ID!){
+                        query GetSpray($id: ID!, $userId: ID!){
                             spray(id: $id) {
                                 caption
                                 comments
                                 cover_url
                                 created_on
                                 deadline
-                                edits
                                 draw_permission
+                                edits
                                 id
                                 likes
                                 limited
@@ -75,21 +92,31 @@ const sprayApiSlice = apiSlice.injectEndpoints({
                                 shares
                                 url
                                 view_permission
+                                isLike(userId: $userId) {
+                                    id
+                                }
+                                isSave(userId: $userId) {
+                                    id
+                                }
                                 user {
                                     avatar_url
                                     nickname
                                     username
                                     id
+                                    isFollow(followeeId: $userId) {
+                                        id
+                                    }
                                 }
                             }
                         }
-                    `
-                },
-                variables: {
-                    id
+                    `,
+                    variables: {
+                        id,
+                        userId
+                    }
                 }
             }),
-            transformResponse: (response: {data: {spray: Spray}}) => response.data.spray
+            transformResponse: (response: {data: {spray: Spray}}) => response.data.spray,
         }),
         getResprays: builder.query<Spray[], {id: string, page: number, count: number}>({
             query: ({id, page, count}) => ({
@@ -132,7 +159,7 @@ const sprayApiSlice = apiSlice.injectEndpoints({
                     }
                 }
             }),
-            transformResponse: (response: {data: {resprays: Spray[]}}) => response.data.resprays
+            transformResponse: (response: {data: {resprays: Spray[]}}) => response.data.resprays,
         }),
         getSpraysForUser: builder.query<Spray[], {id: string, page: number, count: number}>({
             query: ({id, page, count}) => ({
@@ -169,7 +196,7 @@ const sprayApiSlice = apiSlice.injectEndpoints({
                     }
                 }
             }),
-            transformResponse: (response: {data: {userSprays: Spray[]}}) => response.data.userSprays
+            transformResponse: (response: {data: {userSprays: Spray[]}}) => response.data.userSprays,
         }),
         getRespraysForUser: builder.query<Spray[], {id: string, page: number, count: number}>({
             query: ({id, page, count}) => ({
@@ -206,7 +233,7 @@ const sprayApiSlice = apiSlice.injectEndpoints({
                     }
                 }
             }),
-            transformResponse: (response: {data: {userResprays: Spray[]}}) => response.data.userResprays
+            transformResponse: (response: {data: {userResprays: Spray[]}}) => response.data.userResprays,
         }),
         updateSpray: builder.mutation<Spray, {id: string, caption?: string, viewPermisson?: number, drawPermission?: number, limited?: number, deadline?: string}> ({
             query: ({id, caption, viewPermisson, drawPermission, limited, deadline}) => ({
@@ -229,7 +256,8 @@ const sprayApiSlice = apiSlice.injectEndpoints({
                         deadline
                     }
                 }
-            })
+            }),
+            transformResponse: (response: {data: {updateSpray: Spray}}) => response.data.updateSpray,
         }),
         deleteSpray: builder.mutation<Spray, {id: string}>({
             query: id => ({
@@ -248,7 +276,7 @@ const sprayApiSlice = apiSlice.injectEndpoints({
                     id
                 }
             }),
-            transformResponse: (response: {data: {deleteSpray: Spray}}) => response.data.deleteSpray
+            transformResponse: (response: {data: {deleteSpray: Spray}}) => response.data.deleteSpray,
         })
     })
 })

@@ -1,12 +1,13 @@
 import './_HomeItemContainer.css'
 
 import { Link, useLocation } from 'react-router-dom'
-import { forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { useLikeMutation, useUnlikeMutation } from '../../features/spray/likeApiSlice';
 import { useFollowMutation, useUnfollowMutation } from '../../features/user/userApiSlice';
 import { useSaveMutation, useUnsaveMutation } from '../../features/spray/saveApiSlice';
 import { toggleAuth } from '../../features/modal/modalSlice';
 import { useDispatch } from 'react-redux';
+import { useInView } from 'react-cool-inview';
 
 import Avatar from '../avatar/Avatar';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -27,6 +28,7 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
 }: HomeItemContainerProps, ref) => {
     const location = useLocation()
     const dispatch = useDispatch()
+    const videoRef = useRef<HTMLVideoElement>()
     const [like] = useLikeMutation()
     const [unlike] = useUnlikeMutation()
     const [follow] = useFollowMutation()
@@ -40,6 +42,17 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
     const [likeCount, setLikeCount] = useState<number>()
     const [saveCount, setSaveCount] = useState<number>()
     const [shareCount, setShareCount] = useState<number>()
+
+    const { observe: itemRef} = useInView<HTMLVideoElement>({
+        threshold: 0.8,
+        onEnter: () => {
+            videoRef.current?.play()
+        },
+        onLeave: ({unobserve}) => {
+            unobserve()
+            videoRef.current?.pause()
+        }
+    })
 
     const handleFollowButtonClick = async () => {
         if (!userId) {
@@ -62,10 +75,12 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
             if (!isLike) {
                 const response = await like({sprayId: spray.id.toString(), userId: userId.toString(), notifierId: spray.user.id.toString()}).unwrap()
                 setIsLike(response)
+                setLikeCount(response.spray.likes)
             }
             else {
-                await unlike({sprayId: spray.id.toString(), userId: userId.toString()}).unwrap()
+                const response = await unlike({sprayId: spray.id.toString(), userId: userId.toString()}).unwrap()
                 setIsLike(null)
+                setLikeCount(response.spray.likes)
             }
         }
     }
@@ -77,9 +92,11 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
             if (!isSave) {
                 const response = await save({sprayId: spray.id.toString(), userId: userId.toString()}).unwrap()
                 setIsSave(response)
+                setSaveCount(response.spray.saves)
             } else {
-                await unsave({sprayId: spray.id.toString(), userId: userId.toString()}).unwrap()
+                const response = await unsave({sprayId: spray.id.toString(), userId: userId.toString()}).unwrap()
                 setIsSave(null)
+                setSaveCount(response.spray.saves)
             }
         }
     }
@@ -102,7 +119,7 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
                 </div>
             </div>
     }
-    if (userId && parseInt(userId) === spray.user.id) followButton = <></>
+    if (parseInt(userId as string) === spray.user.id) followButton = <></>
 
     useEffect(() => {
         setIsLike(spray.isLike)
@@ -146,7 +163,7 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
                 <div className='sprayWrapper'>
                     <div className='sprayContainer'>
                         <div className='videoWrapper'>
-                            <video preload='auto' loop controls poster={spray.cover_url}>
+                            <video preload='auto' loop controls poster={spray.cover_url} ref={((el: HTMLVideoElement) => {itemRef(el); videoRef.current= el})}>
                                 <source src={spray.url} type='video/mp4'/>
                             </video>
                         </div>
@@ -164,7 +181,7 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
                             </span>
                             <strong className='actionText'>{spray.shares}</strong>
                         </button>
-                        <Link to={`/spray/${spray.id}`} state={{previousLocation: location}}>
+                        <Link to={`/spray/${spray.id}`} state={{previousLocation: location, spray}}>
                             <button className='sprayActionButton'>
                                 <span className='actionIconWrapper'>
                                     <TextsmsIcon />
