@@ -18,7 +18,7 @@ const userApiSlice = apiSlice.injectEndpoints({
                                 bio
                                 followings
                                 followers
-                                isFollow: {
+                                isFollow(followeeId: $userId) {
                                     id
                                 }
                             }

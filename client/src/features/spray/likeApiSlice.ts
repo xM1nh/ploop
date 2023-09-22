@@ -1,7 +1,9 @@
 import apiSlice from "../../app/api/apiSlice"
 import { Like } from "../../utils/types"
 
-const likeApiSlice = apiSlice.injectEndpoints({
+const likeApiSlice = apiSlice
+.enhanceEndpoints({addTagTypes: ['Spray']})
+.injectEndpoints({
     endpoints: builder => ({
         getLikes: builder.query<Like[], {sprayId: string, page: number, count: number}>({
             query: ({sprayId, page, count}) => ({
@@ -57,7 +59,7 @@ const likeApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
                 body: {
                     query: `
-                        mutation Like($sprayId: ID!, userId: ID!, notifierId: ID!) {
+                        mutation Like($sprayId: ID!, $userId: ID!, $notifierId: ID!) {
                             like(sprayId: $sprayId, userId: $userId, notifierId: $notifierId) {
                                 spray {
                                     likes
@@ -72,7 +74,7 @@ const likeApiSlice = apiSlice.injectEndpoints({
                     }
                 }
             }),
-            transformResponse: (response: {data: {like: Like}}) => response.data.like
+            transformResponse: (response: {data: {like: Like}}) => response.data.like,
         }),
         unlike: builder.mutation<Like, {sprayId: string, userId: string}>({
             query: ({sprayId, userId}) => ({

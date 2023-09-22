@@ -38,8 +38,8 @@ export const resolvers = {
             resolve: (payload: Comment) => payload,
             subscribe: withFilter(
                 (_: any, __: any, {pubsub}: {pubsub: AMQPPubSub}) => pubsub.asyncIterator(['COMMENT_ADDED']),
-                (payload: Comment, variables: {sprayId: string}) => {
-                    return payload.spray_id === parseInt(variables.sprayId)
+                (payload: Comment, variables: {sprayId: string, userId: string}) => {
+                    return payload.spray_id === parseInt(variables.sprayId) && payload.user_id !== parseInt(variables.userId)
                 }
             )
         }

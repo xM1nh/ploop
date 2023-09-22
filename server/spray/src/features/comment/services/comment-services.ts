@@ -28,9 +28,9 @@ class CommentService {
         userId: number,
         comment: string
     ) {
-        const commentId = await this.repository.addComment(sprayId, userId, comment)
+        const newComment = await this.repository.addComment(sprayId, userId, comment)
         await this.repository.increaseCount(sprayId, 1)
-        return commentId
+        return newComment
     }
 
     async editComment(

@@ -1,13 +1,9 @@
 import './_HomeItemContainer.css'
 
 import { Link, useLocation } from 'react-router-dom'
-import { forwardRef, useEffect, useRef, useState } from 'react';
-import { useLikeMutation, useUnlikeMutation } from '../../features/spray/likeApiSlice';
-import { useFollowMutation, useUnfollowMutation } from '../../features/user/userApiSlice';
-import { useSaveMutation, useUnsaveMutation } from '../../features/spray/saveApiSlice';
-import { toggleAuth } from '../../features/modal/modalSlice';
-import { useDispatch } from 'react-redux';
+import { forwardRef, useRef } from 'react';
 import { useInView } from 'react-cool-inview';
+import useSpray from '../../hooks/useSpray';
 
 import Avatar from '../avatar/Avatar';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -15,7 +11,7 @@ import TextsmsIcon from '@mui/icons-material/Textsms';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ReplyIcon from '@mui/icons-material/Reply';
 import EditIcon from '@mui/icons-material/Edit';
-import { Follow, Like, Save, Spray } from '../../utils/types';
+import { Spray } from '../../utils/types';
 
 type HomeItemContainerProps = {
     userId: string | undefined,
@@ -27,21 +23,19 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
     spray
 }: HomeItemContainerProps, ref) => {
     const location = useLocation()
-    const dispatch = useDispatch()
     const videoRef = useRef<HTMLVideoElement>()
-    const [like] = useLikeMutation()
-    const [unlike] = useUnlikeMutation()
-    const [follow] = useFollowMutation()
-    const [unfollow] = useUnfollowMutation()
-    const [save] = useSaveMutation()
-    const [unsave] = useUnsaveMutation()
 
-    const [isLike, setIsLike] = useState<Like | null | undefined>(null)
-    const [isFollow, setIsFollow] = useState<Follow | null | undefined>(null)
-    const [isSave, setIsSave] = useState<Save | null | undefined>(null)
-    const [likeCount, setLikeCount] = useState<number>()
-    const [saveCount, setSaveCount] = useState<number>()
-    const [shareCount, setShareCount] = useState<number>()
+    const {
+        isFollow,
+        isLike,
+        isSave,
+        likeCount,
+        saveCount,
+        shareCount,
+        handleFollowButtonClick,
+        handleLikeButtonClick,
+        handleSaveButtonClick
+    } = useSpray(userId as string, spray as Spray)
 
     const { observe: itemRef} = useInView<HTMLVideoElement>({
         threshold: 0.8,
@@ -53,53 +47,6 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
             videoRef.current?.pause()
         }
     })
-
-    const handleFollowButtonClick = async () => {
-        if (!userId) {
-            dispatch(toggleAuth)
-        } else {
-            if (!isFollow) {
-                const response = await follow({userId, followeeId: spray.user.id.toString()}).unwrap()
-                setIsFollow(response)
-            } else {
-                await unfollow({userId, followeeId: spray.user.id.toString()})
-                setIsFollow(null)
-            }
-        }
-    }
-
-    const handleLikeButtonClick = async () => {
-        if (!userId) {
-            dispatch(toggleAuth)
-        } else {
-            if (!isLike) {
-                const response = await like({sprayId: spray.id.toString(), userId: userId.toString(), notifierId: spray.user.id.toString()}).unwrap()
-                setIsLike(response)
-                setLikeCount(response.spray.likes)
-            }
-            else {
-                const response = await unlike({sprayId: spray.id.toString(), userId: userId.toString()}).unwrap()
-                setIsLike(null)
-                setLikeCount(response.spray.likes)
-            }
-        }
-    }
-
-    const handleSaveButtonClick = async () => {
-        if (!userId) {
-            dispatch(toggleAuth)
-        } else {
-            if (!isSave) {
-                const response = await save({sprayId: spray.id.toString(), userId: userId.toString()}).unwrap()
-                setIsSave(response)
-                setSaveCount(response.spray.saves)
-            } else {
-                const response = await unsave({sprayId: spray.id.toString(), userId: userId.toString()}).unwrap()
-                setIsSave(null)
-                setSaveCount(response.spray.saves)
-            }
-        }
-    }
 
     let followButton = 
         <div className='followButton' onClick={handleFollowButtonClick}>
@@ -120,14 +67,6 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
             </div>
     }
     if (parseInt(userId as string) === spray.user.id) followButton = <></>
-
-    useEffect(() => {
-        setIsLike(spray.isLike)
-        setIsSave(spray.isSave)
-        setLikeCount(spray.likes)
-        setSaveCount(spray.saves)
-        setShareCount(spray.shares)
-    }, [spray.isLike, spray.isSave, spray.likes, spray.saves, spray.shares])
 
     return (
         <div className='homeItemContainer' ref={ref}>

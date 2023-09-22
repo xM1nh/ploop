@@ -1,10 +1,10 @@
 import { Routes, Route, useLocation } from "react-router-dom"
 
-import CreateSpray from './pages/spray/CreateSpray'
-import User from "./pages/user/User"
-import App from "./App"
-import PersistLogin from "./components/wrapper/PersistLogin"
-import SprayModal from "./components/modal/spray/SprayModal"
+import CreateSpray from '../pages/spray/CreateSpray'
+import User from "../pages/user/User"
+import App from "../App"
+import PersistLogin from "../components/wrapper/PersistLogin"
+import SprayModal from "../components/modal/spray/SprayModal"
 
 const RouteSwitch = () => {
     const location = useLocation()

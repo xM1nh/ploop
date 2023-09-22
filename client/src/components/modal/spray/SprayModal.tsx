@@ -1,30 +1,149 @@
 import './_SprayModal.css'
+import { Comment, Spray } from '../../../utils/types';
 
-import { useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRef, useEffect, useState } from 'react';
+import { useNavigate, Link, useParams } from 'react-router-dom';
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock'
+import { useGetSprayQuery } from '../../../features/spray/sprayApiSlice';
+import { useGetCommentsQuery, useAddCommentMutation } from '../../../features/spray/commentApiSlice';
+import { selectUser } from '../../../features/auth/authSlice';
+import { toggleAuth } from '../../../features/modal/modalSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { useInView } from 'react-cool-inview';
+import { gql, useSubscription } from '@apollo/client';
+import useSpray from '../../../hooks/useSpray';
 
 import CloseIcon from '@mui/icons-material/Close';
 import Avatar from '../../avatar/Avatar'
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ReplyIcon from '@mui/icons-material/Reply';
+import SprayModalSkeleton from './SprayModalSkeleton';
+import CommentItem from '../../comment/Comment';
+
+const COMMENT_ADDED_SUBSCRIPTION = gql `
+    subscription CommentAdded($sprayId: ID!) {
+        commentAdded(sprayId: $sprayId) {
+            id
+            description
+            created_on
+            user {
+                id
+                avatar_url
+                nickname
+                username
+            }
+            spray {
+                comments
+            }
+        }
+}
+`
 
 const SprayModal = () => {
+    const dispatch = useDispatch()
+    const userId = useSelector(selectUser)
+    const {id} = useParams()
     const navigate = useNavigate()
     const modalRef = useRef<HTMLDivElement>(null)
+    const [page, setPage] = useState<number>(1)
+    const [addComment] = useAddCommentMutation()
+    const [newComments, setNewComments] = useState<Comment[]>([])
+    const [commentInput, setCommentInput] = useState<string>('')
+
+    const {
+        data: spray,
+        isLoading: sprayIsLoading
+    } = useGetSprayQuery({id: id as string, userId})
+
+    const {
+        isFollow,
+        isLike,
+        isSave,
+        likeCount,
+        saveCount,
+        shareCount,
+        commentCount,
+        setCommnetCount,
+        handleFollowButtonClick,
+        handleLikeButtonClick,
+        handleSaveButtonClick
+    } = useSpray(userId, spray as Spray)
+
+    const {
+        data,
+        isLoading,
+        isFetching
+    } = useGetCommentsQuery({sprayId: id as string, page, count: 10})
+
+    const { observe: endItemRef } = useInView({
+        threshold: 0.8,
+        onEnter: ({unobserve}) => {
+            unobserve()
+            if (!isFetching) {
+                setPage(page => page + 1)
+            }
+        }
+    })
+
+    const { data: subData } = useSubscription(COMMENT_ADDED_SUBSCRIPTION, {
+        variables: {sprayId: id}
+    })
 
     const handleCloseSpray = () => {
-        navigate('/')
+        navigate(-1)
     }
 
-    const content = <div className='emptyComment'>
-        Be the first to comment!
-    </div>
+    const handleSubmit = async () => {
+        if (!userId) {
+            dispatch(toggleAuth)
+        } else {
+            const response = await addComment({sprayId: id as string, userId, notifierId: (spray?.user.id as number).toString(), comment: commentInput}).unwrap()
+            setNewComments([])
+            setPage(1)
+            setCommentInput('')
+            setCommnetCount(response.spray.comments)
+        }
+    }
+
+    let followButton = 
+        <div className='followButton' onClick={handleFollowButtonClick}>
+            <div className='followButtonContent'>
+                <div className='followButtonLabel'>
+                    Follow
+                </div>
+            </div>
+        </div>
+    if (isFollow) {
+        followButton = 
+            <div className='followButton' onClick={handleFollowButtonClick}>
+                <div className='followButtonContent'>
+                    <div className='followButtonLabel'>
+                        Following
+                    </div>
+                </div>
+            </div>
+    }
+    if (parseInt(userId as string) === spray?.user.id) followButton = <></>
+
+    let content
+    if (commentCount === 0 && newComments.length === 0) content = <div className='emptyComment'>
+                                            Be the first to comment!
+                                        </div>
+    else if (isLoading) {
+        content = <div className='emptyComment'>
+                    Loading...
+                </div>
+    } else {
+        content = <>
+            {newComments.map((comment: Comment, i: number) => <CommentItem key={`query${i}`} comment={comment}/>)}
+            {data?.map((comment: Comment, i: number) => <CommentItem key={`query${i}`} comment={comment} ref={endItemRef}/>)}
+        </>
+    }
 
     useEffect(() => {
         const observerRefValue = modalRef.current
-        disableBodyScroll(observerRefValue as HTMLDivElement)
+        if (observerRefValue) disableBodyScroll(observerRefValue)
 
         return () => {
             if (observerRefValue) {
@@ -33,6 +152,16 @@ const SprayModal = () => {
         }
     }, [])
 
+    useEffect(() => {
+        if (subData) {
+            if (subData.commentAdded.user.id !== parseInt(userId)) {
+                setNewComments(prev => [subData.commentAdded, ...prev])
+            }
+        }
+        return () => setNewComments([])
+    }, [subData, userId])
+
+    if (sprayIsLoading) return <SprayModalSkeleton />
     return (
         <div className="sprayModal" ref={modalRef}>
             <div className='modalVideoContainer'>
@@ -41,7 +170,9 @@ const SprayModal = () => {
                     <div className='modalVideoInnerWrapper'>
                         <div className='playerWrapper'>
                             <div style={{width: '100%', height: '100%'}}>
-                                <video></video>
+                                <video preload='auto' loop controls poster={spray?.cover_url} autoPlay>
+                                    <source src={spray?.url} type='video/mp4'/>
+                                </video>
                             </div>
                         </div>
                     </div>
@@ -49,29 +180,28 @@ const SprayModal = () => {
                 <button className='control close' onClick={handleCloseSpray}>
                     <CloseIcon />
                 </button>
-                <button className='control prev'></button> 
-                <button className='control next'></button>
             </div>
             <div className='modalContentContainer'>
                 <div className='modalDescContentWrapper'>
                     <div className='modalInfoContainer'>
-                        <Avatar url=''/>
-                        <div className='nameContainer'>
-                            <span className='modalUsername'>xM1nh</span>
+                        <Avatar url={spray?.user.avatar_url as string}/>
+                        <Link to={`/${spray?.user.id}`} className='nameContainer'>
+                            <span className='modalUsername'>{spray?.user.username}</span>
                             <br />
                             <span className='modalNickname'>
-                                Minh Le
+                                {spray?.user.nickname}
                                 <span style={{margin: '0px 4px'}}>.</span>
-                                <span>30-8</span>
+                                <span>{spray?.created_on.toLocaleString()}</span>
                             </span>
-                        </div>
+                        </Link>
+                        {followButton}
                     </div>
                     <div className='modalDescContainer'>
                         <div className='descWrapper'>
                             <div className='descText'>
                                 <div style={{fill: 'rgb(22, 24, 35)'}}>
                                     <div className='descRealText'>
-                                        hello yes yes
+                                        {spray?.caption}
                                     </div>
                                 </div>
                             </div>
@@ -82,29 +212,29 @@ const SprayModal = () => {
                     <div style={{position: 'relative', padding: '16px 0px 0px'}}>
                         <div className='modalNumber'>
                             <div className='modalNumberWrapper'>
-                                <button className='modalNumber'>
+                                <button className='modalNumber' onClick={handleLikeButtonClick}>
                                     <span className='modalSpanIconWrapper'>
-                                        <FavoriteIcon />
+                                        {isLike ? <FavoriteIcon sx={{color: 'red'}}/> : <FavoriteIcon />}
                                     </span>
-                                    <strong>1999</strong>
+                                    <strong>{likeCount}</strong>
                                 </button>
-                                <button className='modalNumber' style={{marginLeft: '20px'}}>
+                                <button className='modalNumber' style={{marginLeft: '20px'}} onClick={handleSaveButtonClick}>
                                     <span className='modalSpanIconWrapper'>
-                                        <BookmarkIcon />
+                                        {isSave ? <BookmarkIcon sx={{color: 'red'}}/> : <BookmarkIcon />}
                                     </span>
-                                    <strong>1999</strong>
+                                    <strong>{saveCount}</strong>
                                 </button>
                                 <button className='modalNumber' style={{marginLeft: '20px'}}>
                                     <span className='modalSpanIconWrapper'>
                                         <ReplyIcon />
                                     </span>
-                                    <strong>1999</strong>
+                                    <strong>{shareCount}</strong>
                                 </button>
                             </div>
                         </div>
                         <div className='modalTabContainer'>
                             <div className='modalTabItem'>
-                                Comment
+                                {`Comment (${commentCount})`}
                             </div>
                         </div>
                         <div className='tabBorder'></div>
@@ -120,11 +250,11 @@ const SprayModal = () => {
                             <div style={{flex: '1 1 auto'}}>
                                 <div className='bottomInputAreaContainer'>
                                     <div className='textAreaWrapper'>
-                                        <textarea placeholder='Add a comment...'></textarea>
+                                        <textarea placeholder='Add a comment...' onChange={(e) => setCommentInput(e.target.value)}></textarea>
                                     </div>
                                 </div>
                             </div>
-                            <div className='bottomInputButton'>Post</div>
+                            <button className='bottomInputButton' onClick={handleSubmit} disabled={!commentInput}>Post</button>
                         </div>
                     </div>
             </div>

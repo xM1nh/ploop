@@ -1,0 +1,44 @@
+.commentContainer {
+    margin-bottom: 20px;
+}
+
+.commentContentContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.commentMainContentContainer {
+    flex: 1 1 auto
+}
+
+.commentName {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 18px;
+}
+
+.commentText {
+    font-size: 16px;
+    line-height: 21px;
+    white-space: pre-line;
+    word-break: break-word;
+    margin-bottom: 6px;
+}
+
+.commentSubContent {
+    color: rgba(22, 24, 35, 0.5);
+    font-size: 14px;
+    line-height: 18px;
+}
+
+.commentCreatedON {
+    display: inline-block;
+    width: 64px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: top;
+}

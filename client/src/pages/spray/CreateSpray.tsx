@@ -58,7 +58,7 @@ const CreateSpray = () => {
         const uploadWorker = new Worker(new URL('../../serviceWorker.ts', import.meta.url))
         const id = uuidv4()
         const data = {
-            userId: user?.id,
+            userId: user,
             spray: sprayHistory,
             caption,
             viewPermission,

@@ -46,7 +46,7 @@ class CommentRepository {
         const queryString = `SELECT *   
                             FROM spray_schema.comments
                             WHERE spray_id = ${id}
-                            ORDER BY created_on
+                            ORDER BY created_on DESC
                             LIMIT ${limit} OFFSET ${offset}`
 
         try {

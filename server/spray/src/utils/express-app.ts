@@ -11,7 +11,7 @@ export default (app: Express, channel: Channel) => {
 
     comment(app, channel)
     like(app, channel)
-    //save(app, channel)
+    save(app, channel)
     //share(app, channel)
     spray(app, channel)
 }
