@@ -39,6 +39,7 @@ export const resolvers = {
             subscribe: withFilter(
                 (_: any, __: any, {pubsub}: {pubsub: AMQPPubSub}) => pubsub.asyncIterator(['COMMENT_ADDED']),
                 (payload: Comment, variables: {sprayId: string, userId: string}) => {
+                    console.log(payload.user_id)
                     return payload.spray_id === parseInt(variables.sprayId) && payload.user_id !== parseInt(variables.userId)
                 }
             )

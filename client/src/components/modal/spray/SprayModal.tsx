@@ -22,8 +22,8 @@ import SprayModalSkeleton from './SprayModalSkeleton';
 import CommentItem from '../../comment/Comment';
 
 const COMMENT_ADDED_SUBSCRIPTION = gql `
-    subscription CommentAdded($sprayId: ID!) {
-        commentAdded(sprayId: $sprayId) {
+    subscription CommentAdded($sprayId: ID!, $userId: ID!) {
+        commentAdded(sprayId: $sprayId, userId: $userId) {
             id
             description
             created_on
@@ -73,7 +73,8 @@ const SprayModal = () => {
     const {
         data,
         isLoading,
-        isFetching
+        isFetching,
+        refetch
     } = useGetCommentsQuery({sprayId: id as string, page, count: 10})
 
     const { observe: endItemRef } = useInView({
@@ -87,7 +88,10 @@ const SprayModal = () => {
     })
 
     const { data: subData } = useSubscription(COMMENT_ADDED_SUBSCRIPTION, {
-        variables: {sprayId: id}
+        variables: {
+            sprayId: id,
+            userId
+        }
     })
 
     const handleCloseSpray = () => {
@@ -96,13 +100,16 @@ const SprayModal = () => {
 
     const handleSubmit = async () => {
         if (!userId) {
-            dispatch(toggleAuth)
+            dispatch(toggleAuth())
         } else {
             const response = await addComment({sprayId: id as string, userId, notifierId: (spray?.user.id as number).toString(), comment: commentInput}).unwrap()
             setNewComments([])
-            setPage(1)
             setCommentInput('')
             setCommnetCount(response.spray.comments)
+            if (page === 1) refetch()
+            else {
+                setPage(1)
+            }
         }
     }
 
@@ -136,7 +143,9 @@ const SprayModal = () => {
                 </div>
     } else {
         content = <>
-            {newComments.map((comment: Comment, i: number) => <CommentItem key={`query${i}`} comment={comment}/>)}
+            {newComments.map((comment: Comment, i: number) => {
+                return <CommentItem key={`query${i}`} comment={comment}/>
+            })}
             {data?.map((comment: Comment, i: number) => <CommentItem key={`query${i}`} comment={comment} ref={endItemRef}/>)}
         </>
     }
@@ -250,7 +259,7 @@ const SprayModal = () => {
                             <div style={{flex: '1 1 auto'}}>
                                 <div className='bottomInputAreaContainer'>
                                     <div className='textAreaWrapper'>
-                                        <textarea placeholder='Add a comment...' onChange={(e) => setCommentInput(e.target.value)}></textarea>
+                                        <textarea placeholder='Add a comment...' value={commentInput} onChange={(e) => setCommentInput(e.target.value)}></textarea>
                                     </div>
                                 </div>
                             </div>

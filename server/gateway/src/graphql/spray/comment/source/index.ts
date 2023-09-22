@@ -11,7 +11,13 @@ export default class CommentSource extends RESTDataSource {
     }
 
     async getComments(sprayId: string, page: number, count: number) {
-        return this.get<Comment[]>(`?sprayId=${sprayId}&page=${page}&count=${count}`)
+        return this.get<Comment[]>(``, {
+            params: {
+                sprayId,
+                page: page.toString(),
+                count: count.toString()
+            }
+        })
     }
 
     async getComment(commentId: string) {

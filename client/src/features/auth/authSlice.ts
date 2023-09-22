@@ -4,11 +4,11 @@ import { RootState } from '../../app/store'
 const initialState: {
     isAuthenticated: boolean,
     token: null | string,
-    user: number,
+    user: string,
 } = {
     isAuthenticated: false,
     token: null,
-    user: 0,
+    user: '',
 }
 
 const authSlice = createSlice({
@@ -19,12 +19,12 @@ const authSlice = createSlice({
             const {accessToken, userId} = action.payload
             state.isAuthenticated = true
             state.token = accessToken
-            state.user = userId
+            state.user = userId.toString()
         },
         logOut: (state) => {
             state.isAuthenticated = false,
             state.token = null,
-            state.user = 0
+            state.user = ''
         }
     }
 })

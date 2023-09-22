@@ -42,7 +42,7 @@ const commentApiSlice = apiSlice
             serializeQueryArgs: ({ endpointName }) => {
                 return endpointName
             },
-            merge: (currentCache, newItems, {arg}) => {
+            merge: (currentCache, newItems, {arg}) => { 
                 if (arg.page > 1) {
                     currentCache.push(...newItems)
                     return currentCache

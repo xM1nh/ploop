@@ -25,7 +25,7 @@ const useSpray = (userId: string, spray: Spray) => {
 
     const handleFollowButtonClick = async () => {
         if (!userId) {
-            dispatch(toggleAuth)
+            dispatch(toggleAuth())
         } else {
             if (!isFollow) {
                 const response = await follow({userId, followeeId: (spray?.user.id as number).toString()}).unwrap()
@@ -39,7 +39,7 @@ const useSpray = (userId: string, spray: Spray) => {
 
     const handleLikeButtonClick = async () => {
         if (!userId) {
-            dispatch(toggleAuth)
+            dispatch(toggleAuth())
         } else {
             if (!isLike) {
                 const response = await like({sprayId: (spray?.id as number).toString(), userId: userId.toString(), notifierId: (spray?.user.id as number).toString()}).unwrap()
@@ -56,7 +56,7 @@ const useSpray = (userId: string, spray: Spray) => {
 
     const handleSaveButtonClick = async () => {
         if (!userId) {
-            dispatch(toggleAuth)
+            dispatch(toggleAuth())
         } else {
             if (!isSave) {
                 const response = await save({sprayId: (spray?.id as number).toString(), userId: userId.toString()}).unwrap()

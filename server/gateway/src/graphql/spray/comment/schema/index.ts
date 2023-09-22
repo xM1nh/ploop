@@ -17,6 +17,6 @@ export const typeDef = `#graphql
         deleteComment(commentId: ID!, sprayId: String!): Comment!
     }
     type Subscription {
-        commentAdded(sprayId: ID!): Comment
+        commentAdded(sprayId: ID!, userId: ID!): Comment
     }
 `
