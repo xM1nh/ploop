@@ -28,7 +28,7 @@ export default (app: Express, channel: Channel) => {
     app.get('/sprays/users/:id', asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const id = parseInt(req.params.id)
         const limit = parseInt(req.query.count as string)
-        const offset = limit * parseInt(req.query.page as string)
+        const offset = limit * (parseInt(req.query.page as string) - 1)
 
         const sprays = await service.getOriginalSpraysForUser(id, limit, offset)
 

@@ -73,9 +73,9 @@ class UserService {
         followerId: number,
         followeeId: number,
     ) {
-        const isFollow = await this.repository.getFollow(followerId, followeeId)
+        const follow = await this.repository.getFollow(followerId, followeeId)
 
-        return isFollow ? true : false
+        return follow
     }
 
     async follow(
@@ -139,11 +139,14 @@ class UserService {
 
         const {event, data} = message
 
-        const {id, username, nickname} = data
+        const {id, username, nickname, url} = data
 
         switch(event) {
             case 'SIGN_UP':
                 await this.createUser(id, username, nickname)
+                break
+            case 'CHANGE_AVATAR':
+                await this.changeAvatar(id, url)
                 break
             default:
                 break

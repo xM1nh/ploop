@@ -4,7 +4,7 @@ import multer from 'multer'
 import multerS3 from 'multer-s3'
 import {Request} from 'express'
 import fs from 'fs'
-import { DeleteObjectCommand, HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 //.env
 if (process.env.NODE_ENV !== 'prod') {
@@ -86,26 +86,26 @@ export const uploadToR2 = multer({
         s3: r2,
         bucket: CLOUDFLARE_BUCKET,
         key: async function(req: Request, file, cb) {
+            console.log(file)
             const id = file.originalname
             try {
-                const key = `user-avatar/${id}.png`
+                const key = `user-avatar/${id}`
 
                 const deleteObject = new DeleteObjectCommand({
                     Bucket: CLOUDFLARE_BUCKET,
-                    Key: key
+                    Key: key,
                 })
                 await r2.send(deleteObject)
 
-                const headObject = new HeadObjectCommand({
-                    Bucket: CLOUDFLARE_BUCKET,
-                    Key: key
-                })
-                await r2.send(headObject)
+                cb(null, key)
             } catch(e) {
                 throw e
             }
 
             cb(null, id)
+        },
+        metadata: function(req: Request, file, cb) {
+            cb(null, file.fieldname)
         }
     })
 })

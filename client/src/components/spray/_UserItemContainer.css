@@ -1,0 +1,51 @@
+.userItemContainer {
+    border-radius: 4px;
+}
+
+.userSprayContainer {
+    position: relative;
+    width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.userSprayWrapper {
+    position: absolute;
+    inset: 0px;
+}
+
+.userSprayWrapper img {
+    position: absolute;
+    inset: 0px;
+    box-sizing: border-box;
+    padding: 0px;
+    border: medium;
+    margin: auto;
+    display: block;
+    width: 0px;
+    height: 0px;
+    min-width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    max-height: 100%;
+}
+
+.userSprayDesc {
+    font-weight: 400;
+    padding: 2px 4px 0px;
+    height: 28px;
+    overflow: hidden;
+    box-sizing: content-box;
+}
+
+.userSprayDescTextContainer {
+    font-size: 16px;
+    word-break: break-word;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    font-weight: 600;
+    line-height: 22px;
+    color: rgb(22, 24, 35);
+    pointer-events: none;
+}

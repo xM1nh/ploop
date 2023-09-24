@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { forwardRef, useRef } from 'react';
 import { useInView } from 'react-cool-inview';
 import useSpray from '../../hooks/useSpray';
+import { formatDate } from '../../utils';
 
 import Avatar from '../avatar/Avatar';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -95,7 +96,7 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
                     </div>
                     <div className='contributorWrapper'>
                         <h4>
-                            {`${new Date(spray.created_on).toLocaleString()}`}
+                            {`${formatDate(spray.created_on)}`}
                         </h4>
                     </div>
                 </div>
@@ -114,13 +115,15 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
                             </span>
                             <strong className='actionText'>{likeCount}</strong>
                         </button>
-                        <button className='sprayActionButton'>
-                            <span className='actionIconWrapper'>
-                                <EditIcon />
-                            </span>
-                            <strong className='actionText'>{spray.shares}</strong>
-                        </button>
-                        <Link to={`/spray/${spray.id}`} state={{previousLocation: location, spray}}>
+                        <Link to={`/create`} state={{initState: spray.cover_url, id: spray.id}}>
+                            <button className='sprayActionButton'>
+                                <span className='actionIconWrapper'>
+                                    <EditIcon />
+                                </span>
+                                <strong className='actionText'>{spray.shares}</strong>
+                            </button>
+                        </Link>
+                        <Link to={`/spray/${spray.id}`} state={{previousLocation: location}}>
                             <button className='sprayActionButton'>
                                 <span className='actionIconWrapper'>
                                     <TextsmsIcon />

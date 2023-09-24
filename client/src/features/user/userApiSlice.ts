@@ -1,15 +1,17 @@
 import apiSlice from "../../app/api/apiSlice"
 import { User, Follow } from "../../utils/types"
 
-const userApiSlice = apiSlice.injectEndpoints({
+const userApiSlice = apiSlice
+.enhanceEndpoints({addTagTypes: ['User']})
+.injectEndpoints({
     endpoints: builder => ({
-        getUser: builder.query<User, {userId: string}>({
-            query: ({userId}) => ({
+        getUser: builder.query<User, {userId: string, currentUserId: string}>({
+            query: ({userId, currentUserId}) => ({
                 url: '/graphql',
                 method: 'POST',
                 body: {
                     query: `
-                        query GetUser($userId: ID!) {
+                        query GetUser($userId: ID!, $currentUserId: ID!) {
                             user(id: $userId) {
                                 id
                                 username
@@ -18,28 +20,32 @@ const userApiSlice = apiSlice.injectEndpoints({
                                 bio
                                 followings
                                 followers
-                                isFollow(followeeId: $userId) {
+                                isFollow(followerId: $currentUserId) {
                                     id
                                 }
                             }
                         }
                     `,
                     variables: {
-                        userId
+                        userId,
+                        currentUserId
                     }
                 }
             }),
-            transformResponse: (response: {data: {user: User}}) => response.data.user
+            transformResponse: (response: {data: {user: User}}) => response.data.user,
+            providesTags: (_, __, arg) => [{type: 'User' as const, id: arg.userId}]
         }),
         follow: builder.mutation<Follow, {userId: string, followeeId: string}>({
             query: ({userId, followeeId}) => ({
                 url: `/graphql`,
                 method: 'POST',
                 body: {
-                    mutation: `
+                    query: `
                         mutation Follow($id: ID!, $followeeId: ID!) {
                             follow(id: $id, followeeId: $followeeId) {
-                                id
+                                followee {
+                                    followers
+                                }
                             }
                         }
                     `,
@@ -56,10 +62,12 @@ const userApiSlice = apiSlice.injectEndpoints({
                 url: `/graphql`,
                 method: 'POST',
                 body: {
-                    mutation: `
+                    query: `
                         mutation Unfollow($id: ID!, $followeeId: ID!) {
                             unfollow(id: $id, followeeId: $followeeId) {
-                                id
+                                followee {
+                                    followers
+                                }
                             }
                         }
                     `,
@@ -69,7 +77,7 @@ const userApiSlice = apiSlice.injectEndpoints({
                     }
                 }
             }),
-            transformResponse: (response: {data: {follow: Follow}}) => response.data.follow
+            transformResponse: (response: {data: {unfollow: Follow}}) => response.data.unfollow
         }),
         getFollow: builder.query<Follow, {userId: string, followeeId: string}>({
             query: ({userId, followeeId}) => ({
@@ -90,6 +98,43 @@ const userApiSlice = apiSlice.injectEndpoints({
                 }
             }),
             transformResponse: (response: {data: {follow: Follow}}) => response.data.follow
+        }),
+        editUserInfo: builder.mutation<User, {id: string, username: string, nickname: string, bio: string}>({
+            query: ({id, username, nickname, bio}) => ({
+                url: '/graphql',
+                method: 'POST',
+                body: {
+                    query: `
+                        mutation EditUser($id: ID!, $username: String, $nickname: String, $bio: String) {
+                            editUser(id: $id, username: $username, nickname: $nickname, bio: $bio) {
+                                id
+                            }
+                        }
+                    `,
+                    variables: {
+                        id,
+                        username,
+                        nickname,
+                        bio
+                    }
+                }
+            }),
+            transformResponse: (response: {data: {editUser: User}}) => response.data.editUser,
+            invalidatesTags: (_, __, arg) => [{type: 'User' as const, id: arg.id}]
+        }),
+        editUserAvatar: builder.mutation<void, {id: string, imageFile: File}>({
+            query: ({id, imageFile}) => {
+                const formData = new FormData()
+                formData.append('avatar', imageFile, id)
+                formData.append('id', id)
+                return {
+                    url: `http://127.0.0.1:8000/upload/avatar`,
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData,
+                }
+            },
+            invalidatesTags: (_, __, arg) => [{type: 'User' as const, id: arg.id}]
         })
     })
 })
@@ -101,5 +146,6 @@ export const {
     useFollowMutation,
     useUnfollowMutation,
     useGetFollowQuery,
-    useLazyGetFollowQuery,
+    useEditUserAvatarMutation,
+    useEditUserInfoMutation
 } = userApiSlice

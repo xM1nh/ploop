@@ -87,12 +87,12 @@ class SprayRepository {
         const queryString =`SELECT *
                             FROM spray_schema.sprays
                             WHERE user_id = ${id}
-                            ORDER BY created_on
+                            ORDER BY created_on DESC
                             LIMIT ${limit} OFFSET ${offset}`
 
         try {
-            const spray = (await pool.query(queryString)).rows
-            return spray
+            const sprays = (await pool.query(queryString)).rows
+            return sprays
         } catch (e) {
             throw e
         }
@@ -106,12 +106,12 @@ class SprayRepository {
         const queryString = `SELECT *
                             FROM spray_schema.edits
                             WHERE original_id = ${id} AND view_permission = 1
-                            ORDER BY created_on
+                            ORDER BY created_on DESC
                             LIMIT ${limit} OFFSET ${offset}`
 
         try {
-            const edit = (await pool.query(queryString)).rows
-            return edit
+            const edits = (await pool.query(queryString)).rows
+            return edits
         } catch (e) {
             throw e
         }

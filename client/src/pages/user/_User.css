@@ -165,8 +165,33 @@
     min-width: 208px;
     height: 36px;
     line-height: 22px;
+}
+
+.userPage .infoContainer .followButtonWrapper.false {
+    z-index: -1;
+    opacity: 0;
+}
+
+.userPage .infoContainer .followButtonWrapper.true {
     z-index: unset;
     opacity: 1;
+}
+
+.messageButtonWrapper {
+    display: flex;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.messageButtonWrapper.false {
+    opacity: 0;
+    z-index: -1;
+}
+
+.messageButtonWrapper.true {
+    opacity: 1;
+    z-index: unset;
 }
 
 .followButtonWrapper button {
@@ -304,15 +329,6 @@
     grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
 }
 
-.messageButtonWrapper {
-    display: flex;
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    opacity: 0;
-    z-index: -1;
-}
-
 .messageButtonWrapper button {
     border-width: 1px;
     border-style: solid;
@@ -350,4 +366,38 @@
     position: relative;
     background-color: rgb(255, 255, 255);
     float: right;
+}
+
+.userErrorContainer {
+  flex: 0 0 auto;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 490px;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.userErrorWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.userErrorMessage {
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 700;
+    color: rgba(22, 24, 35, 1);
+}
+
+.userErrorDescription {
+    font-size: 16px;
+    line-height: 21px;
+    font-weight: 400;
+    color: rgba(22, 24, 35, .75);
+    margin-top: 8px;
 }

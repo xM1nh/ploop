@@ -54,7 +54,7 @@ export type Save = {
 
 export type Follow = {
     id: number,
-    follower_id: number,
-    followee_id: number,
+    follower: User,
+    followee: User,
     created_on: Date
 }

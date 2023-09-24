@@ -19,7 +19,7 @@ function App() {
         data: sprays,
         isFetching,
         isLoading,
-    } = useGetSpraysQuery({page, count: 10, userId: user}, {skip: isLoggedIn && user === '0'})
+    } = useGetSpraysQuery({page, count: 10, userId: user ? user : "0"}, {skip: isLoggedIn && user === '0'})
 
     const { observe: endItemRef } = useInView({
         threshold: 0.5,

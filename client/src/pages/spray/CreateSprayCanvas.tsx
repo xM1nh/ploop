@@ -8,10 +8,11 @@ import { CanvasRef } from "./CreateSpray";
 type CreateSprayCanvasProps = {
     canvasRef: Ref<CanvasRef>,
     handleDiscard: () => void,
-    handleNext: () => void
+    handleNext: () => void,
+    initState?: string
 }
 
-const CreateSprayCanvas = ({canvasRef, handleDiscard, handleNext} :CreateSprayCanvasProps) => {
+const CreateSprayCanvas = ({canvasRef, handleDiscard, handleNext, initState} :CreateSprayCanvasProps) => {
     return (
         <div className='createMainContainer'>
             <div className='subContainer one'>
@@ -25,6 +26,7 @@ const CreateSprayCanvas = ({canvasRef, handleDiscard, handleNext} :CreateSprayCa
                         height={800}
                         drawable={true}
                         ref={canvasRef}
+                        initState={initState}
                     />
                 </div>
 

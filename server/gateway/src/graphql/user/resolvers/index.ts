@@ -1,4 +1,4 @@
-import { DataSource, Pagination, User } from '../../../utils/types'
+import { DataSource, Follow, Pagination, User } from '../../../utils/types'
 
 export const resolvers = {
     Query: {
@@ -43,8 +43,16 @@ export const resolvers = {
         },
     },
     User: {
-        isFollow: async (parent: User, {followeeId}: {followeeId: string}, {dataSources}: {dataSources: DataSource}) => {
-            return dataSources.userApi.getFollow(parent.id.toString(), followeeId)
+        isFollow: async (parent: User, {followerId}: {followerId: string}, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.userApi.getFollow(followerId, parent.id.toString())
         }
+    },
+    Follow: {
+        follower: async (parent: Follow, _: any, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.userApi.getUser(parent.follower_id.toString())
+        },
+        followee: async (parent: Follow, _: any, {dataSources}: {dataSources: DataSource}) => {
+            return dataSources.userApi.getUser(parent.followee_id.toString())
+        },
     }
 }

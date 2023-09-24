@@ -25,7 +25,7 @@ const Header = () => {
 
     const {
         data: userData,
-    } = useGetUserQuery({userId: userId as string}, {skip: !userId})
+    } = useGetUserQuery({userId: userId as string, currentUserId: userId}, {skip: !userId})
 
     const toggleLoginModal = () => {
         dispatch(toggleAuth())

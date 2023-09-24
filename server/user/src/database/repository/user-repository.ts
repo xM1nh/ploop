@@ -151,7 +151,7 @@ class UserRepository {
     }
 
     async getFollow(followerId: number, followeeId: number) {
-        const queryString = `SELECT 1
+        const queryString = `SELECT *
                             FROM user_schema.follows
                             WHERE follower_id = ${followerId} AND followee_id = ${followeeId}`
 

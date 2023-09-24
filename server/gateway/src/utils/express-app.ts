@@ -1,5 +1,4 @@
-import express, {Express} from 'express'
-import cors from 'cors'
+import {Express} from 'express'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 
 export default (app: Express) => {

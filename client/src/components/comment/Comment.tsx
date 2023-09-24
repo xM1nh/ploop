@@ -3,6 +3,7 @@ import Avatar from '../avatar/Avatar'
 import { Link } from 'react-router-dom'
 import { Comment as CommentType } from '../../utils/types'
 import { forwardRef } from 'react'
+import { formatDate } from '../../utils'
 
 type CommentProps = {
     comment: CommentType
@@ -22,7 +23,7 @@ const Comment = forwardRef<HTMLDivElement | null, CommentProps>(({comment}: Comm
                     </p>
                     <p className='commentSubContent'>
                         <span className='commentCreatedOn'>
-                            {comment.created_on.toLocaleString()}
+                            {formatDate(comment.created_on)}
                         </span>
                     </p>
                 </div>
