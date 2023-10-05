@@ -15,9 +15,10 @@ class SprayService {
         viewPermission: number,
         drawPermission: number,
         limited: boolean,
-        deadline: Date | string
+        deadline: Date | string,
+        originalId: number | null
     ) {
-        const spray = await this.repository.addSpray(url, coverUrl, creatorId, caption, viewPermission, drawPermission, limited, deadline)
+        const spray = await this.repository.addSpray(url, coverUrl, creatorId, caption, viewPermission, drawPermission, limited, deadline, originalId)
         return spray
     }
 
@@ -176,14 +177,15 @@ class SprayService {
             viewPermission,
             drawPermission,
             isLimited: limited,
-            deadline
+            deadline,
+            originalId
         } = data
 
         console.log(event, data)
 
         switch(event) {
             case 'CREATE_SPRAY':
-                await this.createNewSpray(sprayUrl, coverUrl, creatorId, caption, viewPermission, drawPermission, limited, JSON.parse(deadline))
+                await this.createNewSpray(sprayUrl, coverUrl, creatorId, caption, viewPermission, drawPermission, limited, JSON.parse(deadline), originalId)
                 break
             default:
                 break
