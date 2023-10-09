@@ -2,7 +2,7 @@ import './_CreateSpray.css'
 import {v4 as uuidv4} from 'uuid'
 
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
-
+import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../features/auth/authSlice';
 
@@ -17,6 +17,7 @@ export interface CanvasRef {
 }
 
 const CreateSpray = () => {
+    const location = useLocation()
     const canvasRef = useRef<CanvasRef>(null)
     const [step, setStep] = useState(0)
     const [sprayHistory, setSprayHistory] = useState<string[][]>([])
@@ -25,7 +26,7 @@ const CreateSpray = () => {
     const [drawPermission, setDrawPermission] = useState('1')
     const [isLimited, setIsLimited] = useState(false)
     const [deadline, setDeadline] = useState<Event | null>(null)
-
+    const [hasNext, setHasNext] = useState<boolean>(false)
     const user = useSelector(selectUser)
 
     const handleNext = () => {
@@ -38,6 +39,7 @@ const CreateSpray = () => {
             setSprayHistory(data)
         }
         setStep(1)
+        setHasNext(true)
     }
 
     const handleBack = () => {
@@ -64,7 +66,8 @@ const CreateSpray = () => {
             viewPermission,
             drawPermission,
             isLimited,
-            deadline
+            deadline,
+            originalId: location.state ? location.state.id : null
         }
         uploadWorker.postMessage({id, data})
         uploadWorker.onmessage = () => {
@@ -86,7 +89,7 @@ const CreateSpray = () => {
 
     let content
     if (step === 0) {
-        content = <CreateSprayCanvas canvasRef={canvasRef} handleNext={handleNext} handleDiscard={handleDiscard}/>
+        content = <CreateSprayCanvas canvasRef={canvasRef} handleNext={handleNext} handleDiscard={handleDiscard} initState={(!hasNext && location.state) ? location.state.initState : undefined}/>
     }
     if (step === 1) {
         content = <CreateCanvasForm 

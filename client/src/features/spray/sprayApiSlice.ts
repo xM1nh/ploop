@@ -40,7 +40,7 @@ const sprayApiSlice = apiSlice
                                         nickname
                                         username
                                         id
-                                        isFollow(followeeId: $userId) {
+                                        isFollow(followerId: $userId) {
                                             id
                                         }
                                     }
@@ -113,7 +113,7 @@ const sprayApiSlice = apiSlice
                                         nickname
                                         username
                                         id
-                                        isFollow(followeeId: $userId) {
+                                        isFollow(followerId: $userId) {
                                             id
                                         }
                                     }
@@ -180,7 +180,7 @@ const sprayApiSlice = apiSlice
                     body: {
                         query: `
                             query GetSpraysForUser($id: ID!, $pagination: PaginationInput!){
-                                userSprays(id: $id, pagination: $pagination) {
+                                userSprays(userId: $id, pagination: $pagination) {
                                     caption
                                     comments
                                     cover_url
@@ -198,13 +198,13 @@ const sprayApiSlice = apiSlice
                                     view_permission
                                 }
                             }
-                        `
-                    },
-                    variables: {
-                        id,
-                        pagination: {
-                            page,
-                            count
+                        `,
+                        variables: {
+                            id,
+                            pagination: {
+                                page,
+                                count
+                            }
                         }
                     }
                 }),

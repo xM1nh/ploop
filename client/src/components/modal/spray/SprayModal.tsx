@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useInView } from 'react-cool-inview';
 import { gql, useSubscription } from '@apollo/client';
 import useSpray from '../../../hooks/useSpray';
+import { formatDate } from '../../../utils';
 
 import CloseIcon from '@mui/icons-material/Close';
 import Avatar from '../../avatar/Avatar'
@@ -54,7 +55,7 @@ const SprayModal = () => {
     const {
         data: spray,
         isLoading: sprayIsLoading
-    } = useGetSprayQuery({id: id as string, userId})
+    } = useGetSprayQuery({id: id as string, userId: userId ? userId : '0'})
 
     const {
         isFollow,
@@ -90,7 +91,7 @@ const SprayModal = () => {
     const { data: subData } = useSubscription(COMMENT_ADDED_SUBSCRIPTION, {
         variables: {
             sprayId: id,
-            userId
+            userId: userId ? userId : '0'
         }
     })
 
@@ -117,21 +118,11 @@ const SprayModal = () => {
         <div className='followButton' onClick={handleFollowButtonClick}>
             <div className='followButtonContent'>
                 <div className='followButtonLabel'>
-                    Follow
+                    {isFollow ? 'Following' : 'Follow'}
                 </div>
             </div>
         </div>
-    if (isFollow) {
-        followButton = 
-            <div className='followButton' onClick={handleFollowButtonClick}>
-                <div className='followButtonContent'>
-                    <div className='followButtonLabel'>
-                        Following
-                    </div>
-                </div>
-            </div>
-    }
-    if (parseInt(userId as string) === spray?.user.id) followButton = <></>
+    if (userId === spray?.user.id.toString()) followButton = <></> 
 
     let content
     if (commentCount === 0 && newComments.length === 0) content = <div className='emptyComment'>
@@ -200,7 +191,7 @@ const SprayModal = () => {
                             <span className='modalNickname'>
                                 {spray?.user.nickname}
                                 <span style={{margin: '0px 4px'}}>.</span>
-                                <span>{spray?.created_on.toLocaleString()}</span>
+                                <span>{formatDate(spray?.created_on as Date)}</span>
                             </span>
                         </Link>
                         {followButton}

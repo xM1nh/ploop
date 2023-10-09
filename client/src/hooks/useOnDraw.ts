@@ -1,12 +1,13 @@
 import { useRef, useEffect, } from "react"
 import * as features from '../components/canvas/features'
+import { urlToObject } from "../utils"
 
 export type Point = {
     x: number,
     y: number
 } | null
 
-export const useOnDraw = (tool: string, color: string, lineWidth: number, initState?: Blob) => {
+export const useOnDraw = (tool: string, color: string, lineWidth: number, initState?: string) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const permanentCanvasRef = useRef<HTMLCanvasElement | null>(null)
     const isDrawingRef = useRef<boolean | null>(false)
@@ -33,7 +34,7 @@ export const useOnDraw = (tool: string, color: string, lineWidth: number, initSt
         permanentCanvasRef.current = ref
     }
 
-    const init = () => {
+    const init = async () => {
         if (permanentCanvasRef.current) {
             const ctx = permanentCanvasRef.current.getContext('2d')
             if (ctx) {
@@ -42,12 +43,13 @@ export const useOnDraw = (tool: string, color: string, lineWidth: number, initSt
                 ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
                 if (initState) {
                     const image = new Image()
-                    const blobUrl = URL.createObjectURL(initState)
-                    image.src = blobUrl
+                    const blobUrl = await urlToObject(initState)
+                    const imgSrc = URL.createObjectURL(blobUrl)
                     image.onload = () => {
                         ctx.drawImage(image, 0, 0, ctx.canvas.width, ctx.canvas.height)
-                        URL.revokeObjectURL(blobUrl)
+                        URL.revokeObjectURL(imgSrc)
                     }
+                    image.src = imgSrc
                 }
             }
         }
