@@ -1,5 +1,4 @@
 import { NotificationRepository } from "../database";
-import { stringToDate } from "../utils";
 
 interface NotificationMessage {
     [index: number]: string
@@ -24,7 +23,7 @@ class NotificationService {
     
         300: `liked you spray`,
         301: `commented on your spray`,
-        302: `drew on you spray`,
+        302: `resprayed your spray`,
         303: `shared your spray`
     }
 
@@ -34,30 +33,19 @@ class NotificationService {
         actorId: number,
         notifierId: number,
     ) {
-        const status = 0 //Create an unread notification by default
+        const notification = await this.repository.createNotification(actorId, notifierId, entityTypeId, entityId, 0)
 
-        const notificationObjectId = await this.repository.createNotificationObject(entityTypeId, entityId, status)
-        await this.repository.createNotificationChange(notificationObjectId, actorId)
-        await this.repository.createNotification(notificationObjectId, notifierId)
-
-        return notificationObjectId
+        return notification
     }
 
     async getNotificationsOfUser(
         id: number,
-        pageNumber: number
+        limit: number,
+        offset: number
     ) {
-        const offset = pageNumber * 10
-        const notifications = await this.repository.getNotificationsByUserId(id, offset)
+        const notifications = await this.repository.getNotificationsByUserId(id, limit, offset)
 
         return notifications
-    }
-
-    async deleteNotificationsOfUser(
-        userId: number
-    ) {
-        const response = await this.repository.deleteNotificationsByUserId(userId)
-        return response
     }
 
     async markAsRead(
@@ -66,26 +54,12 @@ class NotificationService {
         const response = await this.repository.updateNotificationStatus(id, 1)
         return response
     }
-    
-    async generateNotificationPackage (
-        entityTypeId: number,
-        actor: string,
-        created_on: string
+
+    async markAsUnread(
+        id: number
     ) {
-        if (entityTypeId < 200) {
-            return {
-                actor: 'System Notification',
-                message: this.NOTIFICATION_MESSAGE[entityTypeId],
-                created_on: stringToDate(created_on)
-            }
-        }
-        else {
-            return {
-                actor,
-                message: this.NOTIFICATION_MESSAGE[entityTypeId],
-                created_on: stringToDate(created_on),
-            }
-        }
+        const response = await this.repository.updateNotificationStatus(id, 0)
+        return response
     }
 
     async subscribeEvents(payload: string) {
@@ -105,11 +79,6 @@ class NotificationService {
             case 'CREATE_NOTIFICATION':
                 await this.createNewNotification(entityTypeId, entityId, actorId, notifierId)
                 break
-            case 'DELETE_NOTIFICATIONS':
-                await this.deleteNotificationsOfUser(notifierId)
-                break
-            case 'MARK_AS_READ':
-                await this.markAsRead(id)
             default: 
                 break
         }
