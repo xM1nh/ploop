@@ -5,6 +5,7 @@ import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core'
 import { schema } from '../graphql/schema'
 import { SpraySource, CommentSource, LikeSource, SaveSource } from '../graphql/spray'
 import { UserSource } from '../graphql/user'
+import { NotificationSource } from '../graphql/notification'
 import { DataSource } from '../utils/types'
 import { useServer } from 'graphql-ws/lib/use/ws';
 import {WebSocketServer} from 'ws'
@@ -20,7 +21,8 @@ export default async (httpServer: Server, app: Express, connection: Connection) 
             sprayApi: new SpraySource(),
             commentApi: new CommentSource(),
             likeApi: new LikeSource(),
-            saveApi: new SaveSource()
+            saveApi: new SaveSource(),
+            notificationApi: new NotificationSource()
         } as DataSources<DataSource>
     }
     

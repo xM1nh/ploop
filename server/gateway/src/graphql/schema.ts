@@ -6,20 +6,23 @@ import {
     likeTypeDef, likeResolvers,
     saveTypeDef, saveResolvers  } from "./spray";
 import { typeDef as userTypeDef, resolvers as userResolvers } from "./user";
+import { typeDef as notificationTypeDef, resolvers as notificationResolvers } from './notification';
 
 const typeDefs = [
     userTypeDef,
     sprayTypeDef, 
     commentTypeDef,
     likeTypeDef,
-    saveTypeDef
+    saveTypeDef,
+    notificationTypeDef
 ]
 const resolvers = [ 
     userResolvers,
     sprayResolvers,
     commentResolvers,
     likeResolvers,
-    saveResolvers
+    saveResolvers,
+    notificationResolvers
 ]
 
 export const schema = makeExecutableSchema({
