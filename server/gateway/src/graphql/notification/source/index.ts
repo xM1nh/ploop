@@ -15,16 +15,52 @@ export default class NotificationSource extends RESTDataSource {
             params: {
                 userId,
                 page: page.toString(),
-                count: count.toString()
+                count: count.toString(),
+                status: 'all'
+            }
+        })
+    }
+
+    async getUnreadNotifications(userId: string) {
+        return this.get<Notification[]>('', {
+            params: {
+                userId,
+                status: 'unread'
             }
         })
     }
 
     async read(id: string) {
-        return this.post<Notification>(`${id}/read`)
+        return this.put<Notification>(`${id}`, {
+            params: {
+                action: 'read'
+            }
+        })
     }
 
     async unread(id: string) {
-        return this.post<Notification>(`${id}/unread`)
+        return this.put<Notification>(`${id}`, {
+            params: {
+                action: 'unread'
+            }
+        })
+    }
+
+    async readAll(id: string) {
+        return this.put<void>(`${id}`, {
+            params: {
+                action: 'read',
+                all: 'true'
+            }
+        })
+    }
+
+    async unreadAll(id: string) {
+        return this.put<void>(`${id}`, {
+            params: {
+                action: 'unread',
+                all: 'true'
+            }
+        })
     }
 }

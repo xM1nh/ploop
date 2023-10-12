@@ -2,7 +2,7 @@ import UserService from "../services/user-services";
 import { Express, Request, Response, NextFunction } from "express";
 import { Channel } from "amqplib";
 import { publishMessage, subscribeMessage } from "../utils";
-import { USER_QUEUE, USER_ROUTING_KEY, AUTH_ROUTING_KEY } from "../config";
+import { USER_QUEUE, USER_ROUTING_KEY, AUTH_ROUTING_KEY, NOTIFICATION_ROUTING_KEY } from "../config";
 import asyncHandler from 'express-async-handler'
 
 const user = (app: Express, channel: Channel) => {
@@ -74,6 +74,18 @@ const user = (app: Express, channel: Channel) => {
         const {followeeId} = req.body
 
         const response = await service.follow(followerId, parseInt(followeeId))
+
+        const message = {
+            event: 'CREATE_NOTIFICATION',
+            data: {
+                entityTypeId: 301,
+                entityId: followerId,
+                actorId: followeeId,
+                notifierId: followeeId
+            }
+        }
+
+        publishMessage(channel, NOTIFICATION_ROUTING_KEY, message)
 
         if (!response) res.sendStatus(500)
         else res.status(200).json(response)

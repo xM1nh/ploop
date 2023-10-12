@@ -75,7 +75,7 @@ const HomeItemContainer = forwardRef<HTMLDivElement | null, HomeItemContainerPro
             <div className='contentContainer'>
                 <div className='textInfoContainer'>
                     <div className='creatorContainer'>
-                        <Link className='creatorAnchor' to={`/${spray.user.username}`}>
+                        <Link className='creatorAnchor' to={`/${spray.user.id}`}>
                             <h3 className='creatorUsername'>
                                 {spray.user.username}
                             </h3>

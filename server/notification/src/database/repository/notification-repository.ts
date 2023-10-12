@@ -23,18 +23,18 @@ class NotificationRepository {
             )
             RETURNING *`
 
-            const NCQueryString = `INSERT INTO notification_schema.notification_change (
+            const NCQueryString = `INSERT INTO notification_schema.notification_changes (
                 notification_object_id,
-                actor_id,
+                actor_id
             ) VALUES (
                 $1,
                 $2
             ) 
             RETURNING *`
 
-            const NQueryString = `INSERT INTO notification_schema.notification (
+            const NQueryString = `INSERT INTO notification_schema.notifications (
                 notification_object_id,
-                notifier_id,
+                notifier_id
             ) VALUES (
                 $1,
                 $2
@@ -84,12 +84,28 @@ class NotificationRepository {
                             INNER JOIN notification_schema.notification_changes AS nc
                                 ON no.id = nc.notification_object_id
                             WHERE n.notifier_id = $1
-                            ORDER BY no.created_on
+                            ORDER BY no.created_on DESC
                             LIMIT $2 OFFSET $3`
         const values = [userId, limit, offset]
         try {
             const notifications = (await pool.query(queryString, values)).rows
             return notifications
+        } catch (e) {
+            throw e
+        }
+    }
+
+    async getUnreadNotificationCountByUserId(
+        userId: number
+    ) {
+        const queryString = `SELECT COUNT(no.id)
+                            FROM notification_schema.notification_objects no
+                            INNER JOIN notification_schema.notifications AS n
+                                ON no.id = n.notification_object_id
+                            WHERE n.notifier_id = $1 AND no.status = 0`
+        try {
+            const count = (await pool.query(queryString, [userId])).rows[0].count
+            return count
         } catch (e) {
             throw e
         }
@@ -119,6 +135,23 @@ class NotificationRepository {
         try {
             const notification = (await pool.query(queryString, values)).rows[0]
             return notification
+        } catch (e) {
+            throw e
+        }
+    }
+
+    async updateAllNotificationStatusByUserId(
+        userId: number,
+        status: number
+    ) {
+        const queryString = `UPDATE notification_schema.notification_objects AS no
+                            SET status = $1
+                            FROM notification_schema.notifications AS n
+                            WHERE n.notifier_id = $2 AND no.id = n.notification_object_id AND no.status != $1`
+        const values = [status, userId]
+
+        try {
+            const notification = await pool.query(queryString, values)
         } catch (e) {
             throw e
         }

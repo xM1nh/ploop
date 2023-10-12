@@ -1,4 +1,7 @@
+import { Channel } from "amqplib";
 import { NotificationRepository } from "../database";
+import { publishMessage } from "../utils";
+import { SUBSCRIPTION_EXCHANGE_NAME } from "../config";
 
 interface NotificationMessage {
     [index: number]: string
@@ -6,9 +9,11 @@ interface NotificationMessage {
 
 class NotificationService {
     repository: NotificationRepository
+    channel: Channel
 
-    constructor() {
+    constructor(channel: Channel) {
         this.repository = new NotificationRepository()
+        this.channel = channel
     }
 
     NOTIFICATION_MESSAGE: NotificationMessage = {
@@ -39,13 +44,21 @@ class NotificationService {
     }
 
     async getNotificationsOfUser(
-        id: number,
+        userId: number,
         limit: number,
         offset: number
     ) {
-        const notifications = await this.repository.getNotificationsByUserId(id, limit, offset)
+        const notifications = await this.repository.getNotificationsByUserId(userId, limit, offset)
 
         return notifications
+    }
+
+    async getUnreadNotificationCountOfUser(
+        id: number
+    ) {
+        const count = await this.repository.getUnreadNotificationCountByUserId(id)
+
+        return count
     }
 
     async markAsRead(
@@ -60,6 +73,18 @@ class NotificationService {
     ) {
         const response = await this.repository.updateNotificationStatus(id, 0)
         return response
+    }
+
+    async markAllAsRead(
+        userId: number
+    ) {
+        await this.repository.updateAllNotificationStatusByUserId(userId, 1)
+    }
+
+    async markAllAsUnread(
+        userId: number
+    ) {
+        await this.repository.updateAllNotificationStatusByUserId(userId, 0)
     }
 
     async subscribeEvents(payload: string) {
@@ -77,7 +102,8 @@ class NotificationService {
 
         switch(event) {
             case 'CREATE_NOTIFICATION':
-                await this.createNewNotification(entityTypeId, entityId, actorId, notifierId)
+                const notification = await this.createNewNotification(entityTypeId, entityId, actorId, notifierId)
+                publishMessage(this.channel, 'NOTIFICATION_ADDED', {...notification}, SUBSCRIPTION_EXCHANGE_NAME)
                 break
             default: 
                 break

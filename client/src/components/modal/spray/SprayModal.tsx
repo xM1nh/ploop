@@ -135,9 +135,9 @@ const SprayModal = () => {
     } else {
         content = <>
             {newComments.map((comment: Comment, i: number) => {
-                return <CommentItem key={`query${i}`} comment={comment}/>
+                return <CommentItem key={`subs${i}`} comment={comment}/>
             })}
-            {data?.map((comment: Comment, i: number) => <CommentItem key={`query${i}`} comment={comment} ref={endItemRef}/>)}
+            {data?.map((comment: Comment, i: number) => <CommentItem key={`query${i}`} comment={comment} ref={i === data?.length - 1 ? endItemRef : null}/>)}
         </>
     }
 

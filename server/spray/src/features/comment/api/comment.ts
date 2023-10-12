@@ -31,17 +31,19 @@ export default (app: Express, channel: Channel) => {
 
         const response = await service.comment(sprayId, userId, comment)
 
-        const message = {
-            event: 'CREATE_NOTIFICATION',
-            data: {
-                entityTypeId: 301,
-                entityId: sprayId,
-                actorId: userId,
-                notifierId
+        if (userId !== notifierId) {
+            const message = {
+                event: 'CREATE_NOTIFICATION',
+                data: {
+                    entityTypeId: 301,
+                    entityId: sprayId,
+                    actorId: userId,
+                    notifierId
+                }
             }
+    
+            publishMessage(channel, NOTIFICATION_ROUTING_KEY, message)
         }
-
-        publishMessage(channel, NOTIFICATION_ROUTING_KEY, message)
 
         res.status(200).json(response)
     }))
