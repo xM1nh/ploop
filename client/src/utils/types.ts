@@ -58,3 +58,13 @@ export type Follow = {
     followee: User,
     created_on: Date
 }
+
+export type Notification = {
+    actor: User,
+    notifier: User,
+    id: number,
+    entity_type_id: number,
+    entity: User | Spray,
+    created_on: Date,
+    status: number
+}

@@ -10,54 +10,33 @@ class SprayRepository {
         drawPermission: number,
         limited: boolean,
         deadline: Date | string,
-        originalId?: number
+        originalId: number | null
     ) {
-        let queryString
-        if (originalId) {
-            queryString = `INSERT INTO spray_schema.sprays (
-                url,
-                cover_url,
-                user_id,
-                caption,
-                view_permission,
-                draw_permission,
-                limited,
-                deadline,
-                original_id
-            ) VALUES (
-                '${url}',
-                '${coverUrl}',
-                ${userId},
-                '${caption}',
-                ${viewPermission},
-                ${drawPermission},
-                ${limited},
-                '${deadline}'::TIMESTAMP,
-                ${originalId}
-            ) RETURNING *`
-        } else {
-            queryString = `INSERT INTO spray_schema.sprays (
-                url,
-                cover_url,
-                user_id,
-                caption,
-                view_permission,
-                draw_permission,
-                limited,
-                deadline
-            ) VALUES (
-                '${url}',
-                '${coverUrl}',
-                ${userId},
-                '${caption}',
-                ${viewPermission},
-                ${drawPermission},
-                ${limited},
-                '${deadline}'::TIMESTAMP
-            ) RETURNING *`
-        }
+        const queryString = `INSERT INTO spray_schema.sprays (
+                                url,
+                                cover_url,
+                                user_id,
+                                caption,
+                                view_permission,
+                                draw_permission,
+                                limited,
+                                deadline,
+                                original_id
+                            ) VALUES (
+                                $1,
+                                $2,
+                                $3,
+                                $4,
+                                $5,
+                                $6,
+                                $7,
+                                $8::TIMESTAMP,
+                                $9
+                            ) RETURNING *`
+        const values = [url, coverUrl, userId, caption, viewPermission, drawPermission, limited, deadline, originalId]
+
         try {
-            const spray = (await pool.query(queryString)).rows[0]
+            const spray = (await pool.query(queryString, values)).rows[0]
             return spray
         } catch (e) {
             throw e
@@ -69,10 +48,10 @@ class SprayRepository {
     ) {
         const queryString = `SELECT *
                             FROM spray_schema.sprays
-                            WHERE id = ${id}`
+                            WHERE id = $1`
 
         try {
-            const spray = (await pool.query(queryString)).rows[0]
+            const spray = (await pool.query(queryString, [id])).rows[0]
             return spray
         } catch (e) {
             throw e
@@ -86,12 +65,13 @@ class SprayRepository {
     ) {
         const queryString =`SELECT *
                             FROM spray_schema.sprays
-                            WHERE user_id = ${id}
+                            WHERE user_id = $1
                             ORDER BY created_on DESC
-                            LIMIT ${limit} OFFSET ${offset}`
-
+                            LIMIT $2 OFFSET $3`
+        const values = [id, limit, offset]
+        
         try {
-            const sprays = (await pool.query(queryString)).rows
+            const sprays = (await pool.query(queryString, values)).rows
             return sprays
         } catch (e) {
             throw e
@@ -105,12 +85,13 @@ class SprayRepository {
     ) {
         const queryString = `SELECT *
                             FROM spray_schema.edits
-                            WHERE original_id = ${id} AND view_permission = 1
+                            WHERE original_id = $1 AND view_permission = 1
                             ORDER BY created_on DESC
-                            LIMIT ${limit} OFFSET ${offset}`
+                            LIMIT $2 OFFSET $3`
+        const values = [id, limit, offset]
 
         try {
-            const edits = (await pool.query(queryString)).rows
+            const edits = (await pool.query(queryString, values)).rows
             return edits
         } catch (e) {
             throw e
@@ -124,12 +105,13 @@ class SprayRepository {
     ) {
         const queryString = `SELECT *
                             FROM spray_schema.edits
-                            WHERE user_id = ${id} AND original_id IS NOT NULL
+                            WHERE user_id = $1 AND original_id IS NOT NULL
                             ORDER BY created_on
-                            LIMIT ${limit} OFFSET ${offset}`
-
+                            LIMIT $2 OFFSET $3`
+        const values = [id, limit, offset]
+        
         try {
-            const edit = (await pool.query(queryString)).rows
+            const edit = (await pool.query(queryString, values)).rows
             return edit
         } catch (e) {
             throw e
@@ -144,10 +126,11 @@ class SprayRepository {
                             FROM spray_schema.sprays
                             WHERE view_permission = 1
                             ORDER BY created_on DESC
-                            LIMIT ${limit} OFFSET ${offset}`
+                            LIMIT $1 OFFSET $2`
+        const values = [limit, offset]
 
         try {
-            const spray = (await pool.query(queryString)).rows
+            const spray = (await pool.query(queryString, values)).rows
             return spray
         } catch (e) {
             throw e
@@ -159,12 +142,13 @@ class SprayRepository {
         newUrl: string,
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                            SET url = '${newUrl}'
-                            WHERE id = ${id}
+                            SET url = $1
+                            WHERE id = $2
                             RETURNING *`
+        const values = [newUrl, id]
 
         try {
-            const spray = (await pool.query(queryString)).rows[0]
+            const spray = (await pool.query(queryString, values)).rows[0]
             return spray
         } catch (e) {
             throw e
@@ -176,12 +160,13 @@ class SprayRepository {
         newCaption: string
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                            SET caption = '${newCaption}'
-                            WHERE id = ${id}
+                            SET caption = $1
+                            WHERE id = $2
                             RETURNING *`
+        const values = [newCaption, id]
 
         try {
-            const spray = (await pool.query(queryString)).rows[0]
+            const spray = (await pool.query(queryString, values)).rows[0]
             return spray
         } catch (e) {
             throw e
@@ -193,12 +178,13 @@ class SprayRepository {
         viewPermission: number
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                            SET view_permission = ${viewPermission}
-                            WHERE id = ${id}
+                            SET view_permission = $1
+                            WHERE id = $2
                             RETURNING *`
+        const values = [viewPermission, id]
 
         try {
-            const spray = (await pool.query(queryString)).rows[0]
+            const spray = (await pool.query(queryString, values)).rows[0]
             return spray
         } catch (e) {
             throw e
@@ -210,12 +196,13 @@ class SprayRepository {
         drawPermission: number
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                            SET draw_permission = ${drawPermission}
-                            WHERE id = ${id}
+                            SET draw_permission = $1
+                            WHERE id = $2
                             RETURNING *`
+        const values = [drawPermission, id]
 
         try {
-            const spray = (await pool.query(queryString)).rows[0]
+            const spray = (await pool.query(queryString, values)).rows[0]
             return spray
         } catch (e) {
             throw e
@@ -228,13 +215,14 @@ class SprayRepository {
         deadline?: Date | string
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                                SET limited = ${limitation}
-                                    deadline = '${deadline}'::TIMESTAMP
-                                WHERE id = ${id}
+                                SET limited = $1
+                                    deadline = $2::TIMESTAMP
+                                WHERE id = $3
                                 RETURNING *`
+        const values = [limitation, deadline, id]
 
         try {
-            const spray = (await pool.query(queryString)).rows[0]
+            const spray = (await pool.query(queryString, values)).rows[0]
             return spray
         } catch (e) {
             throw e
@@ -245,11 +233,11 @@ class SprayRepository {
         id: number
     ) {
         const queryString = `DELETE FROM spray_schema.sprays
-                            WHERE id = ${id}
+                            WHERE id = $1
                             RETURNING *`
 
         try {
-            const spray = (await pool.query(queryString)).rows[0]
+            const spray = (await pool.query(queryString, [id])).rows[0]
             return spray
         } catch (e) {
             throw e
@@ -260,10 +248,10 @@ class SprayRepository {
         id: number
     ) {
         const queryString = `DELETE FROM spray_schema.sprays
-                            WHERE user_id = ${id}`
+                            WHERE user_id = $1`
 
         try {
-            await pool.query(queryString)
+            await pool.query(queryString, [id])
         } catch (e) {
             throw e
         }

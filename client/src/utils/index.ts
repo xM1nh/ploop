@@ -1,3 +1,23 @@
+interface NotificationMessage {
+    [index: number]: string
+}
+
+const NOTIFICATION_MESSAGE: NotificationMessage = {
+    //System notifications
+    100: `Your spray has been successfully uploaded. You will be able to view your spray after we're done processing.`,
+    101: `Your spray has been successfully processed. You can now view your spray.`,
+    102: `There's an error occurred during your upload. Please try again later.`,
+
+    //Non-system notifications
+    200: `started following you`,
+    201: `posted a new spray`,
+
+    300: `liked you spray`,
+    301: `commented on your spray`,
+    302: `resprayed your spray`,
+    303: `shared your spray`
+}
+
 export const formatDate = (date: Date) => {
     date = new Date(date)
     const dateTime = date.getTime()
@@ -30,6 +50,10 @@ export const formatDate = (date: Date) => {
     }
 
     return `${date.getMonth()}-${date.getDate()}`
+}
+
+export const generateNotificationMessage = (entity_type_id: number) => {
+    return NOTIFICATION_MESSAGE[entity_type_id]
 }
 
 export const urlToObject = async (url: string) => {

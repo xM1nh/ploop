@@ -13,7 +13,8 @@ import LineWidthSelector from './LineWidthSelector'
 interface CanvasProps {
     width: string | number | undefined,
     height: string | number | undefined,
-    drawable: boolean
+    drawable: boolean,
+    initState?: string
 }
 
 export type Point = {
@@ -24,7 +25,8 @@ export type Point = {
 const Canvas = forwardRef<CanvasRef, CanvasProps>(({
     width, 
     height,
-    drawable
+    drawable,
+    initState
 }: CanvasProps, ref) => {
     const [tool, setTool] = useState('free')
     const [isToolOpen, setIsToolOpen] = useState(false)
@@ -44,7 +46,7 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
         redo,
         getHistory,
         setHistory
-    } = useOnDraw(tool, color, lineWidth)
+    } = useOnDraw(tool, color, lineWidth, initState)
 
     const handleSelectTool: MouseEventHandler = (e) => {
         const tool = e.currentTarget.getAttribute('data-tool') as string

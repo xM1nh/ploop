@@ -32,17 +32,19 @@ export default (app: Express, channel: Channel) => {
 
         const like = await service.like(sprayId, userId)
 
-        const message = {
-            event: 'CREATE_NOTIFICATION',
-            data: {
-                entityTypeId: 300,
-                entityId: sprayId,
-                userId,
-                notifierId
+        if (userId !== notifierId) {
+            const message = {
+                event: 'CREATE_NOTIFICATION',
+                data: {
+                    entityTypeId: 300,
+                    entityId: sprayId,
+                    userId,
+                    notifierId
+                }
             }
+    
+            publishMessage(channel, NOTIFICATION_ROUTING_KEY, message)
         }
-
-        publishMessage(channel, NOTIFICATION_ROUTING_KEY, message)
 
         res.status(200).json(like)
     }))

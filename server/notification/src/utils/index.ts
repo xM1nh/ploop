@@ -2,10 +2,6 @@ import amqp, {Channel} from 'amqplib'
 import NotificationService from '../services/notification-services'
 import { MESSAGE_BROKER_URL, EXCHANGE_NAME } from '../config'
 
-export const stringToDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US')
-}
-
 export const connect = async () => {
     try {
         const connection = await amqp.connect(MESSAGE_BROKER_URL as string)
@@ -13,7 +9,10 @@ export const connect = async () => {
         await channel.assertExchange(EXCHANGE_NAME, 'direct', {
             durable: true
         })
-
+        await channel.assertExchange('graphql_subscriptions', 'topic', {
+            durable: false,
+            autoDelete: false
+        })
         return channel
     } catch (e) {
         throw e
@@ -21,16 +20,21 @@ export const connect = async () => {
 }
 
 export const publishMessage = async (
-    channel: Channel,
+    channel: Channel, 
     routingKey: string, 
-    message: any,
+    message: any, 
+    exchangeName?: string
 ) => {
-    message = JSON.stringify(message)
-        try {
-            channel.publish(EXCHANGE_NAME, routingKey, Buffer.from(message))
-        } catch (e) {
-            throw e
+    message = Buffer.from(JSON.stringify(message))
+    try {
+        if (!exchangeName) {
+            channel.publish(EXCHANGE_NAME, routingKey, message)
+        } else {
+            channel.publish(exchangeName, routingKey, message)
         }
+    } catch (e) {
+        throw e
+    }
 }
 
 export const subscribeMessage = async (channel: Channel, queueName: string, service: NotificationService, routingKey: string) => {

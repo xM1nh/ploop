@@ -1,3 +1,4 @@
+import { NotificationSource } from "../graphql/notification"
 import { SpraySource, CommentSource, LikeSource, SaveSource } from "../graphql/spray"
 import { UserSource } from "../graphql/user"
 
@@ -69,5 +70,16 @@ export type DataSource = {
     sprayApi: SpraySource,
     commentApi: CommentSource,
     likeApi: LikeSource,
-    saveApi: SaveSource
+    saveApi: SaveSource,
+    notificationApi: NotificationSource
+}
+
+export type Notification = {
+    actor_id: number,
+    notifier_id: number,
+    id: number,
+    entity_type_id: number,
+    entity_id: number,
+    created_on: Date,
+    status: number
 }
