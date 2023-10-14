@@ -8,10 +8,11 @@ self.addEventListener('message', async (e) => {
         viewPermission,
         drawPermission,
         isLimited,
-        deadline
+        deadline,
+        originalId
     } = data
 
-    const chunks = [].concat(...spray).map(url => dataUrltoBlob(url))
+    const chunks = [].concat(...spray).map(dataUrltoBlob)
 
     const formData = new FormData()
 
@@ -25,6 +26,7 @@ self.addEventListener('message', async (e) => {
     formData.append('drawPermission', drawPermission)
     formData.append('isLimited', isLimited)
     formData.append('deadline', JSON.stringify(formattedDeadline))
+    formData.append('originalId', originalId)
 
     chunks.forEach((chunk, index) => {
         formData.append(`sprays[]`, chunk, index.toString())
@@ -40,7 +42,6 @@ self.addEventListener('message', async (e) => {
             body: formData
         })
 
-    console.log('done')
 
     self.postMessage('Done')
 })

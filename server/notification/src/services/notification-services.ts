@@ -1,5 +1,7 @@
+import { Channel } from "amqplib";
 import { NotificationRepository } from "../database";
-import { stringToDate } from "../utils";
+import { publishMessage } from "../utils";
+import { SUBSCRIPTION_EXCHANGE_NAME } from "../config";
 
 interface NotificationMessage {
     [index: number]: string
@@ -7,9 +9,11 @@ interface NotificationMessage {
 
 class NotificationService {
     repository: NotificationRepository
+    channel: Channel
 
-    constructor() {
+    constructor(channel: Channel) {
         this.repository = new NotificationRepository()
+        this.channel = channel
     }
 
     NOTIFICATION_MESSAGE: NotificationMessage = {
@@ -24,7 +28,7 @@ class NotificationService {
     
         300: `liked you spray`,
         301: `commented on your spray`,
-        302: `drew on you spray`,
+        302: `resprayed your spray`,
         303: `shared your spray`
     }
 
@@ -34,30 +38,27 @@ class NotificationService {
         actorId: number,
         notifierId: number,
     ) {
-        const status = 0 //Create an unread notification by default
+        const notification = await this.repository.createNotification(actorId, notifierId, entityTypeId, entityId, 0)
 
-        const notificationObjectId = await this.repository.createNotificationObject(entityTypeId, entityId, status)
-        await this.repository.createNotificationChange(notificationObjectId, actorId)
-        await this.repository.createNotification(notificationObjectId, notifierId)
-
-        return notificationObjectId
+        return notification
     }
 
     async getNotificationsOfUser(
-        id: number,
-        pageNumber: number
+        userId: number,
+        limit: number,
+        offset: number
     ) {
-        const offset = pageNumber * 10
-        const notifications = await this.repository.getNotificationsByUserId(id, offset)
+        const notifications = await this.repository.getNotificationsByUserId(userId, limit, offset)
 
         return notifications
     }
 
-    async deleteNotificationsOfUser(
-        userId: number
+    async getUnreadNotificationCountOfUser(
+        id: number
     ) {
-        const response = await this.repository.deleteNotificationsByUserId(userId)
-        return response
+        const count = await this.repository.getUnreadNotificationCountByUserId(id)
+
+        return count
     }
 
     async markAsRead(
@@ -66,26 +67,24 @@ class NotificationService {
         const response = await this.repository.updateNotificationStatus(id, 1)
         return response
     }
-    
-    async generateNotificationPackage (
-        entityTypeId: number,
-        actor: string,
-        created_on: string
+
+    async markAsUnread(
+        id: number
     ) {
-        if (entityTypeId < 200) {
-            return {
-                actor: 'System Notification',
-                message: this.NOTIFICATION_MESSAGE[entityTypeId],
-                created_on: stringToDate(created_on)
-            }
-        }
-        else {
-            return {
-                actor,
-                message: this.NOTIFICATION_MESSAGE[entityTypeId],
-                created_on: stringToDate(created_on),
-            }
-        }
+        const response = await this.repository.updateNotificationStatus(id, 0)
+        return response
+    }
+
+    async markAllAsRead(
+        userId: number
+    ) {
+        await this.repository.updateAllNotificationStatusByUserId(userId, 1)
+    }
+
+    async markAllAsUnread(
+        userId: number
+    ) {
+        await this.repository.updateAllNotificationStatusByUserId(userId, 0)
     }
 
     async subscribeEvents(payload: string) {
@@ -103,13 +102,9 @@ class NotificationService {
 
         switch(event) {
             case 'CREATE_NOTIFICATION':
-                await this.createNewNotification(entityTypeId, entityId, actorId, notifierId)
+                const notification = await this.createNewNotification(entityTypeId, entityId, actorId, notifierId)
+                publishMessage(this.channel, 'NOTIFICATION_ADDED', {...notification}, SUBSCRIPTION_EXCHANGE_NAME)
                 break
-            case 'DELETE_NOTIFICATIONS':
-                await this.deleteNotificationsOfUser(notifierId)
-                break
-            case 'MARK_AS_READ':
-                await this.markAsRead(id)
             default: 
                 break
         }

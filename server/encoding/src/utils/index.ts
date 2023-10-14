@@ -9,16 +9,29 @@ export const connect = async () => {
         await channel.assertExchange(EXCHANGE_NAME, 'direct', {
             durable: true
         })
+        await channel.assertExchange('graphql_subscriptions', 'topic', {
+            durable: false,
+            autoDelete: false
+        })
         return channel
     } catch (e) {
         throw e
     }
 }
 
-export const publishMessage = (channel: Channel, routingKey: string, message: any) => {
-    const payload = JSON.stringify(message)
+export const publishMessage = async (
+    channel: Channel, 
+    routingKey: string, 
+    message: any, 
+    exchangeName?: string
+) => {
+    message = Buffer.from(JSON.stringify(message))
     try {
-        channel.publish(EXCHANGE_NAME, routingKey, Buffer.from(payload))
+        if (!exchangeName) {
+            channel.publish(EXCHANGE_NAME, routingKey, message)
+        } else {
+            channel.publish(exchangeName, routingKey, message)
+        }
     } catch (e) {
         throw e
     }

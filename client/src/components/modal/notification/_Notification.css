@@ -9,7 +9,7 @@
     box-shadow: rgba(0, 0, 0, 0.12) 0px -4px 32px;
     transition: all 200ms linear 0s;
     z-index: 1000;
-    right: -66px;
+    right: -35px;
 }
 
 .notificationModalWrapper.false {
@@ -28,7 +28,7 @@
     flex-direction: column;
 }
 
-.notificationContainer .header {
+.notificationModalContainer .header {
     padding-top: 24px;
     flex: 0 0 auto;
     padding-left: 16px;

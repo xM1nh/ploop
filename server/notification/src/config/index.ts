@@ -9,7 +9,7 @@ if (process.env.NODE_ENV !== 'prod') {
 }
 
 //Cors
-const whitelist = ['http://localhost:5173'];
+const whitelist = ['http://localhost:5173', 'http://localhost:8000'];
 export const corsOptions: CorsOptions = {
     credentials: true,
     origin: (origin, callback) => {
@@ -29,6 +29,7 @@ const index = {
     DB_PORT: process.env.POSTGRES_PORT,
     MESSAGE_BROKER_URL: process.env.MESSAGE_BROKER_URL,
     EXCHANGE_NAME: 'PLOOP_EVENT_BUS',
+    SUBSCRIPTION_EXCHANGE_NAME: 'graphql_subscriptions',
     NOTIFICATION_ROUTING_KEY: 'NOTIFICATION_SERVICE',
     QUEUE_NAME: 'NOTIFICATION_QUEUE',
 }
@@ -42,6 +43,7 @@ export const {
     DB_USER,
     MESSAGE_BROKER_URL,
     EXCHANGE_NAME,
+    SUBSCRIPTION_EXCHANGE_NAME,
     NOTIFICATION_ROUTING_KEY,
     QUEUE_NAME,
 } = index

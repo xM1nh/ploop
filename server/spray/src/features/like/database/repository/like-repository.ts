@@ -9,11 +9,13 @@ class LikeRepository {
                                 spray_id,
                                 user_id
                             ) VALUES (
-                                ${sprayId},
-                                ${userId}
+                                $1,
+                                $2
                             ) RETURNING *`
+        const values = [sprayId, userId]
+
         try {
-            const like = (await pool.query(queryString)).rows[0]
+            const like = (await pool.query(queryString, values)).rows[0]
             return like
         } catch (e) {
             throw e
@@ -29,11 +31,12 @@ class LikeRepository {
                                 u.username
                             FROM spray_schema.likes l
                                 INNER JOIN user_schema.users AS u ON l.user_id = u.id
-                            WHERE l.spray_id = ${id}
-                            LIMIT ${limit} OFFSET ${offset}`
+                            WHERE l.spray_id = $1
+                            LIMIT $2 OFFSET $3`
+        const values = [id, limit, offset]
 
         try {
-            const like = (await pool.query(queryString)).rows
+            const like = (await pool.query(queryString, values)).rows
             return like
         } catch (e) {
             throw e
@@ -46,10 +49,11 @@ class LikeRepository {
     ) {
         const queryString = `SELECT *
                             FROM spray_schema.likes
-                            WHERE spray_id = ${sprayId} AND user_id = ${userId}`
+                            WHERE spray_id = $1 AND user_id = $2`
+        const values = [sprayId, userId]
 
         try {
-            const like = (await pool.query(queryString)).rows[0]
+            const like = (await pool.query(queryString, values)).rows[0]
             return like
         } catch (e) {
             throw e
@@ -61,11 +65,12 @@ class LikeRepository {
         userId: number
     ) {
         const queryString = `DELETE FROM spray_schema.likes
-                            WHERE spray_id = ${sprayId} AND user_id = ${userId}
+                            WHERE spray_id = $1 AND user_id = $2
                             RETURNING *`
+        const values = [sprayId, userId]
 
         try {
-            const response = (await pool.query(queryString)).rows[0]
+            const response = (await pool.query(queryString, values)).rows[0]
             return response
         } catch (e) {
             throw e
@@ -76,11 +81,11 @@ class LikeRepository {
         id: number
     ) {
         const queryString = `DELETE FROM spray_schema.likes
-                            WHERE user_id = ${id}
+                            WHERE user_id = $1
                             RETURNING spray_id`
 
         try {
-            const response = (await pool.query(queryString)).rows
+            const response = (await pool.query(queryString, [id])).rows
             return response
         } catch (e) {
             throw e
@@ -91,10 +96,10 @@ class LikeRepository {
         id: number
     ) {
         const queryString = `DELETE FROM spray_schema.likes
-                            WHERE spray_id = ${id}`
+                            WHERE spray_id = $1`
 
         try {
-            await pool.query(queryString)
+            await pool.query(queryString, [id])
         } catch (e) {
             throw e
         }
@@ -105,11 +110,12 @@ class LikeRepository {
         amount: number
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                            SET likes = likes + ${amount}
-                            WHERE id = ${id}`
+                            SET likes = likes + $1
+                            WHERE id = $2`
+        const values = [amount, id]
 
         try {
-            await pool.query(queryString)
+            await pool.query(queryString, values)
         } catch (e) {
             throw e
         }
@@ -120,11 +126,12 @@ class LikeRepository {
         amount: number
     ) {
         const queryString = `UPDATE spray_schema.sprays
-                            SET likes = likes - ${amount}
-                            WHERE id = ${id}`
+                            SET likes = likes - $1
+                            WHERE id = $2`
+        const values = [amount, id]
 
         try {
-            await pool.query(queryString)
+            await pool.query(queryString, values)
         } catch (e) {
             throw e
         }
