@@ -1,13 +1,13 @@
-import { pool } from '..'
+import { pool } from "..";
 
 class AuthRepository {
-    async createUser(
-        email: string,
-        password: string,
-        username: string,
-        salt: string,
-    ) {
-        const queryString = `INSERT INTO auth_schema.users (
+  async createUser(
+    email: string,
+    password: string,
+    username: string,
+    salt: string,
+  ) {
+    const queryString = `INSERT INTO auth_schema.users (
                                 email,
                                 password,
                                 username,
@@ -19,26 +19,26 @@ class AuthRepository {
                                 '${username}',
                                 '${salt}'
                             )
-                            RETURNING id`
+                            RETURNING id`;
 
-        const user = (await pool.query(queryString)).rows[0].id
-        return user
-    }
+    const user = (await pool.query(queryString)).rows[0].id;
+    return user;
+  }
 
-    async createUserWithTokenTransaction(
-        email: string,
-        password: string,
-        username: string,
-        salt: string,
-        refreshToken: string
-    ) {
-        const client = await pool.connect()
-        console.log('here')
-        
-        try {
-            await client.query('BEGIN')
+  async createUserWithTokenTransaction(
+    email: string,
+    password: string,
+    username: string,
+    salt: string,
+    refreshToken: string,
+  ) {
+    const client = await pool.connect();
+    console.log("here");
 
-            const createUserqueryString = `INSERT INTO auth_schema.users (
+    try {
+      await client.query("BEGIN");
+
+      const createUserqueryString = `INSERT INTO auth_schema.users (
                                             email,
                                             password,
                                             username,
@@ -50,11 +50,11 @@ class AuthRepository {
                                             '${username}',
                                             '${salt}'
                                         )
-                                        RETURNING id`
+                                        RETURNING id`;
 
-            const id = (await client.query(createUserqueryString)).rows[0].id
+      const id = (await client.query(createUserqueryString)).rows[0].id;
 
-            const createRefreshTokenQueryString = `INSERT INTO auth_schema.refresh_tokens (
+      const createRefreshTokenQueryString = `INSERT INTO auth_schema.refresh_tokens (
                                                     user_id,
                                                     token
                                                 )
@@ -62,91 +62,91 @@ class AuthRepository {
                                                     ${id},
                                                     '${refreshToken}'
                                                 )
-                                                RETURNING id`
+                                                RETURNING id`;
 
-            await client.query(createRefreshTokenQueryString)
+      await client.query(createRefreshTokenQueryString);
 
-            await client.query('COMMIT')
-            return id
-        } catch (e) {
-            await client.query('ROLLBACK')
-            return null
-        } finally {
-            client.release()
-        }
+      await client.query("COMMIT");
+      return id;
+    } catch (e) {
+      await client.query("ROLLBACK");
+      return null;
+    } finally {
+      client.release();
     }
+  }
 
-    async findUserByEmail(email: string) {
-        const queryString = `SELECT * 
+  async findUserByEmail(email: string) {
+    const queryString = `SELECT * 
                             FROM auth_schema.users 
-                            WHERE email = '${email}'`
+                            WHERE email = '${email}'`;
 
-        const existingUser = (await pool.query(queryString)).rows[0]
-        return existingUser
-    }
+    const existingUser = (await pool.query(queryString)).rows[0];
+    return existingUser;
+  }
 
-    async findUserByUsername(username: string) {
-        const queryString = `SELECT *
+  async findUserByUsername(username: string) {
+    const queryString = `SELECT *
                             FROM auth_schema.users
-                            WHERE username = '${username}'`
-        
-        const existingUser = (await pool.query(queryString)).rows[0]
-        return existingUser
-    }
+                            WHERE username = '${username}'`;
 
-    async findUserById(id: number) {
-        const queryString = `SELECT * 
+    const existingUser = (await pool.query(queryString)).rows[0];
+    return existingUser;
+  }
+
+  async findUserById(id: number) {
+    const queryString = `SELECT * 
                             FROM auth_schema.users 
-                            WHERE id = ${id}`
+                            WHERE id = ${id}`;
 
-        const existingUser = (await pool.query(queryString)).rows[0]
-        return existingUser
+    const existingUser = (await pool.query(queryString)).rows[0];
+    return existingUser;
+  }
+
+  async deleteUserById(id: number) {
+    const queryString = `DELETE FROM auth_schema.users
+                            WHERE id = ${id}`;
+
+    try {
+      await pool.query(queryString);
+      return true;
+    } catch (e) {
+      return null;
     }
+  }
 
-    async deleteUserById(id: number) {
-        const queryString = `DELETE FROM auth_schema.users
-                            WHERE id = ${id}`
-
-        try {
-            await pool.query(queryString)
-            return true
-        } catch(e) {
-            return null
-        }
-    }
-
-    async updateEmail(id: number, email: string) {
-        const queryString = `UPDATE auth_schema.users
+  async updateEmail(id: number, email: string) {
+    const queryString = `UPDATE auth_schema.users
                             SET email = '${email}'
                             WHERE id = ${id}
-                            RETURNING id`
+                            RETURNING id`;
 
-        const existingUser = (await pool.query(queryString)).rows[0]
-        return existingUser
-    }
+    const existingUser = (await pool.query(queryString)).rows[0];
+    return existingUser;
+  }
 
-    async updateUsername(id: number, username: string) {
-        const queryString = `UPDATE auth_schema.users
+  async updateUsername(id: number, username: string) {
+    const queryString = `UPDATE auth_schema.users
                             SET username = '${username}'
                             WHERE id = ${id}
-                            RETURNING username`
+                            RETURNING username`;
 
-        const existingUser = (await pool.query(queryString)).rows[0]
-        return existingUser
-    }
+    const existingUser = (await pool.query(queryString)).rows[0];
+    return existingUser;
+  }
 
-    async updatePassword(id: number, password: string) {
-        const queryString = `UPDATE auth_schema.users
+  async updatePassword(id: number, password: string) {
+    const queryString = `UPDATE auth_schema.users
                             SET password = '${password}'
                             WHERE id = ${id}
-                            RETURNING password`
+                            RETURNING password`;
 
-        const existingUser = (await pool.query(queryString)).rows[0]
-        return existingUser
-    }
+    const existingUser = (await pool.query(queryString)).rows[0];
+    return existingUser;
+  }
 
-    async createRefreshToken(id: number, refreshToken: string) {
-        const queryString = `INSERT INTO auth_schema.refresh_tokens (
+  async createRefreshToken(id: number, refreshToken: string) {
+    const queryString = `INSERT INTO auth_schema.refresh_tokens (
                                 user_id,
                                 token
                             )
@@ -154,25 +154,29 @@ class AuthRepository {
                                 ${id},
                                 '${refreshToken}'
                             )
-                            RETURNING id`
-        
-        const existingUser = (await pool.query(queryString)).rows[0]
-        return existingUser
-    }
+                            RETURNING id`;
 
-    async deleteRefreshToken(refreshToken: string) {
-        const queryString = `DELETE FROM auth_schema.refresh_tokens
+    const existingUser = (await pool.query(queryString)).rows[0];
+    return existingUser;
+  }
+
+  async deleteRefreshToken(refreshToken: string) {
+    const queryString = `DELETE FROM auth_schema.refresh_tokens
                             WHERE token = '${refreshToken}'
-                            RETURNING user_id`
+                            RETURNING user_id`;
 
-        const deletedUser = (await pool.query(queryString)).rows
-        return deletedUser
-    }
+    const deletedUser = (await pool.query(queryString)).rows;
+    return deletedUser;
+  }
 
-    async replaceRefreshToken(id:number, oldRefreshToken: string, newRefreshToken: string) {
-        const client = await pool.connect()
+  async replaceRefreshToken(
+    id: number,
+    oldRefreshToken: string,
+    newRefreshToken: string,
+  ) {
+    const client = await pool.connect();
 
-        const createQueryString = `INSERT INTO auth_schema.refresh_tokens (
+    const createQueryString = `INSERT INTO auth_schema.refresh_tokens (
                                         user_id,
                                         token
                                     )
@@ -180,46 +184,46 @@ class AuthRepository {
                                         ${id},
                                         '${newRefreshToken}'
                                     )
-                                    RETURNING id`
-        
-        const deleteQueryString = `DELETE FROM auth_schema.refresh_tokens
+                                    RETURNING id`;
+
+    const deleteQueryString = `DELETE FROM auth_schema.refresh_tokens
                                     WHERE token = '${oldRefreshToken}'
-                                    RETURNING user_id`
+                                    RETURNING user_id`;
 
-        try {
-            await client.query('BEGIN')
+    try {
+      await client.query("BEGIN");
 
-            await client.query(createQueryString)
-            await client.query(deleteQueryString)
+      await client.query(createQueryString);
+      await client.query(deleteQueryString);
 
-            await client.query('COMMIT')
-            return 1
-        } catch (e) {
-            await client.query('ROLLBACK')
-            return 0
-        } finally {
-            client.release()
-        }
+      await client.query("COMMIT");
+      return 1;
+    } catch (e) {
+      await client.query("ROLLBACK");
+      return 0;
+    } finally {
+      client.release();
     }
+  }
 
-    async deleteAllUserRefreshToken(id: number) {
-        const queryString = `DELETE FROM auth_schema.refresh_tokens
-                            WHERE user_id = ${id}`
+  async deleteAllUserRefreshToken(id: number) {
+    const queryString = `DELETE FROM auth_schema.refresh_tokens
+                            WHERE user_id = ${id}`;
 
-        await pool.query(queryString)
-    }
+    await pool.query(queryString);
+  }
 
-    async getUserRefreshTokens(id: number) {
-        const queryString = `SELECT token
+  async getUserRefreshTokens(id: number) {
+    const queryString = `SELECT token
                             FROM auth_schema.refresh_tokens
-                            where user_id = ${id}`
-        
-        const tokens = (await pool.query(queryString)).rows
-        return tokens
-    }
+                            where user_id = ${id}`;
 
-    async findUserByRefreshToken(refreshToken: string) {
-        const queryString = `SELECT 
+    const tokens = (await pool.query(queryString)).rows;
+    return tokens;
+  }
+
+  async findUserByRefreshToken(refreshToken: string) {
+    const queryString = `SELECT 
                                 users.id,
                                 email,
                                 password,
@@ -227,11 +231,11 @@ class AuthRepository {
                                 salt
                             FROM auth_schema.refresh_tokens
                             INNER JOIN auth_schema.users ON user_id = users.id
-                            WHERE token = '${refreshToken}'`
-        
-        const existingUser = (await pool.query(queryString)).rows[0]
-        return existingUser
-    }
+                            WHERE token = '${refreshToken}'`;
+
+    const existingUser = (await pool.query(queryString)).rows[0];
+    return existingUser;
+  }
 }
 
-export default AuthRepository
+export default AuthRepository;

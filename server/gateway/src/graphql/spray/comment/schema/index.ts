@@ -19,4 +19,4 @@ export const typeDef = `#graphql
     type Subscription {
         commentAdded(sprayId: ID!, userId: ID!): Comment
     }
-`
+`;

@@ -1,7 +1,4 @@
-import {pool} from './connection'
-import UserRepository from "./repository/user-repository"
+import { pool } from "./connection";
+import UserRepository from "./repository/user-repository";
 
-export {
-    pool, 
-    UserRepository
-}
+export { pool, UserRepository };

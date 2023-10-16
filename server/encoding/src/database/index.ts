@@ -1,7 +1,4 @@
-import s3 from './connection'
-import EncodingRepository from './repository/encoding-repository'
+import s3 from "./connection";
+import EncodingRepository from "./repository/encoding-repository";
 
-export {
-    s3,
-    EncodingRepository
-}
+export { s3, EncodingRepository };

@@ -1,12 +1,12 @@
-import {pool} from '..'
+import { pool } from "..";
 
 class NotificationRepository {
-    async createNotificationObject(
-        entityTypeId: number,
-        entityId: number,
-        status: number,
-    ) {
-        const queryString = `INSERT INTO notification_schema.notification_objects (
+  async createNotificationObject(
+    entityTypeId: number,
+    entityId: number,
+    status: number,
+  ) {
+    const queryString = `INSERT INTO notification_schema.notification_objects (
                                 entity_type_id,
                                 entity_id,
                                 status
@@ -15,34 +15,31 @@ class NotificationRepository {
                                 ${entityId},
                                 ${status}
                             )
-                            RETURNING id`
-        
-        const notificationObjectId = (await pool.query(queryString)).rows[0]
-        return notificationObjectId
-    }
+                            RETURNING id`;
 
-    async createNotificationChange(
-        notificationObjectId: number,
-        actorId: number,
-    ) {
-        const queryString = `INSERT INTO notification_schema.notification_change (
+    const notificationObjectId = (await pool.query(queryString)).rows[0];
+    return notificationObjectId;
+  }
+
+  async createNotificationChange(
+    notificationObjectId: number,
+    actorId: number,
+  ) {
+    const queryString = `INSERT INTO notification_schema.notification_change (
                                 notification_object_id,
                                 actor_id,
                             ) VALUES (
                                 ${notificationObjectId},
                                 ${actorId}
                             ) 
-                            RETURNING id`
-        
-        const changeId = (await pool.query(queryString)).rows[0]
-        return changeId
-    }
+                            RETURNING id`;
 
-    async createNotification(
-        notificationObjectId: number,
-        notifierId: number,
-    ) {
-        const queryString = `INSERT INTO notification_schema.notification_change (
+    const changeId = (await pool.query(queryString)).rows[0];
+    return changeId;
+  }
+
+  async createNotification(notificationObjectId: number, notifierId: number) {
+    const queryString = `INSERT INTO notification_schema.notification_change (
                                 notification_object_id,
                                 notifier_id,
                                 notifier_name
@@ -50,28 +47,23 @@ class NotificationRepository {
                                 ${notificationObjectId},
                                 ${notifierId}
                             ) 
-                            RETURNING id`
+                            RETURNING id`;
 
-        const notificationId = (await pool.query(queryString)).rows[0]
-        return notificationId
-    }
+    const notificationId = (await pool.query(queryString)).rows[0];
+    return notificationId;
+  }
 
-    async getNotificationObjectById(
-        id: number
-    ) {
-        const queryString = `SELECT *
+  async getNotificationObjectById(id: number) {
+    const queryString = `SELECT *
                             FROM notification_schema.notification_objects
-                            WHERE id = ${id}`
-        
-        const notificationObject = (await pool.query(queryString)).rows[0]
-        return notificationObject
-    }
+                            WHERE id = ${id}`;
 
-    async getNotificationsByUserId(
-        userId: number,
-        offset: number
-    ) {
-        const queryString = `SELECT
+    const notificationObject = (await pool.query(queryString)).rows[0];
+    return notificationObject;
+  }
+
+  async getNotificationsByUserId(userId: number, offset: number) {
+    const queryString = `SELECT
                                 no.id,
                                 nc.actor_id,
                                 actor.username as actor_username,
@@ -92,41 +84,36 @@ class NotificationRepository {
                                     ON n.notifier_id = notifier.id
                             WHERE n.notifier_id = ${userId}
                             ORDER BY no.created_on
-                            LIMIT 10 OFFSET ${offset}`
+                            LIMIT 10 OFFSET ${offset}`;
 
-        const notificationList = (await pool.query(queryString)).rows
-        return notificationList
+    const notificationList = (await pool.query(queryString)).rows;
+    return notificationList;
+  }
+
+  async deleteNotificationsByUserId(userId: number) {
+    const queryString = `DELETE FROM notification_schema.notifications
+                            WHERE notifier_id = ${userId}`;
+
+    try {
+      await pool.query(queryString);
+      return true;
+    } catch (e) {
+      return null;
     }
-    
-    async deleteNotificationsByUserId(
-        userId: number
-    ) {
-        const queryString = `DELETE FROM notification_schema.notifications
-                            WHERE notifier_id = ${userId}`
+  }
 
-        try {
-            await pool.query(queryString)
-            return true
-        } catch (e) {
-            return null
-        }
-    }
-
-    async updateNotificationStatus(
-        id: number,
-        status: number
-    ) {
-        const queryString = `UPDATE TABLE notification_objects
+  async updateNotificationStatus(id: number, status: number) {
+    const queryString = `UPDATE TABLE notification_objects
                             SET status = ${status}
-                            WHERE id = ${id}`
-        
-        try {
-            await pool.query(queryString)
-            return true
-        } catch (e) {
-            return null
-        }
+                            WHERE id = ${id}`;
+
+    try {
+      await pool.query(queryString);
+      return true;
+    } catch (e) {
+      return null;
     }
+  }
 }
 
-export default NotificationRepository
+export default NotificationRepository;
