@@ -1,5 +1,3 @@
-import encoding from './encoding'
+import encoding from "./encoding";
 
-export {
-    encoding,
-}
+export { encoding };

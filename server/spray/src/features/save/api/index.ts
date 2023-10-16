@@ -1,5 +1,3 @@
 import save from "./save";
 
-export {
-    save
-}
+export { save };

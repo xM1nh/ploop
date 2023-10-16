@@ -13,4 +13,4 @@ export const typeDef = `#graphql
         save(sprayId: ID!, userId: ID!): Save!,
         unsave(sprayId: ID!, userId: ID!): Save! 
     }
-`
+`;

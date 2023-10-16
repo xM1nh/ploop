@@ -22,4 +22,4 @@ export const typeDef = `#graphql
     type Subscription {
         notificationAdded(userId: ID!): Notification!
     }
-`
+`;

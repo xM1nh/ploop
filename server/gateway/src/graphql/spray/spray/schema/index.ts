@@ -38,4 +38,4 @@ export const typeDef = `#graphql
         ): Spray!,
 
     }
-`
+`;

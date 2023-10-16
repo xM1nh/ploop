@@ -12,4 +12,4 @@ export const typeDef = `#graphql
         like(sprayId: ID!, userId: ID!, notifierId: ID): Like
         unlike(sprayId: ID!, userId: ID!): Like
     }
-`
+`;

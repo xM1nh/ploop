@@ -1,5 +1,3 @@
 import like from "./like";
 
-export {
-    like
-}
+export { like };

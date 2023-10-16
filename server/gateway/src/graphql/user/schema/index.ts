@@ -31,4 +31,4 @@ export const typeDef = `#graphql
         page: Int!,
         count: Int!
     }
-`
+`;
