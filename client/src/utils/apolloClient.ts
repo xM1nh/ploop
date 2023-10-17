@@ -25,25 +25,7 @@ const splitLink = split(
 
 const client = new ApolloClient({
     link: splitLink,
-    cache: new InMemoryCache({
-        typePolicies: {
-            Query: {
-                fields: {
-                    comments: {
-                        keyArgs: false,
-                        merge(existing, incoming, {args}) {
-                            const {pagination: {count}} = args
-                            const merged = existing ? existing.slice(count) : []
-                            for (let i = 0; i < incoming.length; i ++) {
-                                merged[count + i] = incoming[i]
-                            }
-                            return merged
-                        }
-                    }
-                }
-            }
-        }
-    })
+    cache: new InMemoryCache()
 })
 
 export default client
