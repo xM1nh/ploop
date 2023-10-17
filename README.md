@@ -20,8 +20,16 @@ Create stunning paintings with a simple swipe of your finger, then watch as your
 - Usual social media features with real-update: Like, Comment, Save, Follow, etc..
 - Edit user profile
 
-# To be implemented:
+# To be implemented
 - Email Verification
 - Share
 - Chat
 - Recommendation System
+
+# To run locally
+To run the project locally, run
+```
+docker compose build
+docker compose up
+```
+You will need a PostgreSQL database, a rabbitMQ client and a cloud storage.
