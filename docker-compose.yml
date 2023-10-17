@@ -1,50 +1,74 @@
 version: '4'
 services:
   client:
-    image: client
+    image: client:client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
     stdin_open: true
     ports:
       - "5173:5173"
     networks:
       - ploop
   auth-server:
-    image: auth
+    image: auth:auth
+    build:
+      context: ./server/auth
+      dockerfile: Dockerfile
     ports:
       - "8001:8001"
     networks:
       - ploop
   encoding-server:
-    image: encoding
+    image: encoding:encoding
+    build:
+      context: ./server/encoding
+      dockerfile: Dockerfile
     ports:
       - "8006:8006"
     networks:
       - ploop
   api-gateway-server:
-    image: gateway
+    image: gateway:gateway
+    build:
+      context: ./server/gateway
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     networks:
       - ploop
   notification-server:
-    image: notification
+    image: notification:notification
+    build:
+      context: ./server/notification
+      dockerfile: Dockerfile
     ports:
       - "8004:8004"
     networks:
       - ploop
   spray-server:
-    image: spray
+    image: spray:spray
+    build:
+      context: ./server/spray
+      dockerfile: Dockerfile
     ports:
       - "8005:8005"
     networks:
       - ploop
   upload-server:
-    image: upload
+    image: upload:upload
+    build:
+      context: ./server/upload
+      dockerfile: Dockerfile
     ports:
       - "8003:8003"
     networks:
       - ploop
   user-server:
-    image: user
+    image: user:user
+    build:
+      context: ./server/user
+      dockerfile: Dockerfile
     ports:
       - "8002:8002"
     networks:

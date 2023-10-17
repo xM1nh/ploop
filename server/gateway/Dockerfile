@@ -13,7 +13,6 @@ COPY ./package*.json ./
 RUN npm install --omit=dev
 
 COPY --from=builder /app/server/gateway/dist ./dist
-COPY .env ./dist/
 
 EXPOSE 8001
 CMD node dist/index.js

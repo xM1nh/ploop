@@ -14,6 +14,7 @@ RUN npm install --omit=dev
 
 COPY --from=builder /app/server/encoding/dist ./dist
 COPY .env ./dist/
+COPY .env.development.local ./dist/
 
 EXPOSE 8006
 CMD node dist/index.js
