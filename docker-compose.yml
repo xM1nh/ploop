@@ -1,0 +1,54 @@
+version: '4'
+services:
+  client:
+    image: client
+    stdin_open: true
+    ports:
+      - "5173:5173"
+    networks:
+      - ploop
+  auth-server:
+    image: auth
+    ports:
+      - "8001:8001"
+    networks:
+      - ploop
+  encoding-server:
+    image: encoding
+    ports:
+      - "8006:8006"
+    networks:
+      - ploop
+  api-gateway-server:
+    image: gateway
+    ports:
+      - "8000:8000"
+    networks:
+      - ploop
+  notification-server:
+    image: notification
+    ports:
+      - "8004:8004"
+    networks:
+      - ploop
+  spray-server:
+    image: spray
+    ports:
+      - "8005:8005"
+    networks:
+      - ploop
+  upload-server:
+    image: upload
+    ports:
+      - "8003:8003"
+    networks:
+      - ploop
+  user-server:
+    image: user
+    ports:
+      - "8002:8002"
+    networks:
+      - ploop
+networks:
+  ploop: 
+    driver: bridge
