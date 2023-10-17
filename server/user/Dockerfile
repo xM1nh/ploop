@@ -13,8 +13,6 @@ COPY ./package*.json ./
 RUN npm install --omit=dev
 
 COPY --from=builder /app/server/user/dist ./dist
-COPY .env ./dist/
-COPY .env.development.local ./dist/
 
 EXPOSE 8001
 CMD node dist/index.js

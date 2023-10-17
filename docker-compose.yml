@@ -15,6 +15,10 @@ services:
     build:
       context: ./server/auth
       dockerfile: Dockerfile
+    environment:
+      - NODE_ENV="prod"
+    env_file:
+      - ./server/auth/.env
     ports:
       - "8001:8001"
     networks:
@@ -24,6 +28,10 @@ services:
     build:
       context: ./server/encoding
       dockerfile: Dockerfile
+    environment:
+      - NODE_ENV="prod"
+    env_file:
+      - ./server/encoding/.env
     ports:
       - "8006:8006"
     networks:
@@ -33,6 +41,10 @@ services:
     build:
       context: ./server/gateway
       dockerfile: Dockerfile
+    environment:
+      - NODE_ENV="prod"
+    env_file:
+      - ./server/gateway/.env
     ports:
       - "8000:8000"
     networks:
@@ -42,6 +54,10 @@ services:
     build:
       context: ./server/notification
       dockerfile: Dockerfile
+    environment:
+      - NODE_ENV="prod"
+    env_file:
+      - ./server/notification/.env
     ports:
       - "8004:8004"
     networks:
@@ -51,6 +67,10 @@ services:
     build:
       context: ./server/spray
       dockerfile: Dockerfile
+    environment:
+      - NODE_ENV="prod"
+    env_file:
+      - ./server/spray/.env
     ports:
       - "8005:8005"
     networks:
@@ -60,6 +80,10 @@ services:
     build:
       context: ./server/upload
       dockerfile: Dockerfile
+    environment:
+      - NODE_ENV="prod"
+    env_file:
+      - ./server/upload/.env
     ports:
       - "8003:8003"
     networks:
@@ -69,6 +93,10 @@ services:
     build:
       context: ./server/user
       dockerfile: Dockerfile
+    environment:
+      - NODE_ENV="prod"
+    env_file:
+      - ./server/user/.env
     ports:
       - "8002:8002"
     networks:
